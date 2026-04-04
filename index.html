@@ -785,6 +785,18 @@
       border-color: var(--confidence-high);
     }
 
+    .source-url-link {
+      text-decoration: none;
+      color: var(--accent);
+      border-color: var(--accent);
+    }
+
+    .source-url-link:hover {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: var(--text-on-accent);
+    }
+
     .page-badge {
       font-size: 0.6875rem;
       color: var(--text-muted);
@@ -2358,17 +2370,34 @@
       const docName = source.document_name || 'Document';
       const content = source.content || 'Source content not available.';
       const pageNumber = source.page_number || null;
+      const sourceUrl = source.source_url || null;
+
+      // Build full breadcrumb: Document > Hierarchy > Title
+      const pathParts = [docName];
+      if (hierarchy.length > 0) pathParts.push(...hierarchy);
+      if (title && !hierarchy.includes(title) && title !== docName) pathParts.push(title);
+      const fullPath = pathParts.join(' \u203a ');
 
       const sourceId = `${messageId}-source-${index}`;
-      sourceDataStore[sourceId] = { path: docName + ' > ' + title, content };
+      sourceDataStore[sourceId] = { path: fullPath, content, sourceUrl };
 
       const pageHtml = pageNumber ? `<span class="page-badge">Page ${pageNumber}</span>` : '';
+
+      const sourceUrlHtml = sourceUrl ? `
+            <a class="view-source-link source-url-link" href="${escapeHtml(sourceUrl)}" target="_blank" rel="noopener">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                <polyline points="15 3 21 3 21 9"></polyline>
+                <line x1="10" y1="14" x2="21" y2="3"></line>
+              </svg>
+              View on NTA website
+            </a>` : '';
 
       return `
         <div class="source-item" id="${sourceId}">
           <div class="source-header">
             <div class="source-info">
-              <div class="source-path">${escapeHtml(docName)} &rsaquo; ${escapeHtml(title)}</div>
+              <div class="source-path">${escapeHtml(fullPath)}</div>
               <div class="source-meta">
                 <span class="authority-badge authority-binding">Curriculum</span>
                 ${pageHtml}
@@ -2391,7 +2420,7 @@
                 <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
               </svg>
               Copy ref
-            </button>
+            </button>${sourceUrlHtml}
           </div>
         </div>
       `;

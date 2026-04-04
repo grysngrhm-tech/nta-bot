@@ -50,25 +50,29 @@ Registry of ingested curriculum documents.
 
 ### `nta_knowledge_chunks`
 Vector store for RAG retrieval.
-- `id` uuid PK, `content` text, `content_hash` text, `embedding` vector(1536), `fts_vector` tsvector (generated), `document_id` uuid FK, `document_name` text, `document_type` text, `section_hierarchy` text[], `section_title` text, `page_number` int, `chunk_index` int, `token_count` int, `created_at` timestamptz
+- `id` uuid PK, `content` text, `content_hash` text, `embedding` vector(1536), `fts_vector` tsvector (generated), `document_id` uuid FK, `document_name` text, `document_type` text, `section_hierarchy` text[], `section_title` text, `page_number` int, `source_url` text (link to NTA webpage source), `chunk_index` int, `token_count` int, `created_at` timestamptz
 
 ### `nta_hybrid_search(query_embedding, query_text, match_count, vector_weight, fts_weight, filter_document_types)`
 Returns: id, content, document_name, document_type, section_hierarchy, section_title, page_number, vector_score, fts_score, combined_score.
 
 ## Content Ingestion
 
-Content is loaded manually in Claude Code sessions (not via n8n pipeline):
-1. Upload curriculum documents (PDF/text) to Claude
-2. Claude extracts text, chunks at ~500 tokens with ~50 token overlap
-3. Claude generates embeddings via OpenAI API (`text-embedding-3-large`)
-4. Claude inserts into `nta_knowledge_chunks` via Supabase MCP
-5. Claude creates/updates parent `nta_documents` record
+Content is loaded manually in Claude Code sessions (not via n8n pipeline).
+Full procedure: `scripts/INGESTION_PROCESS.md`
 
-### Chunking Strategy
-- Split on section headers first (preserve document structure)
-- Within sections, split at paragraph boundaries near 500-token target
-- Overlap ~50 tokens between chunks for continuity
-- Preserve `section_hierarchy` and `section_title` per chunk
+### Reference Document Format
+Reference documents live in `docs/` as structured markdown with YAML frontmatter.
+- H2 headings map to `section_hierarchy[]`
+- H3 headings map to `section_title`
+- `<!-- source_url: ... -->` comments map to `source_url` (link back to NTA webpage)
+- Each H3 subsection = one chunk (~200-600 tokens)
+
+### Ingestion Steps
+1. Create `nta_documents` record via Supabase MCP
+2. Parse markdown sections, generate SHA-256 content hashes
+3. Generate embeddings via OpenAI API (`text-embedding-3-large`, 1536 dims)
+4. Insert chunks into `nta_knowledge_chunks` via Supabase MCP
+5. Update document record with chunk count
 
 ## Key NTA Terminology
 - **Bio-individuality** — each person is biologically unique, no universal diet
