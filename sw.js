@@ -1,0 +1,213 @@
+/**
+ * NTA Bot Service Worker
+ * Provides offline support and caching for the PWA
+ */
+
+const STATIC_CACHE = 'nta-bot-static-v1.0';
+const DYNAMIC_CACHE = 'nta-bot-dynamic-v1.0';
+
+// Assets to cache immediately on install
+const PRECACHE_ASSETS = [
+  './',
+  './index.html',
+  './manifest.json',
+  './assets/icons/icon-192.png',
+  './assets/icons/icon-512.png',
+  './assets/icons/apple-touch-icon.png',
+  './assets/icons/favicon-32.png',
+  './assets/icons/favicon-16.png'
+];
+
+// External resources to cache when fetched
+const CACHEABLE_EXTERNAL = [
+  'https://fonts.googleapis.com',
+  'https://fonts.gstatic.com'
+];
+
+// Install event - precache static assets
+self.addEventListener('install', (event) => {
+  console.log('[SW] Installing service worker...');
+
+  event.waitUntil(
+    caches.open(STATIC_CACHE)
+      .then(async (cache) => {
+        console.log('[SW] Precaching static assets');
+        for (const asset of PRECACHE_ASSETS) {
+          try {
+            await cache.add(asset);
+          } catch (error) {
+            console.warn('[SW] Failed to precache:', asset, error.message);
+          }
+        }
+      })
+      .then(() => {
+        console.log('[SW] Installation complete');
+        return self.skipWaiting();
+      })
+      .catch((error) => {
+        console.error('[SW] Installation failed:', error);
+      })
+  );
+});
+
+// Activate event - clean up old caches
+self.addEventListener('activate', (event) => {
+  console.log('[SW] Activating service worker...');
+
+  event.waitUntil(
+    caches.keys()
+      .then((cacheNames) => {
+        return Promise.all(
+          cacheNames
+            .filter((name) => {
+              return name.startsWith('nta-bot-') &&
+                     name !== STATIC_CACHE &&
+                     name !== DYNAMIC_CACHE;
+            })
+            .map((name) => {
+              console.log('[SW] Deleting old cache:', name);
+              return caches.delete(name);
+            })
+        );
+      })
+      .then(() => {
+        console.log('[SW] Activation complete');
+        return self.clients.claim();
+      })
+  );
+});
+
+// Fetch event - serve from cache with network fallback
+self.addEventListener('fetch', (event) => {
+  const { request } = event;
+  const url = new URL(request.url);
+
+  // Skip non-GET requests
+  if (request.method !== 'GET') {
+    return;
+  }
+
+  // Skip API requests - always go to network
+  if (url.hostname.includes('n8n.srv1208741.hstgr.cloud')) {
+    event.respondWith(networkOnly(request));
+    return;
+  }
+
+  // For same-origin requests - cache first, network fallback
+  if (url.origin === self.location.origin) {
+    event.respondWith(cacheFirst(request));
+    return;
+  }
+
+  // For external fonts and resources - stale while revalidate
+  if (CACHEABLE_EXTERNAL.some(domain => url.href.startsWith(domain))) {
+    event.respondWith(staleWhileRevalidate(request));
+    return;
+  }
+
+  // Default - network first with cache fallback
+  event.respondWith(networkFirst(request));
+});
+
+// Cache-first strategy (for static assets)
+async function cacheFirst(request) {
+  const cachedResponse = await caches.match(request);
+  if (cachedResponse) {
+    return cachedResponse;
+  }
+
+  try {
+    const networkResponse = await fetch(request);
+    if (networkResponse.ok) {
+      const cache = await caches.open(STATIC_CACHE);
+      cache.put(request, networkResponse.clone());
+    }
+    return networkResponse;
+  } catch (error) {
+    return offlineFallback(request);
+  }
+}
+
+// Network-first strategy (for dynamic content)
+async function networkFirst(request) {
+  try {
+    const networkResponse = await fetch(request);
+    if (networkResponse.ok) {
+      const cache = await caches.open(DYNAMIC_CACHE);
+      cache.put(request, networkResponse.clone());
+    }
+    return networkResponse;
+  } catch (error) {
+    const cachedResponse = await caches.match(request);
+    if (cachedResponse) {
+      return cachedResponse;
+    }
+    return offlineFallback(request);
+  }
+}
+
+// Network-only strategy (for API calls)
+async function networkOnly(request) {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 45000);
+  try {
+    const response = await fetch(request, { signal: controller.signal });
+    clearTimeout(timeoutId);
+    return response;
+  } catch (error) {
+    clearTimeout(timeoutId);
+    return new Response(
+      JSON.stringify({
+        error: error.name === 'AbortError' ? 'timeout' : 'offline',
+        message: error.name === 'AbortError'
+          ? 'The request timed out. Please try again.'
+          : 'You appear to be offline. Please check your internet connection.'
+      }),
+      {
+        status: 503,
+        statusText: 'Service Unavailable',
+        headers: { 'Content-Type': 'application/json' }
+      }
+    );
+  }
+}
+
+// Stale-while-revalidate strategy (for fonts)
+async function staleWhileRevalidate(request) {
+  const cache = await caches.open(DYNAMIC_CACHE);
+  const cachedResponse = await cache.match(request);
+
+  const fetchPromise = fetch(request)
+    .then((networkResponse) => {
+      if (networkResponse.ok) {
+        cache.put(request, networkResponse.clone());
+      }
+      return networkResponse;
+    })
+    .catch(() => cachedResponse);
+
+  return cachedResponse || fetchPromise;
+}
+
+// Offline fallback response
+function offlineFallback(request) {
+  if (request.mode === 'navigate') {
+    return caches.match('./index.html');
+  }
+
+  return new Response('Offline', {
+    status: 503,
+    statusText: 'Service Unavailable'
+  });
+}
+
+// Handle messages from the main thread
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
+
+  if (event.data && event.data.type === 'GET_VERSION') {
+    event.ports[0].postMessage({ version: STATIC_CACHE });
+  }
+});
