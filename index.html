@@ -263,41 +263,7 @@
       display: block;
     }
 
-    /* ===== HEADER ===== */
-    .header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 1rem 1.5rem;
-      background: var(--bg-secondary);
-      border-bottom: 1px solid var(--border);
-      flex-shrink: 0;
-    }
-
-    .header-brand {
-      display: flex;
-      align-items: center;
-      gap: 0.875rem;
-      cursor: pointer;
-      border-radius: 8px;
-      padding: 0.25rem 0.5rem;
-      margin: -0.25rem -0.5rem;
-      transition: background 0.2s ease;
-    }
-
-    .header-brand:hover {
-      background: var(--bg-card);
-    }
-
-    .header-brand:active {
-      background: var(--bg-input);
-    }
-
-    .header-logo {
-      height: 36px;
-      width: auto;
-      object-fit: contain;
-    }
+    /* ===== HEADER (removed — logo is in welcome hero) ===== */
 
     .header-actions {
       display: flex;
@@ -954,8 +920,23 @@
     /* Hero Section */
     .welcome-hero {
       text-align: center;
-      margin-bottom: 1.5rem;
+      margin-bottom: 2rem;
       animation: welcomeFadeIn 0.5s ease;
+      position: relative;
+    }
+
+    .welcome-logo {
+      width: 240px;
+      height: auto;
+      margin: 0 auto 1.25rem;
+      display: block;
+      cursor: pointer;
+    }
+
+    .welcome-theme-toggle {
+      position: absolute;
+      top: 0;
+      right: 0;
     }
 
     .welcome-hero h2 {
@@ -974,29 +955,20 @@
       line-height: 1.6;
     }
 
-    /* Two-Column Content */
-    .welcome-content {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1.5rem;
-      animation: welcomeFadeIn 0.5s ease 0.15s both;
-    }
-
-    @media (max-width: 640px) {
-      .welcome-content {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    .welcome-coverage,
-    .welcome-getstarted {
+    /* Stacked Sections */
+    .welcome-section {
       background: var(--bg-card);
       border-radius: var(--radius-lg);
       padding: 1.25rem;
+      margin-bottom: 1rem;
+      animation: welcomeFadeIn 0.5s ease 0.15s both;
     }
 
-    .welcome-coverage h3,
-    .welcome-getstarted h3 {
+    .welcome-section:last-of-type {
+      margin-bottom: 0;
+    }
+
+    .welcome-section h3 {
       font-size: 0.6875rem;
       font-weight: 600;
       color: var(--text-muted);
@@ -1006,10 +978,16 @@
     }
 
     /* ===== COVERAGE CARDS ===== */
-    .coverage-cards {
-      display: flex;
-      flex-direction: column;
+    .coverage-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
       gap: 0.625rem;
+    }
+
+    @media (max-width: 560px) {
+      .coverage-grid {
+        grid-template-columns: 1fr;
+      }
     }
 
     .coverage-card {
@@ -1080,9 +1058,15 @@
 
     /* ===== GET STARTED / QUESTION CHIPS ===== */
     .question-chips {
-      display: flex;
-      flex-direction: column;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
       gap: 0.5rem;
+    }
+
+    @media (max-width: 560px) {
+      .question-chips {
+        grid-template-columns: 1fr;
+      }
     }
 
     .question-chip {
@@ -1588,13 +1572,6 @@
     }
 
     /* ===== RESPONSIVE ===== */
-    @media (max-width: 768px) {
-      .header {
-        padding: 0.875rem 1rem;
-      }
-
-    }
-
     @media (max-width: 640px) {
       .chat-area {
         padding: 1rem;
@@ -1748,9 +1725,6 @@
 
     /* ===== MOBILE: SAFE AREA HANDLING ===== */
     @supports (padding: env(safe-area-inset-top)) {
-      .header {
-        padding-top: calc(0.875rem + env(safe-area-inset-top));
-      }
       .input-area {
         padding-bottom: calc(0.875rem + env(safe-area-inset-bottom));
       }
@@ -1822,21 +1796,14 @@
       overscroll-behavior: contain;
     }
 
-    /* ===== MOBILE: STANDALONE MODE ===== */
-    @media (display-mode: standalone) {
-      .header {
-        padding-top: calc(1rem + env(safe-area-inset-top));
-      }
-    }
-
     /* ===== MOBILE: LANDSCAPE ORIENTATION ===== */
     @media (max-height: 500px) and (orientation: landscape) {
       .welcome-panel {
         padding: 1rem;
       }
-      .welcome-content {
-        grid-template-columns: 1fr 1fr;
-        gap: 1rem;
+      .welcome-logo {
+        width: 160px;
+        margin-bottom: 0.75rem;
       }
     }
 
@@ -1891,31 +1858,7 @@
   </div>
 
   <div class="app-container">
-    <!-- Header -->
-    <header class="header">
-      <div class="header-brand" onclick="startNewChat()" title="Start new conversation">
-        <img class="header-logo" src="assets/icons/nta-logo.svg" alt="NTA Bot" style="height:36px;width:auto;">
-        <h1 class="sr-only">NTA Bot</h1>
-      </div>
-      <div class="header-actions">
-        <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
-          <svg class="moon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-          </svg>
-          <svg class="sun" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="5"></circle>
-            <line x1="12" y1="1" x2="12" y2="3"></line>
-            <line x1="12" y1="21" x2="12" y2="23"></line>
-            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-            <line x1="1" y1="12" x2="3" y2="12"></line>
-            <line x1="21" y1="12" x2="23" y2="12"></line>
-            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-          </svg>
-        </button>
-      </div>
-    </header>
+    <h1 class="sr-only">NTA Bot</h1>
 
     <!-- Chat Area -->
     <main class="chat-area" id="chatArea">
@@ -2124,52 +2067,68 @@
       return `
         <div class="welcome-panel" id="welcomePanel">
           <div class="welcome-hero">
+            <img class="welcome-logo" src="assets/icons/nta-logo.svg" alt="Nutritional Therapy Association" onclick="startNewChat()">
+            <button class="theme-toggle welcome-theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+              <svg class="moon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+              </svg>
+              <svg class="sun" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="5"></circle>
+                <line x1="12" y1="1" x2="12" y2="3"></line>
+                <line x1="12" y1="21" x2="12" y2="23"></line>
+                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                <line x1="1" y1="12" x2="3" y2="12"></line>
+                <line x1="21" y1="12" x2="23" y2="12"></line>
+                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+              </svg>
+            </button>
             <h2>What can I help you find?</h2>
             <p class="welcome-tagline">I'm trained on NTA's official curriculum — the NTP and PHWC programs, scope of practice documents, and clinical tools. Ask me anything and I'll answer with citations from the source material.</p>
           </div>
 
-          <div class="welcome-content">
-            <div class="welcome-coverage">
-              <h3>Knowledge Base</h3>
-              <div class="coverage-cards">
-                <div class="coverage-card">
-                  <div class="coverage-card-header">
-                    <span class="coverage-badge ntp">NTP</span>
-                    <span class="coverage-card-title">Five Foundations of Health</span>
-                  </div>
-                  <p class="coverage-card-desc">Nutrient-dense diet, digestion (north-to-south process), blood sugar regulation, sleep, and stress management — the core physiological framework of the NTP curriculum.</p>
+          <div class="welcome-section">
+            <h3>Knowledge Base</h3>
+            <div class="coverage-grid">
+              <div class="coverage-card">
+                <div class="coverage-card-header">
+                  <span class="coverage-badge ntp">NTP</span>
+                  <span class="coverage-card-title">Five Foundations of Health</span>
                 </div>
-                <div class="coverage-card">
-                  <div class="coverage-card-header">
-                    <span class="coverage-badge ntp">NTP</span>
-                    <span class="coverage-card-title">Clinical Application</span>
-                  </div>
-                  <p class="coverage-card-desc">The NACA process, Nutritional Assessment Questionnaire (NAQ), Symptom Burden Graph, Nutri-Q software, functional lab testing (Metabolomix+, adrenal profiles), and supplement protocols.</p>
-                </div>
-                <div class="coverage-card">
-                  <div class="coverage-card-header">
-                    <span class="coverage-badge phwc">PHWC</span>
-                    <span class="coverage-card-title">Coaching &amp; Behavior Change</span>
-                  </div>
-                  <p class="coverage-card-desc">Client-centered coaching, motivational interviewing, behavior change psychology, the Health and Wellness Wheel, and the key distinction: PHWCs empower — they don't prescribe.</p>
-                </div>
-                <div class="coverage-card">
-                  <div class="coverage-card-header">
-                    <span class="coverage-badge ref">Reference</span>
-                    <span class="coverage-card-title">Scope &amp; Credentials</span>
-                  </div>
-                  <p class="coverage-card-desc">NTP, FNTP, and PHWC scope of practice boundaries, the FCA course and Lingual-Neural Testing, NANP and NBHWC board eligibility, and Career Compass.</p>
-                </div>
+                <p class="coverage-card-desc">Nutrient-dense diet, digestion (north-to-south process), blood sugar regulation, sleep, and stress management — the core physiological framework of the NTP curriculum.</p>
               </div>
-            </div>
-
-            <div class="welcome-getstarted">
-              <h3>Try a Question</h3>
-              <div class="question-chips" id="questionChips">
-                ${questionChipsHTML}
+              <div class="coverage-card">
+                <div class="coverage-card-header">
+                  <span class="coverage-badge ntp">NTP</span>
+                  <span class="coverage-card-title">Clinical Application</span>
+                </div>
+                <p class="coverage-card-desc">The NACA process, Nutritional Assessment Questionnaire (NAQ), Symptom Burden Graph, Nutri-Q software, functional lab testing (Metabolomix+, adrenal profiles), and supplement protocols.</p>
+              </div>
+              <div class="coverage-card">
+                <div class="coverage-card-header">
+                  <span class="coverage-badge phwc">PHWC</span>
+                  <span class="coverage-card-title">Coaching &amp; Behavior Change</span>
+                </div>
+                <p class="coverage-card-desc">Client-centered coaching, motivational interviewing, behavior change psychology, the Health and Wellness Wheel, and the key distinction: PHWCs empower — they don't prescribe.</p>
+              </div>
+              <div class="coverage-card">
+                <div class="coverage-card-header">
+                  <span class="coverage-badge ref">Reference</span>
+                  <span class="coverage-card-title">Scope &amp; Credentials</span>
+                </div>
+                <p class="coverage-card-desc">NTP, FNTP, and PHWC scope of practice boundaries, the FCA course and Lingual-Neural Testing, NANP and NBHWC board eligibility, and Career Compass.</p>
               </div>
             </div>
           </div>
+
+          <div class="welcome-section">
+            <h3>Try a Question</h3>
+            <div class="question-chips" id="questionChips">
+              ${questionChipsHTML}
+            </div>
+          </div>
+
           <p class="welcome-disclaimer">Curriculum reference only — does not replace instructor guidance.</p>
         </div>
       `;
