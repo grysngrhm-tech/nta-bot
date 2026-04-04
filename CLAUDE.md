@@ -100,8 +100,9 @@ Reference documents live in `docs/` as structured markdown with YAML frontmatter
 - PHWCs **empower** clients to make their own choices — they do NOT prescribe
 - FNTPs can additionally perform hands-on FCA and Lingual-Neural Testing
 
-## Ingested Reference Documents (187 chunks total)
+## Knowledge Base Contents (1,177 chunks total)
 
+### Reference Documents (187 chunks)
 | Document | Type | Chunks | File |
 |----------|------|--------|------|
 | Scope of Practice Reference — NTP, FNTP & PHWC | `scope_of_practice` | 24 | `docs/scope-of-practice.md` |
@@ -110,7 +111,17 @@ Reference documents live in `docs/` as structured markdown with YAML frontmatter
 | PHWC Curriculum Deep Dive — Coaching Foundations & Behavior Change | `phwc_curriculum` | 34 | `docs/phwc-curriculum.md` |
 | NTA Philosophy and Terminology Reference | `reference` | 48 | `docs/philosophy-and-terminology.md` |
 
-All sourced from NTA's public website. These are permanent reference docs, not placeholders — they'll remain in the KB alongside future curriculum content.
+### Podcast Content (990 chunks from 86 episodes)
+All 86 episodes of the NTA "Nutritional Therapy and Wellness Podcast" have been:
+1. Downloaded from RSS feed (Libsyn-hosted MP3s)
+2. Compressed to mono 16kHz and transcribed via OpenAI Whisper API
+3. Processed through GPT-4o to extract factual, educational content (not raw transcripts)
+4. Each extraction is a self-contained reference entry with topic category and timestamp
+5. Embedded and ingested into `nta_knowledge_chunks` with `section_hierarchy = ["Podcast", "<topic>"]`
+
+Podcast chunks are stored as `document_type = 'reference'` and cite `source_url = https://www.nutritionaltherapy.com/podcast`. Transcripts are stored locally in `.podcast-work/transcripts/`.
+
+Topic categories used: Digestion, Blood Sugar Regulation, Sleep, Stress Management, Nutrient-Dense Diet, Bio-Individuality, Supplements & Nutrients, Gut Health & Microbiome, Hormones & Endocrine, Mental Health & Brain, Fertility & Reproductive Health, Food Quality & Sourcing, Traditional Food Preparation, Inflammation, Immune Function, Hydration, Practitioner Development, NTA Philosophy & Mission, Client Work & Assessment, Scope of Practice, General Wellness, and others.
 
 ## Development
 - **Repo:** `github.com/grysngrhm-tech/nta-bot` (public — required for GitHub Pages on free plan)
