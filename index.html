@@ -1646,15 +1646,6 @@
     // Log to Supabase (fire-and-forget, never blocks UI)
     async function logToSupabase(data) {
       try {
-        const body = JSON.stringify(data);
-        // Try sendBeacon first (survives tab close)
-        if (navigator.sendBeacon) {
-          const blob = new Blob([body], { type: 'application/json' });
-          const beaconUrl = `${SUPABASE_URL}/rest/v1/nta_query_log?apikey=${SUPABASE_ANON_KEY}`;
-          const sent = navigator.sendBeacon(beaconUrl, blob);
-          if (sent) return;
-        }
-        // Fallback to fetch
         await fetch(`${SUPABASE_URL}/rest/v1/nta_query_log`, {
           method: 'POST',
           headers: {
@@ -1663,7 +1654,8 @@
             'Content-Type': 'application/json',
             'Prefer': 'return=minimal'
           },
-          body: body
+          body: JSON.stringify(data),
+          keepalive: true  // survives tab close like sendBeacon, but with proper headers
         });
       } catch (e) {
         // Silent fail — analytics must never break chat
