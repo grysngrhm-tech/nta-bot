@@ -2065,39 +2065,62 @@
         "Who founded the NTA and what is the Graham Grant?",
         "What's the difference between Foundations of Healing and the full NTP program?"
       ],
-      // Cross-program questions that pull from multiple documents
-      crossProgram: [
+      // Podcast-sourced — health topics, practical advice, clinical insights from 86 episodes
+      podcastTopics: [
+        "What is SIBO and what are its primary symptoms and root causes?",
+        "How does sugar activate the brain's reward pathways similar to addictive substances?",
+        "What is the connection between PCOS and blood sugar dysregulation?",
+        "How does constipation affect fertility according to NTA practitioners?",
+        "What is Total Load Theory and how does it explain where symptoms begin?",
+        "What did Dr. Weston A. Price discover about traditional diets and dental health?",
+        "How do seed oils contribute to increased sunburn susceptibility?",
+        "What is the 'sober curious' movement and how does alcohol affect foundational health?",
+        "How does dehydration mimic symptoms commonly attributed to other health conditions?",
+        "What are the key mineral deficiencies behind graying hair, cramps, and cognitive decline?",
+        "How can the Pottenger's Cats study inform our understanding of generational nutrition?",
+        "What is iridology and how has it been used as an assessment tool?",
+        "What role does bone broth play in supporting gut health and digestion?",
+        "How does chronic distraction rewire the brain's rhythms and affect health?",
+        "What is the connection between menopause symptoms and foundational health practices?",
+        "How do hormones, libido, and longevity interconnect according to Dr. Lindsey Berkson?",
+        "What practical steps can someone take to start meal planning and eating healthier?",
+        "How does childhood obesity create a generational health cycle?",
+        "What is the relationship between fish oil quality and actual omega-3 benefit?",
+        "How does stress physically impact brain structure and body function?"
+      ],
+      // Cross-source questions that pull from both reference docs and podcast content
+      crossSource: [
         "How do the Five Foundations interconnect as a system?",
         "What is the NTA's root-cause approach versus symptom management?",
         "How does the NTA's omnivorous perspective differ from specific diet frameworks?",
-        "What is the Graham Grant and who qualifies?",
         "What tools does Nutri-Q provide for NTPs versus PHWCs?",
         "How does the NTA define the difference between making recommendations and empowering clients?",
         "If someone wants to both make nutrition recommendations AND do behavior change coaching, what credentials do they need?",
         "How does the NTA's philosophy of bio-individuality show up differently in the NTP versus PHWC programs?",
         "Compare how an NTP uses the Symptom Burden Graph versus how a PHWC uses the Health and Wellness Wheel.",
         "A prospective student loves nutrition science but also wants to coach — what path would you recommend and why?",
-        "How do the NTP's Five Foundations of Health relate to the PHWC's Five Coaching Foundations?",
         "What can an FNTP do in a client session that neither an NTP nor a PHWC can do?",
         "Explain the full NTA credential ecosystem from Nutritional Therapy 101 through FNTP.",
-        "How does the NTA's position on accreditation affect what graduates can and cannot claim professionally?"
+        "How does the NTA's position on accreditation affect what graduates can and cannot claim professionally?",
+        "How does the podcast's discussion of blood sugar relate to what the NTP curriculum teaches about the foundations?",
+        "What practical gallbladder health tips have been shared, and how do they connect to the digestion foundation?",
+        "How does the NTA approach to fertility combine foundational health with bio-individuality?",
+        "What has the NTA said about the relationship between gut health, the microbiome, and mental health?",
+        "How does the NTA's food-first philosophy apply to someone dealing with autoimmune conditions?",
+        "What role does hydration play across multiple foundations according to NTA content?"
       ]
     };
 
+    // Pick 4 unique questions from across all categories, ensuring variety each refresh
     function getRandomQuestions() {
-      const questions = [
-        questionLibrary.fiveFoundations[Math.floor(Math.random() * questionLibrary.fiveFoundations.length)],
-        questionLibrary.ntpClinical[Math.floor(Math.random() * questionLibrary.ntpClinical.length)],
-        questionLibrary.phwcCoaching[Math.floor(Math.random() * questionLibrary.phwcCoaching.length)],
-        questionLibrary.programsAndScope[Math.floor(Math.random() * questionLibrary.programsAndScope.length)]
-      ];
-      if (Math.random() < 0.3) {
-        const swapIndex = Math.floor(Math.random() * 4);
-        questions[swapIndex] = questionLibrary.crossProgram[
-          Math.floor(Math.random() * questionLibrary.crossProgram.length)
-        ];
-      }
-      return questions;
+      const allCategories = Object.keys(questionLibrary);
+      // Shuffle categories and pick 4 different ones
+      const shuffled = allCategories.sort(() => Math.random() - 0.5);
+      const picked = shuffled.slice(0, 4);
+      return picked.map(cat => {
+        const pool = questionLibrary[cat];
+        return pool[Math.floor(Math.random() * pool.length)];
+      });
     }
 
     function generateQuestionChipsHTML() {
