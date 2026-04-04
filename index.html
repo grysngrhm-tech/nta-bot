@@ -780,11 +780,6 @@
       margin: 0;
     }
 
-    .copy-cite-btn.copied {
-      color: var(--confidence-high);
-      border-color: var(--confidence-high);
-    }
-
     .source-url-link {
       text-decoration: none;
       color: var(--accent);
@@ -2407,7 +2402,7 @@
 
       const pageHtml = pageNumber ? `<span class="page-badge">Page ${pageNumber}</span>` : '';
 
-      const sourceUrlHtml = sourceUrl ? `
+      const sourceLink = sourceUrl ? `
             <a class="view-source-link source-url-link" href="${escapeHtml(sourceUrl)}" target="_blank" rel="noopener">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
@@ -2437,14 +2432,7 @@
                 <line x1="16" y1="17" x2="8" y2="17"></line>
               </svg>
               View source text
-            </button>
-            <button class="view-source-link copy-cite-btn" onclick="copyCitation('${sourceId}', this)">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-              </svg>
-              Copy ref
-            </button>${sourceUrlHtml}
+            </button>${sourceLink}
           </div>
         </div>
       `;
@@ -2458,17 +2446,6 @@
       document.getElementById('sourceModalBody').textContent = data.content;
       modal.classList.add('active');
       document.body.style.overflow = 'hidden';
-    }
-
-    function copyCitation(sourceId, button) {
-      const data = sourceDataStore[sourceId];
-      if (!data) return;
-      navigator.clipboard.writeText(data.path).then(() => {
-        button.classList.add('copied');
-        const original = button.innerHTML;
-        button.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> Copied`;
-        setTimeout(() => { button.innerHTML = original; button.classList.remove('copied'); }, 2000);
-      });
     }
 
     function closeSourceModal() {
