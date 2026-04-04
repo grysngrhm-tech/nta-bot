@@ -1,0 +1,1173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NTA Bot Analytics</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg-primary: #f5f5f0;
+      --bg-secondary: #ffffff;
+      --text-primary: #1a1a1a;
+      --text-secondary: #4a4a4a;
+      --text-muted: #777777;
+      --accent: #4a7c59;
+      --accent-hover: #3d6b4a;
+      --accent-subtle: rgba(74, 124, 89, 0.1);
+      --border: #d5d5cc;
+      --confidence-high: #16a34a;
+      --confidence-medium: #ca8a04;
+      --confidence-low: #dc2626;
+      --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1);
+      --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1);
+      --radius-sm: 0.375rem;
+      --radius-md: 0.5rem;
+      --radius-lg: 0.75rem;
+      --radius-xl: 1rem;
+      --radius-pill: 25px;
+      --transition: 200ms ease;
+      --gap-color: #e65100;
+      --gap-bg: #fff3e0;
+    }
+
+    body {
+      font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-size: 15px;
+      line-height: 1.6;
+      color: var(--text-primary);
+      background: var(--bg-primary);
+      min-height: 100vh;
+    }
+
+    /* ===== HEADER ===== */
+    .header {
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border);
+      padding: 0 1.5rem;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .header-logo {
+      height: 36px;
+      width: auto;
+    }
+
+    .header-title {
+      font-size: 1.125rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .header-divider {
+      width: 1px;
+      height: 24px;
+      background: var(--border);
+    }
+
+    .header-subtitle {
+      font-size: 0.8125rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      letter-spacing: 0.02em;
+    }
+
+    .back-link {
+      font-size: 0.8125rem;
+      font-weight: 600;
+      color: var(--accent);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 0.375rem;
+      transition: color var(--transition);
+    }
+
+    .back-link:hover {
+      color: var(--accent-hover);
+    }
+
+    .back-link svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    /* ===== MAIN CONTENT ===== */
+    .main {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 1.5rem;
+    }
+
+    /* ===== SECTION ===== */
+    .section {
+      margin-bottom: 2rem;
+    }
+
+    .section-header {
+      margin-bottom: 1rem;
+    }
+
+    .section-title {
+      font-size: 1.125rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .section-subtitle {
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+      margin-top: 0.125rem;
+    }
+
+    /* ===== STATS ROW ===== */
+    .stats-row {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .stat-card {
+      flex: 1;
+      min-width: 140px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.25rem 1rem;
+      box-shadow: var(--shadow-sm);
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--accent);
+      line-height: 1.1;
+    }
+
+    .stat-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-top: 0.375rem;
+    }
+
+    /* ===== CONTENT GAPS ===== */
+    .gap-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+    }
+
+    @media (max-width: 640px) {
+      .gap-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .gap-card {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--gap-color);
+      border-radius: var(--radius-lg);
+      padding: 1rem 1.25rem;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .gap-card-topic {
+      font-size: 0.9375rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 0.25rem;
+    }
+
+    .gap-card-count {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--gap-color);
+      margin-bottom: 0.625rem;
+    }
+
+    .gap-card-questions {
+      list-style: none;
+    }
+
+    .gap-card-questions li {
+      font-size: 0.8125rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+      padding: 0.25rem 0;
+      border-top: 1px solid #f0f0eb;
+    }
+
+    .gap-card-questions li:first-child {
+      border-top: none;
+    }
+
+    /* ===== TOPIC GAP TABLE ===== */
+    .gap-table {
+      width: 100%;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .gap-table-header {
+      display: grid;
+      grid-template-columns: 1.5fr 1fr 0.75fr 0.75fr;
+      padding: 0.75rem 1.25rem;
+      background: var(--bg-primary);
+      border-bottom: 1px solid var(--border);
+      font-size: 0.6875rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .gap-table-row {
+      display: grid;
+      grid-template-columns: 1.5fr 1fr 0.75fr 0.75fr;
+      padding: 0.75rem 1.25rem;
+      align-items: center;
+      border-bottom: 1px solid #f0f0eb;
+      font-size: 0.875rem;
+      transition: background var(--transition);
+    }
+
+    .gap-table-row:last-child {
+      border-bottom: none;
+    }
+
+    .gap-table-row:hover {
+      background: var(--bg-primary);
+    }
+
+    .gap-table-topic {
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .demand-bar-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .demand-bar {
+      height: 8px;
+      border-radius: 4px;
+      background: var(--accent);
+      transition: width 0.3s ease;
+    }
+
+    .demand-bar-track {
+      flex: 1;
+      height: 8px;
+      border-radius: 4px;
+      background: #e8e8e2;
+    }
+
+    .demand-count {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      min-width: 24px;
+    }
+
+    .supply-label {
+      font-size: 0.8125rem;
+      color: var(--text-secondary);
+    }
+
+    .gap-badge {
+      font-size: 0.6875rem;
+      font-weight: 700;
+      padding: 0.2rem 0.5rem;
+      border-radius: var(--radius-sm);
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    .gap-badge.high {
+      background: #fef2f2;
+      color: #dc2626;
+    }
+
+    .gap-badge.medium {
+      background: var(--gap-bg);
+      color: var(--gap-color);
+    }
+
+    .gap-badge.covered {
+      background: #f0fdf4;
+      color: var(--confidence-high);
+    }
+
+    /* ===== TRENDING ===== */
+    .trending-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .trending-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.375rem;
+      padding: 0.375rem 0.75rem;
+      border-radius: var(--radius-pill);
+      font-size: 0.8125rem;
+      font-weight: 600;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      color: var(--text-primary);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .trending-pill .count {
+      font-size: 0.6875rem;
+      font-weight: 700;
+      background: var(--accent-subtle);
+      color: var(--accent);
+      padding: 0.125rem 0.375rem;
+      border-radius: 10px;
+    }
+
+    .trending-pill .badge {
+      font-size: 0.625rem;
+      font-weight: 700;
+      padding: 0.125rem 0.375rem;
+      border-radius: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .badge-new {
+      background: #dbeafe;
+      color: #1d4ed8;
+    }
+
+    .badge-trending {
+      background: #f0fdf4;
+      color: var(--confidence-high);
+    }
+
+    /* ===== FEED ===== */
+    .feed-header-row {
+      display: flex;
+      align-items: baseline;
+      gap: 0.5rem;
+    }
+
+    .feed-total {
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .feed-list {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .feed-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      padding: 0.875rem 1.25rem;
+      border-bottom: 1px solid #f0f0eb;
+      cursor: pointer;
+      transition: background var(--transition);
+    }
+
+    .feed-item:last-child {
+      border-bottom: none;
+    }
+
+    .feed-item:hover {
+      background: var(--bg-primary);
+    }
+
+    .feed-topic-pill {
+      font-size: 0.625rem;
+      font-weight: 700;
+      color: #fff;
+      padding: 0.2rem 0.5rem;
+      border-radius: var(--radius-sm);
+      white-space: nowrap;
+      flex-shrink: 0;
+      margin-top: 0.2rem;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+    }
+
+    .feed-center {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .feed-question {
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--text-primary);
+      line-height: 1.45;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .feed-time {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 0.125rem;
+    }
+
+    .feed-right {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 0.25rem;
+      flex-shrink: 0;
+    }
+
+    .feed-location {
+      font-size: 0.6875rem;
+      color: var(--text-muted);
+    }
+
+    .feed-meta {
+      display: flex;
+      align-items: center;
+      gap: 0.375rem;
+    }
+
+    .feed-sources {
+      font-size: 0.6875rem;
+      color: var(--text-muted);
+    }
+
+    .confidence-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .confidence-dot.high { background: var(--confidence-high); }
+    .confidence-dot.medium { background: var(--confidence-medium); }
+    .confidence-dot.low { background: var(--confidence-low); }
+
+    /* ===== FEED EXPANDED ===== */
+    .feed-expanded {
+      display: none;
+      padding: 0.75rem 1.25rem 0.875rem;
+      padding-left: calc(1.25rem + 0.75rem + 50px);
+      border-bottom: 1px solid #f0f0eb;
+      background: #fafaf7;
+      animation: expandIn 0.2s ease;
+    }
+
+    .feed-item.expanded + .feed-expanded {
+      display: block;
+    }
+
+    @keyframes expandIn {
+      from { opacity: 0; transform: translateY(-4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .feed-answer-label {
+      font-size: 0.6875rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.375rem;
+    }
+
+    .feed-answer-text {
+      font-size: 0.8125rem;
+      color: var(--text-secondary);
+      line-height: 1.55;
+      margin-bottom: 0.5rem;
+    }
+
+    .feed-sources-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.375rem;
+    }
+
+    .feed-source-tag {
+      font-size: 0.6875rem;
+      font-weight: 500;
+      padding: 0.125rem 0.5rem;
+      border-radius: var(--radius-sm);
+      background: var(--accent-subtle);
+      color: var(--accent);
+    }
+
+    /* ===== EMPTY STATE ===== */
+    .empty-state {
+      text-align: center;
+      padding: 4rem 2rem;
+    }
+
+    .empty-state-icon {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      opacity: 0.4;
+    }
+
+    .empty-state-title {
+      font-size: 1.125rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 0.5rem;
+    }
+
+    .empty-state-text {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      max-width: 480px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+
+    .muted-message {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      font-style: italic;
+      padding: 1.5rem;
+      text-align: center;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+    }
+
+    /* ===== LOADING ===== */
+    .loading-spinner {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      gap: 0.5rem;
+      color: var(--text-muted);
+      font-size: 0.875rem;
+    }
+
+    .spinner {
+      width: 20px;
+      height: 20px;
+      border: 2.5px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .sentinel {
+      height: 1px;
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 640px) {
+      .header {
+        padding: 0 1rem;
+      }
+
+      .header-divider,
+      .header-subtitle {
+        display: none;
+      }
+
+      .main {
+        padding: 1rem;
+      }
+
+      .stat-card {
+        min-width: 100px;
+      }
+
+      .stat-value {
+        font-size: 1.5rem;
+      }
+
+      .gap-table-header,
+      .gap-table-row {
+        grid-template-columns: 1fr 0.75fr 0.6fr 0.6fr;
+        padding: 0.625rem 0.75rem;
+        font-size: 0.8125rem;
+      }
+
+      .feed-right {
+        display: none;
+      }
+
+      .feed-expanded {
+        padding-left: 1.25rem;
+      }
+    }
+
+    @media (max-width: 420px) {
+      .stats-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="header">
+    <div class="header-left">
+      <img src="assets/icons/nta-logo.svg" alt="NTA" class="header-logo">
+      <div class="header-divider"></div>
+      <span class="header-subtitle">Analytics Dashboard</span>
+    </div>
+    <a href="index.html" class="back-link">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+      Back to Bot
+    </a>
+  </header>
+
+  <!-- MAIN -->
+  <main class="main" id="main">
+    <div class="loading-spinner" id="loading">
+      <div class="spinner"></div>
+      Loading analytics...
+    </div>
+  </main>
+
+  <script>
+    // ===== CONFIG =====
+    const SUPABASE_URL = 'https://wdouifomlipmlsksczsv.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indkb3VpZm9tbGlwbWxza3NjenN2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcyMDQ3NTEsImV4cCI6MjA4Mjc4MDc1MX0.lVu6OnArZ_MFXFrx0ljn2GXfFtAM_Ru8xcTUXZbwqn8';
+
+    // ===== HELPERS =====
+    function relativeTime(dateStr) {
+      const now = new Date();
+      const date = new Date(dateStr);
+      const seconds = Math.floor((now - date) / 1000);
+      if (seconds < 60) return 'just now';
+      if (seconds < 3600) return Math.floor(seconds / 60) + 'm ago';
+      if (seconds < 86400) return Math.floor(seconds / 3600) + 'h ago';
+      if (seconds < 172800) return 'Yesterday';
+      return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    }
+
+    function topicColor(label) {
+      if (!label) return 'hsl(0, 0%, 55%)';
+      let hash = 0;
+      for (let i = 0; i < label.length; i++) hash = label.charCodeAt(i) + ((hash << 5) - hash);
+      const h = Math.abs(hash) % 360;
+      return `hsl(${h}, 45%, 45%)`;
+    }
+
+    function truncate(str, len) {
+      if (!str) return '';
+      return str.length > len ? str.slice(0, len) + '...' : str;
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      const d = document.createElement('div');
+      d.textContent = str;
+      return d.innerHTML;
+    }
+
+    function confidenceClass(level) {
+      if (!level) return 'low';
+      const l = level.toLowerCase();
+      if (l === 'high') return 'high';
+      if (l === 'medium') return 'medium';
+      return 'low';
+    }
+
+    function mode(arr) {
+      if (!arr || arr.length === 0) return null;
+      const freq = {};
+      let maxCount = 0;
+      let maxVal = null;
+      for (const v of arr) {
+        if (!v) continue;
+        freq[v] = (freq[v] || 0) + 1;
+        if (freq[v] > maxCount) {
+          maxCount = freq[v];
+          maxVal = v;
+        }
+      }
+      return maxVal;
+    }
+
+    // ===== SUPABASE FETCH =====
+    async function supaFetch(path, opts = {}) {
+      const url = `${SUPABASE_URL}/rest/v1/${path}`;
+      const headers = {
+        'apikey': SUPABASE_KEY,
+        'Authorization': `Bearer ${SUPABASE_KEY}`,
+        'Content-Type': 'application/json',
+        ...opts.headers
+      };
+      const res = await fetch(url, { headers, ...opts });
+      if (!res.ok) throw new Error(`Supabase ${res.status}: ${await res.text()}`);
+      return res;
+    }
+
+    async function supaGet(path, opts = {}) {
+      const res = await supaFetch(path, opts);
+      return res.json();
+    }
+
+    // ===== STATE =====
+    let allLogs = [];
+    let knowledgeTopics = [];
+    let feedOffset = 0;
+    const FEED_PAGE = 50;
+    let feedLoading = false;
+    let feedDone = false;
+    let totalCount = 0;
+
+    // ===== DATA LOADING =====
+    async function loadData() {
+      try {
+        // Fetch initial data in parallel
+        const [logs, chunks] = await Promise.all([
+          supaGet('nta_query_log?select=*&order=created_at.desc&limit=500'),
+          supaGet('nta_knowledge_chunks?select=section_hierarchy&limit=5000')
+        ]);
+
+        allLogs = logs || [];
+        totalCount = allLogs.length;
+        knowledgeTopics = buildKnowledgeIndex(chunks || []);
+
+        document.getElementById('loading').remove();
+
+        if (allLogs.length === 0) {
+          renderEmptyState();
+        } else {
+          renderDashboard();
+        }
+      } catch (err) {
+        console.error('Failed to load data:', err);
+        document.getElementById('loading').innerHTML =
+          `<div style="color:var(--confidence-low);font-size:0.875rem;">Failed to load data. Check console for details.</div>`;
+      }
+    }
+
+    // ===== KNOWLEDGE INDEX =====
+    function buildKnowledgeIndex(chunks) {
+      const index = {};
+      for (const c of chunks) {
+        const hier = c.section_hierarchy;
+        if (!hier || !Array.isArray(hier)) continue;
+        const area = (hier[0] || '').toLowerCase();
+        const topic = (hier[1] || '').toLowerCase();
+        const key = topic || area;
+        if (key) index[key] = (index[key] || 0) + 1;
+      }
+      return index;
+    }
+
+    function fuzzySupply(topicLabel) {
+      if (!topicLabel) return 0;
+      const words = topicLabel.toLowerCase().split(/\s+/).filter(w => w.length > 3);
+      let best = 0;
+      for (const [key, count] of Object.entries(knowledgeTopics)) {
+        for (const word of words) {
+          if (key.includes(word)) {
+            best = Math.max(best, count);
+          }
+        }
+      }
+      return best;
+    }
+
+    // ===== RENDER EMPTY STATE =====
+    function renderEmptyState() {
+      document.getElementById('main').innerHTML = `
+        <div class="empty-state">
+          <div class="empty-state-icon">&#128202;</div>
+          <div class="empty-state-title">No questions yet</div>
+          <div class="empty-state-text">
+            Once users start chatting with NTA Bot, their questions and topic trends will appear here.
+          </div>
+        </div>`;
+    }
+
+    // ===== RENDER DASHBOARD =====
+    function renderDashboard() {
+      const main = document.getElementById('main');
+      main.innerHTML = '';
+
+      renderStats(main);
+      renderContentGaps(main);
+      renderTopicGapAnalysis(main);
+      renderTrending(main);
+      renderFeed(main);
+    }
+
+    // ===== 1. STATS =====
+    function renderStats(container) {
+      const total = totalCount || allLogs.length;
+      const sessions = new Set(allLogs.map(r => r.session_id).filter(Boolean)).size;
+
+      const todayStart = new Date();
+      todayStart.setHours(0, 0, 0, 0);
+      const today = allLogs.filter(r => new Date(r.created_at) >= todayStart).length;
+
+      const topCountry = mode(allLogs.map(r => r.country)) || '\u2014';
+
+      const section = document.createElement('div');
+      section.className = 'section';
+      section.innerHTML = `
+        <div class="stats-row">
+          <div class="stat-card">
+            <div class="stat-value">${total.toLocaleString()}</div>
+            <div class="stat-label">Total Questions</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value">${sessions.toLocaleString()}</div>
+            <div class="stat-label">Unique Sessions</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value">${today}</div>
+            <div class="stat-label">Questions Today</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" style="font-size:${topCountry.length > 4 ? '1.25rem' : '2rem'}">${escapeHtml(topCountry)}</div>
+            <div class="stat-label">Top Country</div>
+          </div>
+        </div>`;
+      container.appendChild(section);
+    }
+
+    // ===== 2. CONTENT GAPS =====
+    function renderContentGaps(container) {
+      const gapLogs = allLogs.filter(r =>
+        (r.confidence_level && r.confidence_level.toLowerCase() === 'low') ||
+        r.source_count === 0 ||
+        r.source_count == null
+      );
+
+      const section = document.createElement('div');
+      section.className = 'section';
+
+      let inner = `
+        <div class="section-header">
+          <div class="section-title">Content Gaps</div>
+          <div class="section-subtitle">Questions the bot couldn't fully answer \u2014 potential podcast topics</div>
+        </div>`;
+
+      if (gapLogs.length === 0) {
+        inner += `<div class="muted-message">No content gaps detected yet. As users ask questions, gaps will appear here.</div>`;
+      } else {
+        const grouped = {};
+        for (const r of gapLogs) {
+          const topic = r.topic_label || 'Uncategorized';
+          if (!grouped[topic]) grouped[topic] = [];
+          grouped[topic].push(r);
+        }
+
+        const sorted = Object.entries(grouped).sort((a, b) => b[1].length - a[1].length);
+
+        inner += `<div class="gap-grid">`;
+        for (const [topic, items] of sorted) {
+          const recent = items.slice(0, 3);
+          inner += `
+            <div class="gap-card">
+              <div class="gap-card-topic">${escapeHtml(topic)}</div>
+              <div class="gap-card-count">${items.length} unanswered question${items.length !== 1 ? 's' : ''}</div>
+              <ul class="gap-card-questions">
+                ${recent.map(r => `<li>${escapeHtml(truncate(r.question, 100))}</li>`).join('')}
+              </ul>
+            </div>`;
+        }
+        inner += `</div>`;
+      }
+
+      section.innerHTML = inner;
+      container.appendChild(section);
+    }
+
+    // ===== 3. TOPIC GAP ANALYSIS =====
+    function renderTopicGapAnalysis(container) {
+      const demandMap = {};
+      for (const r of allLogs) {
+        const t = r.topic_label || 'Uncategorized';
+        demandMap[t] = (demandMap[t] || 0) + 1;
+      }
+
+      const rows = [];
+      const maxDemand = Math.max(...Object.values(demandMap), 1);
+
+      for (const [topic, demand] of Object.entries(demandMap)) {
+        const supply = fuzzySupply(topic);
+        const gapScore = demand - (supply / 10);
+        rows.push({ topic, demand, supply, gapScore });
+      }
+
+      rows.sort((a, b) => b.gapScore - a.gapScore);
+
+      const section = document.createElement('div');
+      section.className = 'section';
+
+      let inner = `
+        <div class="section-header">
+          <div class="section-title">Topic Demand vs Coverage</div>
+        </div>`;
+
+      if (rows.length === 0) {
+        inner += `<div class="muted-message">No topic data available yet.</div>`;
+      } else {
+        inner += `
+          <div class="gap-table">
+            <div class="gap-table-header">
+              <div>Topic</div>
+              <div>Demand</div>
+              <div>Supply</div>
+              <div>Status</div>
+            </div>`;
+
+        for (const r of rows.slice(0, 20)) {
+          const barPct = Math.round((r.demand / maxDemand) * 100);
+          let badgeClass, badgeLabel;
+          if (r.gapScore > 5) { badgeClass = 'high'; badgeLabel = 'High Gap'; }
+          else if (r.gapScore > 1) { badgeClass = 'medium'; badgeLabel = 'Low Coverage'; }
+          else { badgeClass = 'covered'; badgeLabel = 'Covered'; }
+
+          inner += `
+            <div class="gap-table-row">
+              <div class="gap-table-topic">${escapeHtml(r.topic)}</div>
+              <div class="demand-bar-wrapper">
+                <div class="demand-bar-track">
+                  <div class="demand-bar" style="width:${barPct}%"></div>
+                </div>
+                <span class="demand-count">${r.demand}</span>
+              </div>
+              <div class="supply-label">${r.supply} chunk${r.supply !== 1 ? 's' : ''}</div>
+              <div><span class="gap-badge ${badgeClass}">${badgeLabel}</span></div>
+            </div>`;
+        }
+
+        inner += `</div>`;
+      }
+
+      section.innerHTML = inner;
+      container.appendChild(section);
+    }
+
+    // ===== 4. TRENDING =====
+    function renderTrending(container) {
+      const now = new Date();
+      const oneWeekAgo = new Date(now.getTime() - 7 * 86400000);
+      const twoWeeksAgo = new Date(now.getTime() - 14 * 86400000);
+
+      const thisWeek = {};
+      const lastWeek = {};
+
+      for (const r of allLogs) {
+        const t = r.topic_label;
+        if (!t) continue;
+        const d = new Date(r.created_at);
+        if (d >= oneWeekAgo) {
+          thisWeek[t] = (thisWeek[t] || 0) + 1;
+        } else if (d >= twoWeeksAgo && d < oneWeekAgo) {
+          lastWeek[t] = (lastWeek[t] || 0) + 1;
+        }
+      }
+
+      const pills = [];
+      for (const [topic, count] of Object.entries(thisWeek)) {
+        const prev = lastWeek[topic] || 0;
+        let badge = '';
+        if (prev === 0) badge = 'new';
+        else if (count > prev) badge = 'trending';
+        pills.push({ topic, count, badge });
+      }
+
+      pills.sort((a, b) => b.count - a.count);
+
+      const section = document.createElement('div');
+      section.className = 'section';
+
+      let inner = `
+        <div class="section-header">
+          <div class="section-title">Trending This Week</div>
+        </div>`;
+
+      if (pills.length === 0) {
+        inner += `<div class="muted-message">No activity in the last 7 days.</div>`;
+      } else {
+        inner += `<div class="trending-pills">`;
+        for (const p of pills) {
+          let badgeHtml = '';
+          if (p.badge === 'new') badgeHtml = `<span class="badge badge-new">New</span>`;
+          else if (p.badge === 'trending') badgeHtml = `<span class="badge badge-trending">\u2191 Trending</span>`;
+          inner += `
+            <div class="trending-pill">
+              <span style="color:${topicColor(p.topic)}">${escapeHtml(p.topic)}</span>
+              <span class="count">${p.count}</span>
+              ${badgeHtml}
+            </div>`;
+        }
+        inner += `</div>`;
+      }
+
+      section.innerHTML = inner;
+      container.appendChild(section);
+    }
+
+    // ===== 5. FEED =====
+    function renderFeed(container) {
+      const section = document.createElement('div');
+      section.className = 'section';
+      section.id = 'feed-section';
+
+      const totalLabel = totalCount || allLogs.length;
+
+      section.innerHTML = `
+        <div class="section-header">
+          <div class="feed-header-row">
+            <div class="section-title">Recent Questions</div>
+            <div class="feed-total">(${totalLabel.toLocaleString()} total)</div>
+          </div>
+        </div>
+        <div class="feed-list" id="feed-list"></div>
+        <div class="sentinel" id="feed-sentinel"></div>`;
+
+      container.appendChild(section);
+
+      feedOffset = 0;
+      feedDone = false;
+      loadFeedPage();
+
+      const observer = new IntersectionObserver(entries => {
+        if (entries[0].isIntersecting && !feedLoading && !feedDone) {
+          loadFeedPage();
+        }
+      }, { rootMargin: '200px' });
+      observer.observe(document.getElementById('feed-sentinel'));
+    }
+
+    async function loadFeedPage() {
+      if (feedLoading || feedDone) return;
+      feedLoading = true;
+
+      try {
+        const from = feedOffset;
+        const to = feedOffset + FEED_PAGE - 1;
+        const data = await supaGet(
+          `nta_query_log?select=*&order=created_at.desc`,
+          { headers: { 'Range': `${from}-${to}` } }
+        );
+
+        if (!data || data.length === 0) {
+          feedDone = true;
+          feedLoading = false;
+          return;
+        }
+
+        const list = document.getElementById('feed-list');
+        for (const r of data) {
+          appendFeedItem(list, r);
+        }
+
+        feedOffset += data.length;
+        if (data.length < FEED_PAGE) feedDone = true;
+      } catch (err) {
+        console.error('Feed load error:', err);
+      }
+
+      feedLoading = false;
+    }
+
+    function appendFeedItem(list, r) {
+      const topic = r.topic_label || 'General';
+      const conf = confidenceClass(r.confidence_level);
+      const loc = [r.city, r.country].filter(Boolean).join(', ');
+      const itemId = 'fi-' + r.id;
+
+      const item = document.createElement('div');
+      item.className = 'feed-item';
+      item.setAttribute('data-id', r.id);
+      item.innerHTML = `
+        <span class="feed-topic-pill" style="background:${topicColor(topic)}">${escapeHtml(truncate(topic, 18))}</span>
+        <div class="feed-center">
+          <div class="feed-question">${escapeHtml(truncate(r.question, 150))}</div>
+          <div class="feed-time">${relativeTime(r.created_at)}</div>
+        </div>
+        <div class="feed-right">
+          ${loc ? `<span class="feed-location">${escapeHtml(loc)}</span>` : ''}
+          <div class="feed-meta">
+            <span class="feed-sources">${r.source_count != null ? r.source_count + ' src' : ''}</span>
+            <span class="confidence-dot ${conf}" title="${escapeHtml(r.confidence_level || 'unknown')}"></span>
+          </div>
+        </div>`;
+
+      item.addEventListener('click', () => {
+        item.classList.toggle('expanded');
+      });
+
+      list.appendChild(item);
+
+      // Expanded detail
+      const expanded = document.createElement('div');
+      expanded.className = 'feed-expanded';
+
+      const sources = r.source_documents || [];
+      const sourceTags = sources.map(s => `<span class="feed-source-tag">${escapeHtml(s)}</span>`).join('');
+
+      expanded.innerHTML = `
+        <div class="feed-answer-label">Answer Summary</div>
+        <div class="feed-answer-text">${r.answer_summary ? escapeHtml(r.answer_summary) : '<em style="color:var(--text-muted)">No summary recorded</em>'}</div>
+        ${sources.length > 0 ? `
+          <div class="feed-answer-label">Sources</div>
+          <div class="feed-sources-list">${sourceTags}</div>
+        ` : ''}`;
+
+      list.appendChild(expanded);
+    }
+
+    // ===== INIT =====
+    loadData();
+  </script>
+</body>
+</html>

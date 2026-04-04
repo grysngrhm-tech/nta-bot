@@ -1011,6 +1011,23 @@
       margin-top: 1.25rem;
     }
 
+    /* ===== DASHBOARD LINK ===== */
+    .dashboard-link {
+      display: block;
+      text-align: center;
+      padding: 0.375rem;
+      font-size: 0.625rem;
+      color: var(--text-muted);
+      text-decoration: none;
+      opacity: 0.4;
+      transition: opacity 0.2s ease;
+    }
+
+    .dashboard-link:hover {
+      opacity: 1;
+      color: var(--accent);
+    }
+
     /* ===== GET STARTED / QUESTION CHIPS ===== */
     .question-chips {
       display: grid;
@@ -1544,6 +1561,7 @@
         </button>
       </div>
     </footer>
+    <a href="dashboard.html" class="dashboard-link">Analytics</a>
   </div>
 
   <script>
@@ -1582,6 +1600,102 @@
     const REQUEST_TIMEOUT_MS = 45000;
     const MAX_RETRIES = 3;
     const RETRY_DELAY_BASE_MS = 1000;
+
+    // ===== ANALYTICS LOGGING =====
+    const SUPABASE_URL = 'https://wdouifomlipmlsksczsv.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indkb3VpZm9tbGlwbWxza3NjenN2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcyMDQ3NTEsImV4cCI6MjA4Mjc4MDc1MX0.lVu6OnArZ_MFXFrx0ljn2GXfFtAM_Ru8xcTUXZbwqn8';
+    const TOPIC_LABEL_URL = 'https://n8n.srv1208741.hstgr.cloud/webhook/nta-topic-label';
+
+    // Log to Supabase (fire-and-forget, never blocks UI)
+    async function logToSupabase(data) {
+      try {
+        const body = JSON.stringify(data);
+        // Try sendBeacon first (survives tab close)
+        if (navigator.sendBeacon) {
+          const blob = new Blob([body], { type: 'application/json' });
+          const beaconUrl = `${SUPABASE_URL}/rest/v1/nta_query_log?apikey=${SUPABASE_ANON_KEY}`;
+          const sent = navigator.sendBeacon(beaconUrl, blob);
+          if (sent) return;
+        }
+        // Fallback to fetch
+        await fetch(`${SUPABASE_URL}/rest/v1/nta_query_log`, {
+          method: 'POST',
+          headers: {
+            'apikey': SUPABASE_ANON_KEY,
+            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+            'Content-Type': 'application/json',
+            'Prefer': 'return=minimal'
+          },
+          body: body
+        });
+      } catch (e) {
+        // Silent fail — analytics must never break chat
+      }
+    }
+
+    // Geolocation (once per session, non-blocking)
+    async function fetchGeolocation() {
+      if (sessionStorage.getItem('nta_geo')) return;
+      try {
+        const controller = new AbortController();
+        setTimeout(() => controller.abort(), 5000);
+        const resp = await fetch('https://ipapi.co/json/', { signal: controller.signal });
+        const data = await resp.json();
+        sessionStorage.setItem('nta_geo', JSON.stringify({ city: data.city || null, country: data.country_name || null }));
+      } catch (e) {
+        sessionStorage.setItem('nta_geo', JSON.stringify({ city: null, country: null }));
+      }
+    }
+
+    function getGeoData() {
+      try { return JSON.parse(sessionStorage.getItem('nta_geo') || '{}'); }
+      catch { return {}; }
+    }
+
+    // Topic label via n8n webhook (async, non-blocking)
+    async function generateTopicLabel(question) {
+      try {
+        const resp = await fetch(TOPIC_LABEL_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ question: question })
+        });
+        const data = await resp.json();
+        return data.topic_label || 'Other';
+      } catch (e) {
+        return 'Other';
+      }
+    }
+
+    // Log a completed query with all metadata
+    async function logQuery(question, responseData, elapsedMs) {
+      const sources = responseData.sources || [];
+      const sourceTopics = sources.map(s => {
+        const h = s.section_hierarchy || [];
+        return h.length > 1 ? h.join(' > ') : h[0] || 'Unknown';
+      });
+      const sourceDocuments = [...new Set(sources.map(s => s.document_name || 'Unknown'))];
+      const confidence = responseData.confidence?.level || 'Medium';
+      const answerSummary = (responseData.answer || '').substring(0, 300);
+      const geo = getGeoData();
+
+      // Generate topic label async (don't block)
+      const topicLabel = await generateTopicLabel(question);
+
+      logToSupabase({
+        question: question,
+        answer_summary: answerSummary,
+        confidence_level: confidence,
+        source_topics: sourceTopics,
+        source_documents: sourceDocuments,
+        source_count: sources.length,
+        topic_label: topicLabel,
+        session_id: getSessionId(),
+        city: geo.city || null,
+        country: geo.country || null,
+        latency_ms: elapsedMs || null
+      });
+    }
 
     // ===== QUESTION LIBRARY =====
     // Question library organized around NTA's Five Foundations and actual curriculum modules
@@ -2347,6 +2461,9 @@
         messages.push({ role: 'user', content: message });
         messages.push({ role: 'assistant', content: data });
         lastMessageForRetry = null;
+
+        // Log query for analytics (async, non-blocking)
+        logQuery(message, data, elapsedTime ? elapsedTime * 1000 : null);
       } catch (error) {
         console.error('Error sending message:', error);
         if (typingStartTime) elapsedTime = Math.floor((Date.now() - typingStartTime) / 1000);
@@ -2512,6 +2629,7 @@
     document.addEventListener('DOMContentLoaded', () => {
       checkAccessGate();
       getSessionId();
+      fetchGeolocation();
 
       const chatArea = document.getElementById('chatArea');
       if (chatArea) chatArea.innerHTML = generateWelcomePanel();

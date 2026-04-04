@@ -10,7 +10,9 @@ const DYNAMIC_CACHE = 'nta-bot-dynamic-v2.0';
 const PRECACHE_ASSETS = [
   './',
   './index.html',
+  './dashboard.html',
   './manifest.json',
+  './assets/icons/nta-logo.svg',
   './assets/icons/icon-192.png',
   './assets/icons/icon-512.png',
   './assets/icons/apple-touch-icon.png',
