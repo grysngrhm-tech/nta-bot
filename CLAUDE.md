@@ -9,23 +9,23 @@ Single-page PWA frontend (vanilla HTML/CSS/JS) → n8n webhooks → OpenAI GPT-4
 ```
 Browser (GitHub Pages)
   ├─ /webhook/nta-chat       → n8n Main Agent → Retrieval → Supabase → GPT-4o → JSON response
-  ├─ /webhook/nta-voice-session → n8n → OpenAI Realtime ephemeral token
   └─ /webhook/nta-tts        → n8n → OpenAI TTS → audio/mpeg
 ```
 
 ### Frontend
 - `index.html` — Entire PWA in one file. All HTML/CSS/JS inline, no build step.
-- `sw.js` — Service worker. Cache names: `nta-bot-static-v1.0`, `nta-bot-dynamic-v1.0`.
+- `sw.js` — Service worker. Cache names: `nta-bot-static-v2.0`, `nta-bot-dynamic-v2.0`.
 - `manifest.json` — PWA manifest. Scope: `/nta-bot/`.
 - `assets/icons/nta-logo.svg` — Official NTA logo (full color, centered).
 - `.nojekyll` — GitHub Pages config.
 
 ### UI Design
+- **Light mode only.** No dark theme, no theme toggle.
 - **No header.** The NTA logo sits large (240px) in the welcome hero section.
 - **Welcome panel scrolls with chat.** The welcome content (logo, hero text, knowledge base cards, sample questions) is part of the chat area and scrolls up naturally as conversation messages are added below it. It is NOT removed on first message.
 - **New-chat button** (pencil icon) in the input bar resets the conversation and restores the welcome panel.
-- **Theme toggle** is positioned top-right of the welcome hero (not in a header).
-- Source cards show full breadcrumb citations and "View on NTA website" links when `source_url` is present.
+- **Mic button** uses native Web Speech API to transcribe speech directly into the text input (no WebRTC voice mode).
+- Source cards show full breadcrumb citations with **"Web"** (blue) or **"Podcast"** (amber) badges. Podcast sources show "Listen on Apple Podcasts" links; web sources show "View on NTA website" links.
 
 ### Backend (shared Supabase project)
 - **Project ID:** `wdouifomlipmlsksczsv`
@@ -41,8 +41,9 @@ Instance: `n8n.srv1208741.hstgr.cloud`
 |----------|----|-------------|---------|
 | NTA Bot - Main Agent | `gLZcUb9niHGx9psk` | `/webhook/nta-chat` | RAG pipeline: embed query → hybrid search → GPT-4o → response |
 | NTA Bot - Hybrid Retrieval Tool | `KswmKRJcrpHtzkC3` | `/webhook/nta-retrieval` | Sub-workflow: generate embedding → call `nta_hybrid_search` RPC → format results |
-| NTA Bot - Voice Session | `g9iQbA3GX0644o7b` | `/webhook/nta-voice-session` | OpenAI Realtime ephemeral token |
 | NTA Bot - Text to Speech | `hAxXqB2OVgj1iwo1` | `/webhook/nta-tts` | OpenAI TTS (tts-1, alloy voice) |
+
+Note: Voice Session workflow (`g9iQbA3GX0644o7b`) still exists on n8n but is no longer used by the frontend — voice input was replaced with native Web Speech API transcription.
 
 ## Access Control
 - Client-side password gate: `Graham` (case-sensitive)
@@ -119,7 +120,7 @@ All 86 episodes of the NTA "Nutritional Therapy and Wellness Podcast" have been:
 4. Each extraction is a self-contained reference entry with topic category and timestamp
 5. Embedded and ingested into `nta_knowledge_chunks` with `section_hierarchy = ["Podcast", "<topic>"]`
 
-Podcast chunks are stored as `document_type = 'reference'` and cite `source_url = https://www.nutritionaltherapy.com/podcast`. Transcripts are stored locally in `.podcast-work/transcripts/`.
+Podcast chunks are stored as `document_type = 'reference'` and cite `source_url` pointing to the specific Apple Podcasts episode URL (e.g., `https://podcasts.apple.com/us/podcast/ep-085.../id1733339864?i=...`). Transcripts are stored locally in `.podcast-work/transcripts/`.
 
 Topic categories used: Digestion, Blood Sugar Regulation, Sleep, Stress Management, Nutrient-Dense Diet, Bio-Individuality, Supplements & Nutrients, Gut Health & Microbiome, Hormones & Endocrine, Mental Health & Brain, Fertility & Reproductive Health, Food Quality & Sourcing, Traditional Food Preparation, Inflammation, Immune Function, Hydration, Practitioner Development, NTA Philosophy & Mission, Client Work & Assessment, Scope of Practice, General Wellness, and others.
 
@@ -131,7 +132,5 @@ Topic categories used: Digestion, Blood Sugar Regulation, Sleep, Stress Manageme
 - **n8n API:** `https://n8n.srv1208741.hstgr.cloud/api/v1/` — workflows manageable via REST API with API key (ask user for key if needed)
 
 ## Session Storage Keys
-- `nta_access_code` — employee access code
+- `nta_access_code` — employee password
 - `nta_session_id` — chat session ID
-- `nta_theme` — dark/light theme preference (localStorage)
-- `nta-install-dismissed` — PWA install banner dismissed (localStorage)
