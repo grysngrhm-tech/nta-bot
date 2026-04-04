@@ -1087,35 +1087,25 @@
       observer.observe(document.getElementById('feed-sentinel'));
     }
 
-    async function loadFeedPage() {
+    function loadFeedPage() {
       if (feedLoading || feedDone) return;
       feedLoading = true;
 
-      try {
-        const from = feedOffset;
-        const to = feedOffset + FEED_PAGE - 1;
-        const data = await supaGet(
-          `nta_query_log?select=*&order=created_at.desc`,
-          { headers: { 'Range': `${from}-${to}` } }
-        );
+      const page = allLogs.slice(feedOffset, feedOffset + FEED_PAGE);
 
-        if (!data || data.length === 0) {
-          feedDone = true;
-          feedLoading = false;
-          return;
-        }
-
-        const list = document.getElementById('feed-list');
-        for (const r of data) {
-          appendFeedItem(list, r);
-        }
-
-        feedOffset += data.length;
-        if (data.length < FEED_PAGE) feedDone = true;
-      } catch (err) {
-        console.error('Feed load error:', err);
+      if (!page || page.length === 0) {
+        feedDone = true;
+        feedLoading = false;
+        return;
       }
 
+      const list = document.getElementById('feed-list');
+      for (const r of page) {
+        appendFeedItem(list, r);
+      }
+
+      feedOffset += page.length;
+      if (page.length < FEED_PAGE) feedDone = true;
       feedLoading = false;
     }
 
