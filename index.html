@@ -42,42 +42,8 @@
       padding: 0;
     }
 
-    /* ===== CSS VARIABLES - NTA EARTH TONE DARK THEME ===== */
+    /* ===== CSS VARIABLES - LIGHT THEME ===== */
     :root {
-      --bg-primary: #2d2d2d;
-      --bg-secondary: #3d3d3d;
-      --bg-chat: #2d2d2d;
-      --bg-card: #454545;
-      --bg-input: #525252;
-      --bg-user-msg: linear-gradient(135deg, #4a7c59 0%, #3d6b4a 100%);
-      --bg-bot-msg: #3d3d3d;
-      --bg-source: #454545;
-      --bg-source-expanded: #525252;
-      --text-primary: #ffffff;
-      --text-secondary: #b0b0b0;
-      --text-muted: #888888;
-      --text-on-accent: #ffffff;
-      --accent: #4a7c59;
-      --accent-hover: #5d9070;
-      --accent-subtle: rgba(74, 124, 89, 0.15);
-      --border: #555555;
-      --border-focus: #4a7c59;
-      --shadow-sm: 0 1px 2px rgba(0,0,0,0.2);
-      --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.3);
-      --shadow-lg: 0 10px 25px -5px rgba(0,0,0,0.4);
-      --confidence-high: #4ade80;
-      --confidence-medium: #fbbf24;
-      --confidence-low: #f87171;
-      --radius-sm: 0.375rem;
-      --radius-md: 0.5rem;
-      --radius-lg: 0.75rem;
-      --radius-xl: 1rem;
-      --radius-pill: 25px;
-      --transition: 200ms ease;
-    }
-
-    /* ===== LIGHT THEME OVERRIDE ===== */
-    [data-theme="light"] {
       --bg-primary: #f5f5f0;
       --bg-secondary: #ffffff;
       --bg-chat: #f5f5f0;
@@ -102,6 +68,12 @@
       --confidence-high: #16a34a;
       --confidence-medium: #ca8a04;
       --confidence-low: #dc2626;
+      --radius-sm: 0.375rem;
+      --radius-md: 0.5rem;
+      --radius-lg: 0.75rem;
+      --radius-xl: 1rem;
+      --radius-pill: 25px;
+      --transition: 200ms ease;
     }
 
     /* ===== SCREEN READER ONLY ===== */
@@ -158,7 +130,7 @@
       right: 0;
       bottom: 0;
       z-index: 20000;
-      background: #2d2d2d;
+      background: #f5f5f0;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -170,13 +142,13 @@
     }
 
     .access-gate-card {
-      background: #3d3d3d;
+      background: #ffffff;
       border-radius: var(--radius-xl);
       padding: 2.5rem 2rem;
       max-width: 400px;
       width: 100%;
       text-align: center;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
       animation: welcomeFadeIn 0.5s ease;
     }
 
@@ -188,13 +160,13 @@
     .access-gate h2 {
       font-size: 1.375rem;
       font-weight: 700;
-      color: #ffffff;
+      color: #1a1a1a;
       margin-bottom: 0.5rem;
     }
 
     .access-gate p {
       font-size: 0.875rem;
-      color: #b0b0b0;
+      color: #4a4a4a;
       margin-bottom: 1.5rem;
       line-height: 1.5;
     }
@@ -202,10 +174,10 @@
     .access-gate-input {
       width: 100%;
       padding: 0.875rem 1.25rem;
-      border: 1px solid #555555;
+      border: 1px solid #d5d5cc;
       border-radius: var(--radius-pill);
-      background: #525252;
-      color: #ffffff;
+      background: #f5f5f0;
+      color: #1a1a1a;
       font-size: 1rem;
       font-family: inherit;
       text-align: center;
@@ -221,7 +193,7 @@
     }
 
     .access-gate-input::placeholder {
-      color: #888888;
+      color: #999;
       letter-spacing: normal;
     }
 
@@ -253,7 +225,7 @@
     }
 
     .access-gate-error {
-      color: #f87171;
+      color: #dc2626;
       font-size: 0.8125rem;
       margin-top: 0.75rem;
       display: none;
@@ -270,39 +242,6 @@
       align-items: center;
       gap: 0.5rem;
     }
-
-    .theme-toggle {
-      background: transparent;
-      border: 1px solid var(--border);
-      border-radius: var(--radius-pill);
-      padding: 0.5rem;
-      cursor: pointer;
-      transition: var(--transition);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .theme-toggle:hover {
-      border-color: var(--accent);
-      background: var(--accent-subtle);
-    }
-
-    .theme-toggle svg {
-      width: 18px;
-      height: 18px;
-      color: var(--text-secondary);
-    }
-
-    .theme-toggle:hover svg {
-      color: var(--accent);
-    }
-
-    /* Dark theme is default, so show moon by default */
-    .theme-toggle .sun { display: block; }
-    .theme-toggle .moon { display: none; }
-    [data-theme="light"] .theme-toggle .sun { display: none; }
-    [data-theme="light"] .theme-toggle .moon { display: block; }
 
     /* ===== CHAT AREA ===== */
     .chat-area {
@@ -691,6 +630,16 @@
       color: var(--text-muted);
     }
 
+    .authority-web {
+      background: rgba(59, 130, 246, 0.1);
+      color: #3b82f6;
+    }
+
+    .authority-podcast {
+      background: rgba(234, 179, 8, 0.1);
+      color: #ca8a04;
+    }
+
     /* ===== SOURCE REQUIREMENTS ===== */
     .source-requirements {
       padding: 0.5rem 0.75rem 0.75rem 1rem;
@@ -940,12 +889,6 @@
       cursor: pointer;
     }
 
-    .welcome-theme-toggle {
-      position: absolute;
-      top: 0;
-      right: 0;
-    }
-
     .welcome-hero h2 {
       font-size: 1.375rem;
       font-weight: 700;
@@ -1053,6 +996,11 @@
     .coverage-badge.ref {
       background: rgba(136, 136, 136, 0.15);
       color: var(--text-muted);
+    }
+
+    .coverage-badge.podcast {
+      background: rgba(234, 179, 8, 0.1);
+      color: #ca8a04;
     }
 
     /* ===== WELCOME DISCLAIMER ===== */
@@ -1260,173 +1208,6 @@
       50% { box-shadow: 0 0 0 8px rgba(239, 68, 68, 0); }
     }
 
-    /* ===== VOICE INPUT MODE ===== */
-    .voice-input-mode {
-      display: none;
-      align-items: center;
-      justify-content: center;
-      gap: 1rem;
-      width: 100%;
-      padding: 0.5rem 1rem;
-      min-height: 46px;
-    }
-
-    .input-area.voice-active .message-input {
-      display: none;
-    }
-
-    .input-area.voice-active .voice-input-mode {
-      display: flex;
-    }
-
-    .input-area.voice-active .voice-btn {
-      border-color: #ef4444;
-      background: rgba(239, 68, 68, 0.1);
-    }
-
-    .input-area.voice-active .voice-btn svg {
-      color: #ef4444;
-    }
-
-    /* Voice Input Orb */
-    .voice-input-orb {
-      position: relative;
-      width: 36px;
-      height: 36px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .voice-input-orb-core {
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, var(--accent) 0%, #3a6045 100%);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 2;
-      box-shadow: 0 0 20px rgba(74, 124, 89, 0.4);
-    }
-
-    .voice-input-orb-core svg {
-      width: 18px;
-      height: 18px;
-      color: white;
-    }
-
-    .voice-input-orb-ring {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      border-radius: 50%;
-      border: 2px solid var(--accent);
-      opacity: 0;
-    }
-
-    .voice-input-mode[data-state="connecting"] .voice-input-orb-core {
-      animation: voice-orb-connecting 0.8s ease-in-out infinite;
-      opacity: 0.7;
-    }
-
-    @keyframes voice-orb-connecting {
-      0%, 100% { transform: scale(0.95); opacity: 0.5; }
-      50% { transform: scale(1); opacity: 0.8; }
-    }
-
-    .voice-input-mode[data-state="listening"] .voice-input-orb-ring {
-      animation: voice-ring-expand 2s ease-out infinite;
-    }
-
-    .voice-input-mode[data-state="listening"] .voice-input-orb-ring:nth-child(2) {
-      animation-delay: 0.5s;
-    }
-
-    .voice-input-mode[data-state="listening"] .voice-input-orb-ring:nth-child(3) {
-      animation-delay: 1s;
-    }
-
-    @keyframes voice-ring-expand {
-      0% { transform: scale(1); opacity: 0.6; }
-      100% { transform: scale(2.5); opacity: 0; }
-    }
-
-    .voice-input-mode[data-state="processing"] .voice-input-orb-core {
-      animation: voice-orb-processing 1s ease-in-out infinite;
-      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-    }
-
-    @keyframes voice-orb-processing {
-      0%, 100% { box-shadow: 0 0 20px rgba(245, 158, 11, 0.4); }
-      50% { box-shadow: 0 0 35px rgba(245, 158, 11, 0.7); }
-    }
-
-    .voice-input-mode[data-state="speaking"] .voice-input-orb-core {
-      animation: voice-orb-speaking 0.6s ease-in-out infinite;
-      background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
-    }
-
-    @keyframes voice-orb-speaking {
-      0%, 100% {
-        transform: scale(1);
-        box-shadow: 0 0 20px rgba(22, 163, 74, 0.4);
-      }
-      50% {
-        transform: scale(1.1);
-        box-shadow: 0 0 30px rgba(22, 163, 74, 0.6);
-      }
-    }
-
-    .voice-input-status {
-      font-size: 0.875rem;
-      color: var(--text-secondary);
-      font-weight: 500;
-    }
-
-    .voice-input-mode[data-state="connecting"] .voice-input-status { color: var(--text-muted); }
-    .voice-input-mode[data-state="listening"] .voice-input-status { color: #ef4444; }
-    .voice-input-mode[data-state="processing"] .voice-input-status { color: #f59e0b; }
-    .voice-input-mode[data-state="speaking"] .voice-input-status { color: #16a34a; }
-
-    .voice-done-btn {
-      display: none;
-      padding: 0.5rem 1rem;
-      background: var(--accent);
-      color: white;
-      border: none;
-      border-radius: var(--radius-pill);
-      font-size: 0.875rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: var(--transition);
-    }
-
-    .voice-done-btn:hover {
-      background: #3a6045;
-      transform: scale(1.05);
-    }
-
-    .voice-input-mode[data-state="listening"] .voice-done-btn {
-      display: block;
-    }
-
-    .message-bot.speaking .message-header-left::after {
-      content: '';
-      display: inline-block;
-      width: 8px;
-      height: 8px;
-      background: #16a34a;
-      border-radius: 50%;
-      margin-left: 0.5rem;
-      animation: speaking-dot 0.6s ease-in-out infinite;
-    }
-
-    @keyframes speaking-dot {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.5; transform: scale(0.8); }
-    }
-
     .input-wrapper {
       flex: 1;
       position: relative;
@@ -1445,7 +1226,8 @@
       outline: none;
       transition: all 0.2s ease;
       min-height: 44px;
-      max-height: 120px;
+      max-height: 200px;
+      overflow: hidden;
     }
 
     .message-input:focus {
@@ -1561,20 +1343,6 @@
       height: 12px;
     }
 
-    [data-theme="dark"] .error-message,
-    :root:not([data-theme="light"]) .error-message {
-      background: #450a0a;
-      border-color: #7f1d1d;
-      color: #fca5a5;
-    }
-
-    [data-theme="dark"] .error-retry-btn:hover,
-    :root:not([data-theme="light"]) .error-retry-btn:hover {
-      background: #fca5a5;
-      border-color: #fca5a5;
-      color: #450a0a;
-    }
-
     /* ===== CANCEL BUTTON STATE ===== */
     .send-btn.cancel-mode {
       background: var(--confidence-low);
@@ -1625,139 +1393,6 @@
       }
     }
 
-    /* ===== PWA: OFFLINE BANNER ===== */
-    .offline-banner {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      z-index: 10000;
-      background: var(--color-error, #dc2626);
-      color: white;
-      text-align: center;
-      padding: 0.5rem 1rem;
-      padding-top: calc(0.5rem + env(safe-area-inset-top));
-      font-size: 0.8125rem;
-      font-weight: 500;
-      transform: translateY(-100%);
-      transition: transform 0.3s ease;
-    }
-
-    .offline-banner.visible {
-      transform: translateY(0);
-    }
-
-    .offline-banner.online {
-      background: var(--color-success, #16a34a);
-    }
-
-    /* ===== PWA: INSTALL BANNER ===== */
-    .install-banner {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      z-index: 9999;
-      background: var(--bg-secondary);
-      border-top: 1px solid var(--border-color);
-      padding: 1rem;
-      padding-bottom: calc(1rem + env(safe-area-inset-bottom));
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 1rem;
-      transform: translateY(100%);
-      transition: transform 0.3s ease;
-      box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
-    }
-
-    .install-banner.visible {
-      transform: translateY(0);
-    }
-
-    .install-banner-content {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      flex: 1;
-      min-width: 0;
-    }
-
-    .install-icon {
-      width: 48px;
-      height: 48px;
-      border-radius: 12px;
-      flex-shrink: 0;
-    }
-
-    .install-text {
-      display: flex;
-      flex-direction: column;
-      gap: 0.25rem;
-      min-width: 0;
-    }
-
-    .install-text strong {
-      font-size: 0.9375rem;
-      color: var(--text-primary);
-    }
-
-    .install-text span {
-      font-size: 0.75rem;
-      color: var(--text-secondary);
-      display: flex;
-      align-items: center;
-      gap: 0.25rem;
-    }
-
-    .install-text svg {
-      flex-shrink: 0;
-    }
-
-    .install-actions {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      flex-shrink: 0;
-    }
-
-    .install-btn {
-      background: var(--accent);
-      color: white;
-      border: none;
-      padding: 0.625rem 1.25rem;
-      border-radius: 8px;
-      font-size: 0.875rem;
-      font-weight: 600;
-      cursor: pointer;
-      min-height: 44px;
-      min-width: 44px;
-      transition: background 0.2s ease;
-    }
-
-    .install-btn:hover {
-      background: var(--accent-hover);
-    }
-
-    .install-dismiss {
-      background: transparent;
-      border: none;
-      padding: 0.5rem;
-      cursor: pointer;
-      color: var(--text-secondary);
-      min-height: 44px;
-      min-width: 44px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 8px;
-      transition: background 0.2s ease;
-    }
-
-    .install-dismiss:hover {
-      background: var(--bg-card);
-    }
-
     /* ===== MOBILE: SAFE AREA HANDLING ===== */
     @supports (padding: env(safe-area-inset-top)) {
       .input-area {
@@ -1778,11 +1413,6 @@
       .source-item {
         min-height: 44px;
         padding: 0.75rem;
-      }
-      .theme-toggle {
-        min-height: 44px;
-        min-width: 44px;
-        padding: 0.625rem;
       }
       .new-chat-btn,
       .voice-btn {
@@ -1850,46 +1480,17 @@
   <div class="access-gate" id="accessGate">
     <div class="access-gate-card">
       <img src="assets/icons/nta-logo.svg" alt="Nutritional Therapy Association" style="width:180px;margin:0 auto 1.5rem;display:block;">
-      <p>Enter your access code to continue.</p>
+      <p>Enter your password to continue.</p>
       <input
         type="password"
         class="access-gate-input"
         id="accessCodeInput"
-        placeholder="Access code"
+        placeholder="Password"
         autocomplete="off"
         onkeydown="if(event.key==='Enter')submitAccessCode()"
       >
       <button class="access-gate-btn" id="accessCodeBtn" onclick="submitAccessCode()">Continue</button>
-      <div class="access-gate-error" id="accessCodeError">Invalid access code. Please try again.</div>
-    </div>
-  </div>
-
-  <!-- PWA: Offline Banner -->
-  <div class="offline-banner" id="offlineBanner">
-    You're offline — cached content only
-  </div>
-
-  <!-- PWA: Install Banner -->
-  <div class="install-banner" id="installBanner">
-    <div class="install-banner-content">
-      <img src="assets/icons/icon-72.png" alt="NTA Bot" class="install-icon">
-      <div class="install-text">
-        <strong>Install NTA Bot</strong>
-        <span id="iosInstructions" style="display: none;">
-          Tap <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg> then "Add to Home Screen"
-        </span>
-      </div>
-    </div>
-    <div class="install-actions">
-      <button class="install-btn" id="androidInstallBtn" onclick="promptInstall()">
-        Install
-      </button>
-      <button class="install-dismiss" onclick="dismissInstallBanner()" aria-label="Dismiss">
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <line x1="18" y1="6" x2="6" y2="18"></line>
-          <line x1="6" y1="6" x2="18" y2="18"></line>
-        </svg>
-      </button>
+      <div class="access-gate-error" id="accessCodeError">Incorrect password. Please try again.</div>
     </div>
   </div>
 
@@ -1910,7 +1511,7 @@
             <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
           </svg>
         </button>
-        <button class="voice-btn" id="voiceBtn" onclick="toggleVoiceMode()" title="Voice input" aria-label="Toggle voice input">
+        <button class="voice-btn" id="voiceBtn" onclick="toggleSpeechToText()" title="Voice input" aria-label="Toggle voice input">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
             <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
@@ -1922,8 +1523,8 @@
           <textarea
             class="message-input"
             id="messageInput"
-            placeholder="Ask about the Five Foundations, programs, scope of practice..."
-            aria-label="Ask a question about NTA curriculum"
+            placeholder="Ask me anything..."
+            aria-label="Ask me anything"
             rows="1"
             inputmode="text"
             enterkeyhint="send"
@@ -1934,24 +1535,6 @@
             onkeydown="handleKeyDown(event)"
             oninput="autoResize(this)"
           ></textarea>
-          <!-- Voice input mode indicator -->
-          <div class="voice-input-mode" id="voiceInputMode" data-state="idle">
-            <div class="voice-input-orb">
-              <div class="voice-input-orb-ring"></div>
-              <div class="voice-input-orb-ring"></div>
-              <div class="voice-input-orb-ring"></div>
-              <div class="voice-input-orb-core">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
-                  <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
-                </svg>
-              </div>
-            </div>
-            <span class="voice-input-status" id="voiceInputStatus" aria-live="polite" aria-atomic="true">Listening...</span>
-            <button class="voice-done-btn" id="voiceDoneBtn" onclick="submitVoiceInput()" title="Submit voice input">
-              Done
-            </button>
-          </div>
         </div>
         <button class="send-btn" id="sendBtn" onclick="sendMessage()" title="Send message">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -2157,22 +1740,6 @@
         <div class="welcome-panel" id="welcomePanel">
           <div class="welcome-hero">
             <img class="welcome-logo" src="assets/icons/nta-logo.svg" alt="Nutritional Therapy Association" onclick="startNewChat()">
-            <button class="theme-toggle welcome-theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
-              <svg class="moon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-              </svg>
-              <svg class="sun" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="12" r="5"></circle>
-                <line x1="12" y1="1" x2="12" y2="3"></line>
-                <line x1="12" y1="21" x2="12" y2="23"></line>
-                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-                <line x1="1" y1="12" x2="3" y2="12"></line>
-                <line x1="21" y1="12" x2="23" y2="12"></line>
-                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-              </svg>
-            </button>
             <h2>What can I help you find?</h2>
             <p class="welcome-tagline">I'm trained on NTA's official curriculum — the NTP and PHWC programs, scope of practice documents, and clinical tools. Ask me anything and I'll answer with citations from the source material.</p>
           </div>
@@ -2182,31 +1749,31 @@
             <div class="coverage-grid">
               <div class="coverage-card">
                 <div class="coverage-card-header">
-                  <span class="coverage-badge ntp">Scope</span>
-                  <span class="coverage-card-title">Scope of Practice — NTP, FNTP &amp; PHWC</span>
+                  <span class="coverage-badge ntp">NTP/PHWC</span>
+                  <span class="coverage-card-title">NTP &amp; PHWC Program Content</span>
                 </div>
-                <p class="coverage-card-desc">What each credential holder can and cannot do, the critical NTP-vs-PHWC distinction, FNTP hands-on capabilities, FCA prerequisites, state regulatory considerations, and NBHWC board pathways.</p>
+                <p class="coverage-card-desc">The Five Foundations of Health, clinical application (NACA, NAQ, Nutri-Q), coaching foundations, motivational interviewing, behavior change, and program structure for both certifications.</p>
               </div>
               <div class="coverage-card">
                 <div class="coverage-card-header">
-                  <span class="coverage-badge ntp">NTP</span>
-                  <span class="coverage-card-title">NTP Curriculum — Foundations &amp; Clinical</span>
+                  <span class="coverage-badge podcast">Podcast</span>
+                  <span class="coverage-card-title">Podcast Library &mdash; 86 Episodes</span>
                 </div>
-                <p class="coverage-card-desc">All 15 NTP modules from the Five Foundations through the NACA process, Nutri-Q, NAQ, Symptom Burden Graph, functional lab testing, supplements, practice client work, and post-graduation support.</p>
+                <p class="coverage-card-desc">The Body Wisdom Podcast covering digestion, blood sugar, hormones, fertility, mental health, food quality, traditional preparation, supplements, and practitioner development.</p>
               </div>
               <div class="coverage-card">
                 <div class="coverage-card-header">
-                  <span class="coverage-badge phwc">PHWC</span>
-                  <span class="coverage-card-title">PHWC Curriculum — Coaching &amp; Behavior Change</span>
+                  <span class="coverage-badge ref">REF</span>
+                  <span class="coverage-card-title">Scope &amp; Credentials</span>
                 </div>
-                <p class="coverage-card-desc">The five coaching foundations, month-by-month curriculum breakdown, motivational interviewing, the Health and Wellness Wheel, mentor sessions, NBHWC certification requirements, and career pathways.</p>
+                <p class="coverage-card-desc">NTP, FNTP, and PHWC scope of practice boundaries, the FCA course and Lingual-Neural Testing, NANP and NBHWC board eligibility, and Career Compass.</p>
               </div>
               <div class="coverage-card">
                 <div class="coverage-card-header">
-                  <span class="coverage-badge ref">Reference</span>
-                  <span class="coverage-card-title">Programs, Credentials &amp; NTA Philosophy</span>
+                  <span class="coverage-badge ref">REF</span>
+                  <span class="coverage-card-title">NTA Philosophy &amp; Reference</span>
                 </div>
-                <p class="coverage-card-desc">All NTA programs compared (NTP, PHWC, FCA, Foundations of Healing, Career Compass), the Graham Grant, NTA history and leadership, bio-individuality, innate intelligence, and the complete terminology glossary.</p>
+                <p class="coverage-card-desc">Bio-individuality, innate intelligence, food-first approach, root-cause thinking, the complete terminology glossary, NTA history, accreditation, and all programs compared.</p>
               </div>
             </div>
           </div>
@@ -2257,32 +1824,11 @@
       sendMessage();
     }
 
-    // ===== THEME MANAGEMENT =====
-    function initTheme() {
-      const savedTheme = localStorage.getItem('nta_theme');
-      if (savedTheme) {
-        document.documentElement.setAttribute('data-theme', savedTheme);
-      } else if (window.matchMedia('(prefers-color-scheme: light)').matches) {
-        document.documentElement.setAttribute('data-theme', 'light');
-      }
-    }
-
-    function toggleTheme() {
-      const currentTheme = document.documentElement.getAttribute('data-theme');
-      const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-      if (newTheme === 'dark') {
-        document.documentElement.removeAttribute('data-theme');
-      } else {
-        document.documentElement.setAttribute('data-theme', 'light');
-      }
-      localStorage.setItem('nta_theme', newTheme);
-    }
-
     // ===== INPUT HANDLING =====
     function autoResize(textarea) {
       requestAnimationFrame(() => {
         textarea.style.height = 'auto';
-        textarea.style.height = Math.min(textarea.scrollHeight, 120) + 'px';
+        textarea.style.height = Math.min(textarea.scrollHeight, 200) + 'px';
       });
     }
 
@@ -2425,6 +1971,11 @@
 
       const pageHtml = pageNumber ? `<span class="page-badge">Page ${pageNumber}</span>` : '';
 
+      // Dynamic badge: detect podcast vs web sources
+      const isPodcastSource = hierarchy[0] === 'Podcast';
+      const badgeClass = isPodcastSource ? 'authority-podcast' : 'authority-web';
+      const badgeLabel = isPodcastSource ? 'Podcast' : 'Web';
+
       const isPodcast = sourceUrl && sourceUrl.includes('podcasts.apple.com');
       const sourceLinkLabel = isPodcast ? 'Listen on Apple Podcasts' : 'View on NTA website';
       const sourceLinkIcon = isPodcast
@@ -2444,7 +1995,7 @@
             <div class="source-info">
               <div class="source-path">${escapeHtml(fullPath)}</div>
               <div class="source-meta">
-                <span class="authority-badge authority-binding">Curriculum</span>
+                <span class="authority-badge ${badgeClass}">${badgeLabel}</span>
                 ${pageHtml}
               </div>
             </div>
@@ -2815,19 +2366,64 @@
       scrollToBottom();
     }
 
-    // ===== VOICE MODE =====
-    const VOICE_API_URL = 'https://n8n.srv1208741.hstgr.cloud/webhook/nta-voice-session';
+    // ===== SPEECH-TO-TEXT (replaces voice mode) =====
+    let recognition = null;
+    let isListening = false;
+
+    function toggleSpeechToText() {
+      const voiceBtn = document.getElementById('voiceBtn');
+
+      if (isListening && recognition) {
+        recognition.stop();
+        return;
+      }
+
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRecognition) {
+        voiceBtn.title = 'Speech recognition not supported in this browser';
+        setTimeout(() => { voiceBtn.title = 'Voice input'; }, 3000);
+        return;
+      }
+
+      recognition = new SpeechRecognition();
+      recognition.continuous = true;
+      recognition.interimResults = true;
+      recognition.lang = 'en-US';
+
+      recognition.onstart = () => {
+        isListening = true;
+        voiceBtn.classList.add('listening');
+      };
+
+      recognition.onresult = (event) => {
+        const input = document.getElementById('messageInput');
+        let transcript = '';
+        for (let i = 0; i < event.results.length; i++) {
+          transcript += event.results[i][0].transcript;
+        }
+        input.value = transcript;
+        autoResize(input);
+      };
+
+      recognition.onend = () => {
+        isListening = false;
+        voiceBtn.classList.remove('listening');
+        recognition = null;
+      };
+
+      recognition.onerror = (event) => {
+        isListening = false;
+        voiceBtn.classList.remove('listening');
+        recognition = null;
+      };
+
+      recognition.start();
+    }
+
+    // ===== TEXT-TO-SPEECH (TTS) =====
     const TTS_API_URL = 'https://n8n.srv1208741.hstgr.cloud/webhook/nta-tts';
 
-    let voiceState = 'idle';
-    let peerConnection = null;
-    let dataChannel = null;
-    let localStream = null;
-    let voiceSessionActive = false;
-    let voiceMode = false;
-    let currentVoiceTranscript = '';
     let currentTTSAudio = null;
-    let transcriptionTimeout = null;
     let ttsAudioUrl = null;
     let pendingTTSButton = null;
     const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
@@ -2843,7 +2439,6 @@
       const text = answerTextEl.getAttribute('data-raw-answer') || answerTextEl.textContent;
       if (!text || text.trim().length === 0) return;
       button.classList.add('loading');
-      if (voiceMode) setVoiceInputState('speaking');
       try {
         if (isMobile) { await playAudioBlob(text.trim(), button); return; }
         const response = await fetch(TTS_API_URL, {
@@ -2857,7 +2452,6 @@
         console.error('[TTS] Error:', error);
         button.classList.remove('loading', 'speaking');
         if (error.name === 'NotAllowedError') { showTapToPlay(button); return; }
-        if (voiceMode) stopVoiceMode();
         button.title = 'Audio unavailable';
         setTimeout(() => { button.title = 'Read aloud'; }, 2000);
       }
@@ -2881,7 +2475,7 @@
       currentTTSAudio = new Audio(ttsAudioUrl);
       if (isIOS) { currentTTSAudio.playsInline = true; currentTTSAudio.setAttribute('playsinline', ''); }
       currentTTSAudio.onplay = () => { button.classList.remove('loading', 'tap-to-play'); button.classList.add('speaking'); pendingTTSButton = null; };
-      currentTTSAudio.onended = () => { button.classList.remove('speaking'); cleanupTTSAudio(); if (voiceMode) stopVoiceMode(); };
+      currentTTSAudio.onended = () => { button.classList.remove('speaking'); cleanupTTSAudio(); };
       currentTTSAudio.onerror = () => { button.classList.remove('loading', 'speaking', 'tap-to-play'); cleanupTTSAudio(); };
       await currentTTSAudio.play();
     }
@@ -2897,230 +2491,7 @@
       document.querySelectorAll('.speak-btn.speaking, .speak-btn.loading').forEach(btn => btn.classList.remove('speaking', 'loading'));
     }
 
-    async function toggleVoiceMode() {
-      if (voiceMode) { stopVoiceMode(); } else { await startVoiceMode(); }
-    }
-
-    async function startVoiceMode() {
-      voiceMode = true;
-      const inputArea = document.querySelector('.input-area');
-      if (inputArea) inputArea.classList.add('voice-active');
-      setVoiceInputState('connecting');
-      await startVoiceCapture();
-    }
-
-    function stopVoiceMode() {
-      voiceMode = false;
-      const inputArea = document.querySelector('.input-area');
-      if (inputArea) inputArea.classList.remove('voice-active');
-      setVoiceInputState('idle');
-      currentVoiceTranscript = '';
-      if (transcriptionTimeout) { clearTimeout(transcriptionTimeout); transcriptionTimeout = null; }
-      stopVoiceCapture();
-      cleanupVoiceSession();
-    }
-
-    function setVoiceInputState(state) {
-      voiceState = state;
-      const voiceInputMode = document.getElementById('voiceInputMode');
-      const statusText = document.getElementById('voiceInputStatus');
-      const voiceBtn = document.getElementById('voiceBtn');
-      if (voiceInputMode) voiceInputMode.setAttribute('data-state', state);
-      const statusMessages = { idle: 'Tap microphone to speak', connecting: 'Connecting to voice...', listening: 'Listening... speak now', processing: 'Getting your answer...', speaking: 'Reading answer...' };
-      if (statusText) statusText.textContent = statusMessages[state] || 'Ready';
-      if (voiceBtn) voiceBtn.classList.toggle('listening', state === 'listening');
-    }
-
-    function submitVoiceInput() {
-      if (dataChannel && dataChannel.readyState === 'open') {
-        dataChannel.send(JSON.stringify({ type: 'input_audio_buffer.commit' }));
-        setVoiceInputState('processing');
-      } else { showVoiceError('Voice connection lost. Please try again.'); }
-    }
-
-    function showVoiceError(message) {
-      const statusText = document.getElementById('voiceInputStatus');
-      if (statusText) {
-        statusText.textContent = message;
-        statusText.style.color = '#ef4444';
-        setTimeout(() => { statusText.style.color = ''; if (voiceMode) stopVoiceMode(); }, 3000);
-      }
-    }
-
-    async function startVoiceCapture() {
-      try {
-        setVoiceInputState('connecting');
-        currentVoiceTranscript = '';
-        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) throw new Error('Microphone not supported in this browser');
-        const tokenResponse = await fetch(VOICE_API_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ session_id: getSessionId(), access_code: getAccessCode() })
-        });
-        if (!tokenResponse.ok) throw new Error('Failed to get voice session token');
-        const tokenData = await tokenResponse.json();
-        if (!tokenData.client_secret || !tokenData.client_secret.value) throw new Error('Invalid token response from server');
-        await initializeVoiceSession(tokenData.client_secret.value);
-      } catch (error) {
-        setVoiceInputState('idle');
-        if (error.name === 'NotAllowedError') showVoiceError('Microphone permission denied.');
-        else if (error.name === 'NotFoundError') showVoiceError('No microphone found.');
-        else showVoiceError(error.message || 'Failed to start voice mode');
-      }
-    }
-
-    async function initializeVoiceSession(ephemeralKey) {
-      peerConnection = new RTCPeerConnection();
-      localStream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true } });
-      localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
-      dataChannel = peerConnection.createDataChannel('oai-events');
-      dataChannel.onopen = () => { voiceSessionActive = true; configureVoiceSession(); };
-      dataChannel.onmessage = handleVoiceEvent;
-      dataChannel.onclose = () => { voiceSessionActive = false; };
-      const offer = await peerConnection.createOffer();
-      await peerConnection.setLocalDescription(offer);
-      const sdpResponse = await fetch(`https://api.openai.com/v1/realtime?model=gpt-4o-realtime-preview-2024-12-17`, {
-        method: 'POST',
-        headers: { 'Authorization': `Bearer ${ephemeralKey}`, 'Content-Type': 'application/sdp' },
-        body: offer.sdp
-      });
-      if (!sdpResponse.ok) throw new Error('Failed to connect to OpenAI Realtime API');
-      const answerSdp = await sdpResponse.text();
-      await peerConnection.setRemoteDescription({ type: 'answer', sdp: answerSdp });
-      setVoiceInputState('listening');
-    }
-
-    function configureVoiceSession() {
-      if (!dataChannel || dataChannel.readyState !== 'open') return;
-      const sessionConfig = {
-        type: 'session.update',
-        session: {
-          modalities: ['text'],
-          instructions: `You are a voice interface for NTA Bot, the Nutritional Therapy Association's internal curriculum assistant for employees.
-
-CRITICAL RULE: You do NOT have NTA curriculum knowledge. For ANY question about:
-- The Five Foundations of Health (nutrient-dense diet, digestion, blood sugar regulation, sleep, stress management)
-- Bio-individuality, innate intelligence, root-cause approach, or food-first philosophy
-- NTP program content (NACA process, NAQ, Nutri-Q, functional labs, supplements)
-- PHWC program content (coaching models, behavior change, motivational interviewing)
-- FCA course, Lingual-Neural Testing, or FNTP credential
-- Scope of practice boundaries for NTPs, FNTPs, or PHWCs
-- Program structure, prerequisites, credentials, or board exam eligibility
-
-You MUST call the get_nta_answer function and then read the response naturally to the user.
-
-DO NOT attempt to answer curriculum questions from your own knowledge. ALWAYS use the get_nta_answer tool first.
-
-After receiving the answer from the tool:
-1. Read the answer conversationally and naturally
-2. Preserve ALL specific details, terminology, and scope distinctions exactly
-3. Include source citations naturally
-4. If the answer includes a confidence warning, mention it
-
-For simple greetings or requests to repeat, you may respond directly without using the tool.`,
-          input_audio_transcription: { model: 'whisper-1' },
-          turn_detection: { type: 'server_vad', threshold: 0.5, prefix_padding_ms: 300, silence_duration_ms: 1200 },
-          tools: [{
-            type: 'function',
-            name: 'get_nta_answer',
-            description: 'Get the authoritative answer to any question about NTA curriculum content. Covers the Five Foundations of Health, NTP and PHWC program materials, clinical application (NACA, NAQ, Nutri-Q), FCA/FNTP training, scope of practice, credentials, and NTA philosophy (bio-individuality, innate intelligence, root-cause, food-first approach). Returns a cited answer from official curriculum documents.',
-            parameters: { type: 'object', properties: { question: { type: 'string', description: 'The user\'s question about NTA curriculum, programs, or nutritional therapy concepts' } }, required: ['question'] }
-          }]
-        }
-      };
-      dataChannel.send(JSON.stringify(sessionConfig));
-    }
-
-    async function handleVoiceEvent(event) {
-      try {
-        const data = JSON.parse(event.data);
-        switch (data.type) {
-          case 'session.created': case 'session.updated': break;
-          case 'input_audio_buffer.speech_started':
-            setVoiceInputState('listening');
-            const st = document.getElementById('voiceInputStatus');
-            if (st) st.textContent = 'Hearing you...';
-            break;
-          case 'input_audio_buffer.speech_stopped':
-            setVoiceInputState('processing');
-            if (transcriptionTimeout) clearTimeout(transcriptionTimeout);
-            transcriptionTimeout = setTimeout(() => showVoiceError('No transcription received. Please try again.'), 30000);
-            break;
-          case 'conversation.item.input_audio_transcription.completed':
-            if (transcriptionTimeout) { clearTimeout(transcriptionTimeout); transcriptionTimeout = null; }
-            if (data.transcript && data.transcript.trim()) {
-              currentVoiceTranscript = data.transcript.trim();
-              const chatArea = document.getElementById('chatArea');
-              if (chatArea) { chatArea.insertAdjacentHTML('beforeend', renderUserMessage(currentVoiceTranscript)); scrollToBottom(); messages.push({ role: 'user', content: currentVoiceTranscript }); }
-            }
-            break;
-          case 'response.function_call_arguments.done':
-            if (data.name === 'get_nta_answer') await handleGetAnswer(data.call_id, data.arguments);
-            break;
-          case 'response.done': break;
-          case 'error':
-            showVoiceError(data.error?.message || 'An error occurred');
-            setVoiceInputState('idle');
-            break;
-        }
-      } catch (e) { console.error('[Voice] Error handling event:', e); }
-    }
-
-    async function handleGetAnswer(callId, argsString) {
-      try {
-        const args = JSON.parse(argsString);
-        const response = await fetch(API_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ message: args.question, session_id: getSessionId(), access_code: getAccessCode() })
-        });
-        let voiceAnswer = '';
-        if (response.ok) {
-          const responseData = await response.json();
-          const chatArea = document.getElementById('chatArea');
-          if (chatArea && responseData.answer) {
-            chatArea.insertAdjacentHTML('beforeend', renderBotMessage(responseData));
-            scrollToBottom();
-            messages.push({ role: 'assistant', content: responseData.answer });
-            const newMessage = chatArea.querySelector('.message-bot:last-child');
-            const speakBtn = newMessage?.querySelector('.speak-btn');
-            if (speakBtn) setTimeout(() => speakMessage(speakBtn), 100);
-          }
-          voiceAnswer = responseData.answer || 'I could not find specific information about that in the NTA curriculum.';
-        } else {
-          voiceAnswer = 'I encountered an error while searching the curriculum. Please try again.';
-        }
-        if (dataChannel && dataChannel.readyState === 'open') {
-          dataChannel.send(JSON.stringify({ type: 'conversation.item.create', item: { type: 'function_call_output', call_id: callId, output: voiceAnswer } }));
-          dataChannel.send(JSON.stringify({ type: 'response.create' }));
-        }
-      } catch (error) {
-        if (dataChannel && dataChannel.readyState === 'open') {
-          dataChannel.send(JSON.stringify({ type: 'conversation.item.create', item: { type: 'function_call_output', call_id: callId, output: 'I encountered an error. Please try again.' } }));
-          dataChannel.send(JSON.stringify({ type: 'response.create' }));
-        }
-      }
-    }
-
-    function stopVoiceCapture() {
-      setVoiceInputState('idle');
-      if (dataChannel && dataChannel.readyState === 'open') {
-        try { dataChannel.send(JSON.stringify({ type: 'input_audio_buffer.commit' })); } catch (e) {}
-      }
-    }
-
-    function cleanupVoiceSession() {
-      voiceSessionActive = false;
-      if (dataChannel) { dataChannel.close(); dataChannel = null; }
-      if (peerConnection) { peerConnection.close(); peerConnection = null; }
-      if (localStream) { localStream.getTracks().forEach(track => track.stop()); localStream = null; }
-      currentVoiceTranscript = '';
-    }
-
     // ===== PWA: SERVICE WORKER =====
-    let deferredInstallPrompt = null;
-    let isAppInstalled = false;
-
     async function registerServiceWorker() {
       if ('serviceWorker' in navigator) {
         try {
@@ -3137,65 +2508,8 @@ For simple greetings or requests to repeat, you may respond directly without usi
       }
     }
 
-    function setupInstallPrompt() {
-      if (window.matchMedia('(display-mode: standalone)').matches) { isAppInstalled = true; hideInstallBanner(); return; }
-      window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredInstallPrompt = e; showInstallBanner('android'); });
-      const isIOSDevice = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-      if (isIOSDevice && !isAppInstalled && !localStorage.getItem('nta-install-dismissed')) {
-        setTimeout(() => showInstallBanner('ios'), 3000);
-      }
-      window.addEventListener('appinstalled', () => { isAppInstalled = true; deferredInstallPrompt = null; hideInstallBanner(); });
-    }
-
-    function showInstallBanner(platform) {
-      if (localStorage.getItem('nta-install-dismissed')) return;
-      const banner = document.getElementById('installBanner');
-      const iosInstructions = document.getElementById('iosInstructions');
-      const androidButton = document.getElementById('androidInstallBtn');
-      if (banner) {
-        if (platform === 'ios') { iosInstructions.style.display = 'block'; androidButton.style.display = 'none'; }
-        else { iosInstructions.style.display = 'none'; androidButton.style.display = 'flex'; }
-        banner.classList.add('visible');
-      }
-    }
-
-    function hideInstallBanner() { const banner = document.getElementById('installBanner'); if (banner) banner.classList.remove('visible'); }
-    function dismissInstallBanner() { hideInstallBanner(); localStorage.setItem('nta-install-dismissed', 'true'); }
-
-    async function promptInstall() {
-      if (!deferredInstallPrompt) return;
-      deferredInstallPrompt.prompt();
-      await deferredInstallPrompt.userChoice;
-      deferredInstallPrompt = null;
-      hideInstallBanner();
-    }
-
-    // ===== PWA: OFFLINE DETECTION =====
-    let isOnline = navigator.onLine;
-    function updateOnlineStatus() {
-      const wasOnline = isOnline; isOnline = navigator.onLine;
-      const banner = document.getElementById('offlineBanner');
-      if (banner) {
-        if (!isOnline) { banner.classList.add('visible'); }
-        else {
-          banner.classList.remove('visible');
-          if (!wasOnline) {
-            banner.textContent = 'Back online';
-            banner.classList.add('visible', 'online');
-            setTimeout(() => { banner.classList.remove('visible', 'online'); banner.textContent = "You're offline — cached content only"; }, 2000);
-          }
-        }
-      }
-    }
-    function setupOfflineDetection() {
-      window.addEventListener('online', updateOnlineStatus);
-      window.addEventListener('offline', updateOnlineStatus);
-      updateOnlineStatus();
-    }
-
     // ===== INITIALIZATION =====
     document.addEventListener('DOMContentLoaded', () => {
-      initTheme();
       checkAccessGate();
       getSessionId();
 
@@ -3206,8 +2520,6 @@ For simple greetings or requests to repeat, you may respond directly without usi
       if (messageInput) messageInput.focus();
 
       registerServiceWorker();
-      setupInstallPrompt();
-      setupOfflineDetection();
     });
   </script>
 
@@ -3226,8 +2538,5 @@ For simple greetings or requests to repeat, you may respond directly without usi
       <div class="source-modal-body" id="sourceModalBody"></div>
     </div>
   </div>
-
-  <!-- Hidden audio element for voice playback -->
-  <audio id="voiceAudio" style="display: none;"></audio>
 </body>
 </html>

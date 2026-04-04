@@ -3,8 +3,8 @@
  * Provides offline support and caching for the PWA
  */
 
-const STATIC_CACHE = 'nta-bot-static-v1.0';
-const DYNAMIC_CACHE = 'nta-bot-dynamic-v1.0';
+const STATIC_CACHE = 'nta-bot-static-v2.0';
+const DYNAMIC_CACHE = 'nta-bot-dynamic-v2.0';
 
 // Assets to cache immediately on install
 const PRECACHE_ASSETS = [
