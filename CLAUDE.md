@@ -14,11 +14,18 @@ Browser (GitHub Pages)
 ```
 
 ### Frontend
-- `index.html` — Entire PWA in one file (~3800 lines). All HTML/CSS/JS inline, no build step.
+- `index.html` — Entire PWA in one file. All HTML/CSS/JS inline, no build step.
 - `sw.js` — Service worker. Cache names: `nta-bot-static-v1.0`, `nta-bot-dynamic-v1.0`.
 - `manifest.json` — PWA manifest. Scope: `/nta-bot/`.
 - `assets/icons/nta-logo.svg` — Official NTA logo (full color, centered).
 - `.nojekyll` — GitHub Pages config.
+
+### UI Design
+- **No header.** The NTA logo sits large (240px) in the welcome hero section.
+- **Welcome panel scrolls with chat.** The welcome content (logo, hero text, knowledge base cards, sample questions) is part of the chat area and scrolls up naturally as conversation messages are added below it. It is NOT removed on first message.
+- **New-chat button** (pencil icon) in the input bar resets the conversation and restores the welcome panel.
+- **Theme toggle** is positioned top-right of the welcome hero (not in a header).
+- Source cards show full breadcrumb citations and "View on NTA website" links when `source_url` is present.
 
 ### Backend (shared Supabase project)
 - **Project ID:** `wdouifomlipmlsksczsv`
@@ -53,7 +60,7 @@ Vector store for RAG retrieval.
 - `id` uuid PK, `content` text, `content_hash` text, `embedding` vector(1536), `fts_vector` tsvector (generated), `document_id` uuid FK, `document_name` text, `document_type` text, `section_hierarchy` text[], `section_title` text, `page_number` int, `source_url` text (link to NTA webpage source), `chunk_index` int, `token_count` int, `created_at` timestamptz
 
 ### `nta_hybrid_search(query_embedding, query_text, match_count, vector_weight, fts_weight, filter_document_types)`
-Returns: id, content, document_name, document_type, section_hierarchy, section_title, page_number, vector_score, fts_score, combined_score.
+Returns: id, content, document_name, document_type, section_hierarchy, section_title, page_number, source_url, vector_score, fts_score, combined_score.
 
 ## Content Ingestion
 
@@ -93,11 +100,24 @@ Reference documents live in `docs/` as structured markdown with YAML frontmatter
 - PHWCs **empower** clients to make their own choices — they do NOT prescribe
 - FNTPs can additionally perform hands-on FCA and Lingual-Neural Testing
 
+## Ingested Reference Documents (187 chunks total)
+
+| Document | Type | Chunks | File |
+|----------|------|--------|------|
+| Scope of Practice Reference — NTP, FNTP & PHWC | `scope_of_practice` | 24 | `docs/scope-of-practice.md` |
+| NTP Curriculum Deep Dive — Five Foundations & Clinical Application | `ntp_curriculum` | 45 | `docs/ntp-curriculum.md` |
+| NTA Programs and Credentials Guide | `reference` | 36 | `docs/programs-and-credentials.md` |
+| PHWC Curriculum Deep Dive — Coaching Foundations & Behavior Change | `phwc_curriculum` | 34 | `docs/phwc-curriculum.md` |
+| NTA Philosophy and Terminology Reference | `reference` | 48 | `docs/philosophy-and-terminology.md` |
+
+All sourced from NTA's public website. These are permanent reference docs, not placeholders — they'll remain in the KB alongside future curriculum content.
+
 ## Development
-- **Repo:** `github.com/grysngrhm-tech/nta-bot` (private)
+- **Repo:** `github.com/grysngrhm-tech/nta-bot` (public — required for GitHub Pages on free plan)
 - **Live:** `grysngrhm-tech.github.io/nta-bot/`
 - **Local dev:** `python3 -m http.server 3456` in repo root
 - **No build step.** Edit `index.html` directly, push to deploy.
+- **n8n API:** `https://n8n.srv1208741.hstgr.cloud/api/v1/` — workflows manageable via REST API with API key (ask user for key if needed)
 
 ## Session Storage Keys
 - `nta_access_code` — employee access code
