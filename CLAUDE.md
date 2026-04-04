@@ -42,8 +42,25 @@ Instance: `n8n.srv1208741.hstgr.cloud`
 | NTA Bot - Main Agent | `gLZcUb9niHGx9psk` | `/webhook/nta-chat` | RAG pipeline: embed query → hybrid search → GPT-4o → response |
 | NTA Bot - Hybrid Retrieval Tool | `KswmKRJcrpHtzkC3` | `/webhook/nta-retrieval` | Sub-workflow: generate embedding → call `nta_hybrid_search` RPC → format results |
 | NTA Bot - Text to Speech | `hAxXqB2OVgj1iwo1` | `/webhook/nta-tts` | OpenAI TTS (tts-1, alloy voice) |
+| NTA Bot - Topic Labeler | `exPmPwENHcJWx3yZ` | `/webhook/nta-topic-label` | GPT-4o-mini generates 3-5 word topic label for analytics |
 
 Note: Voice Session workflow (`g9iQbA3GX0644o7b`) still exists on n8n but is no longer used by the frontend — voice input was replaced with native Web Speech API transcription.
+
+## Analytics Dashboard
+
+### Query Logging
+Every question is logged to `nta_query_log` in Supabase via client-side POST after each response. Logging is fire-and-forget with `navigator.sendBeacon()` fallback. Never blocks the chat UI.
+
+Each log entry includes: question text, answer summary (first 300 chars), confidence level, source topics and documents cited, GPT-4o-mini-generated topic label, session ID, IP-based city/country (via ipapi.co, cached per session), and response latency.
+
+### Dashboard Page
+- **URL:** `/nta-bot/dashboard.html` (no password required)
+- **Link:** Subtle "Analytics" link at bottom of main chat page
+- **Sections:** Content Gaps (low-confidence questions grouped by topic), Topic Gap Analysis (demand vs knowledge base coverage), Trending Topics (week-over-week), Chronological Feed (infinite scroll)
+- **Data source:** Reads directly from Supabase via anon key (SELECT-only RLS)
+
+### `nta_query_log` Schema
+- `id` uuid PK, `question` text, `answer_summary` text, `confidence_level` text, `source_topics` text[], `source_documents` text[], `source_count` int, `topic_label` text, `session_id` text, `city` text, `country` text, `latency_ms` int, `created_at` timestamptz
 
 ## Access Control
 - Client-side password gate: `Graham` (case-sensitive)
