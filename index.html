@@ -1681,18 +1681,22 @@
       catch { return {}; }
     }
 
-    // Topic label via n8n webhook (async, non-blocking)
+    // Topic label via n8n webhook (async, non-blocking, 10s timeout)
     async function generateTopicLabel(question) {
       try {
+        const controller = new AbortController();
+        setTimeout(() => controller.abort(), 10000);
         const resp = await fetch(TOPIC_LABEL_URL, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ question: question })
+          body: JSON.stringify({ question: question }),
+          signal: controller.signal
         });
+        if (!resp.ok) return null;
         const data = await resp.json();
-        return data.topic_label || 'Other';
+        return data.topic_label || null;
       } catch (e) {
-        return 'Other';
+        return null;
       }
     }
 
@@ -1708,21 +1712,42 @@
       const answerSummary = (responseData.answer || '').substring(0, 300);
       const geo = getGeoData();
 
-      // Generate topic label async (don't block)
-      const topicLabel = await generateTopicLabel(question);
+      // Log immediately with source_topics as fallback label
+      const fallbackLabel = sourceTopics.length > 0 ? sourceTopics[0].replace('Podcast > ', '') : 'General';
 
-      logToSupabase({
+      const logEntry = {
         question: question,
         answer_summary: answerSummary,
         confidence_level: confidence,
         source_topics: sourceTopics,
         source_documents: sourceDocuments,
         source_count: sources.length,
-        topic_label: topicLabel,
+        topic_label: fallbackLabel,
         session_id: getSessionId(),
         city: geo.city || null,
         country: geo.country || null,
         latency_ms: elapsedMs || null
+      };
+
+      // Log right away (topic label will be the fallback)
+      logToSupabase(logEntry);
+
+      // Try to get a better label from GPT-4o-mini (updates the row if successful)
+      generateTopicLabel(question).then(label => {
+        if (label && label !== fallbackLabel) {
+          // Update the log entry with the better label (fire-and-forget)
+          fetch(`${SUPABASE_URL}/rest/v1/nta_query_log?question=eq.${encodeURIComponent(question)}&session_id=eq.${encodeURIComponent(getSessionId())}&order=created_at.desc&limit=1`, {
+            method: 'PATCH',
+            headers: {
+              'apikey': SUPABASE_ANON_KEY,
+              'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+              'Content-Type': 'application/json',
+              'Prefer': 'return=minimal'
+            },
+            body: JSON.stringify({ topic_label: label }),
+            keepalive: true
+          }).catch(() => {});
+        }
       });
     }
 
