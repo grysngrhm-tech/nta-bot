@@ -3,8 +3,8 @@
  * Provides offline support and caching for the PWA
  */
 
-const STATIC_CACHE = 'nta-bot-static-v2.0';
-const DYNAMIC_CACHE = 'nta-bot-dynamic-v2.0';
+const STATIC_CACHE = 'nta-bot-static-v3.0';
+const DYNAMIC_CACHE = 'nta-bot-dynamic-v3.0';
 
 // Assets to cache immediately on install
 const PRECACHE_ASSETS = [
@@ -90,12 +90,21 @@ self.addEventListener('fetch', (event) => {
   }
 
   // Skip API requests - always go to network
-  if (url.hostname.includes('n8n.srv1208741.hstgr.cloud')) {
+  if (url.hostname.includes('n8n.srv1208741.hstgr.cloud') ||
+      url.hostname.includes('supabase.co') ||
+      url.hostname.includes('ipapi.co') ||
+      url.hostname.includes('api.openai.com')) {
     event.respondWith(networkOnly(request));
     return;
   }
 
-  // For same-origin requests - cache first, network fallback
+  // For same-origin HTML - network first (always get latest code)
+  if (url.origin === self.location.origin && (url.pathname.endsWith('.html') || url.pathname.endsWith('/'))) {
+    event.respondWith(networkFirst(request));
+    return;
+  }
+
+  // For same-origin static assets (SVG, icons) - cache first
   if (url.origin === self.location.origin) {
     event.respondWith(cacheFirst(request));
     return;
