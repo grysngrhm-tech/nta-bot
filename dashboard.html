@@ -1146,9 +1146,64 @@
         grid-template-columns: 1fr 1fr;
       }
     }
+
+    /* ===== ACCESS GATE ===== */
+    .access-gate {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      z-index: 20000;
+      background: #f5f5f0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+    }
+
+    .access-gate-card {
+      background: #ffffff;
+      border-radius: 1rem;
+      padding: 2.5rem 2rem;
+      max-width: 400px;
+      width: 100%;
+      box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1);
+    }
   </style>
 </head>
 <body>
+
+  <!-- ACCESS GATE -->
+  <div class="access-gate" id="accessGate">
+    <div class="access-gate-card">
+      <img src="assets/icons/nta-logo.svg" alt="Nutritional Therapy Association" style="width:180px;margin:0 auto 1.5rem;display:block;">
+      <p style="font-size:0.875rem;color:#4a4a4a;margin-bottom:1.5rem;text-align:center;">Enter your password to continue.</p>
+      <input type="password" class="access-gate-input" id="accessCodeInput" placeholder="Password" autocomplete="off"
+        onkeydown="if(event.key==='Enter')submitAccessCode()"
+        style="width:100%;padding:0.875rem 1.25rem;border:1px solid #d5d5cc;border-radius:25px;background:#f5f5f0;color:#1a1a1a;font-size:1rem;font-family:inherit;text-align:center;outline:none;margin-bottom:1rem;">
+      <button onclick="submitAccessCode()"
+        style="width:100%;padding:0.875rem;background:#4a7c59;color:white;border:none;border-radius:25px;font-size:1rem;font-weight:600;font-family:inherit;cursor:pointer;">Continue</button>
+      <div id="accessCodeError" style="color:#dc2626;font-size:0.8125rem;margin-top:0.75rem;display:none;text-align:center;">Incorrect password. Please try again.</div>
+    </div>
+  </div>
+
+  <script>
+    function submitAccessCode() {
+      const input = document.getElementById('accessCodeInput');
+      const code = input.value.trim();
+      if (!code) return;
+      if (code !== 'Graham') {
+        document.getElementById('accessCodeError').style.display = 'block';
+        input.value = '';
+        input.focus();
+        return;
+      }
+      sessionStorage.setItem('nta_access_code', code);
+      document.getElementById('accessGate').style.display = 'none';
+    }
+    // Auto-dismiss if already authenticated (from chat page or previous visit)
+    if (sessionStorage.getItem('nta_access_code') === 'Graham') {
+      document.getElementById('accessGate').style.display = 'none';
+    }
+  </script>
 
   <!-- HEADER -->
   <header class="header">

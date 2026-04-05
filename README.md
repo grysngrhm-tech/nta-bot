@@ -122,7 +122,7 @@ The dashboard doesn't require a password — it only displays question analytics
 | | |
 |---|---|
 | **URL** | [grysngrhm-tech.github.io/nta-bot/](https://grysngrhm-tech.github.io/nta-bot/) |
-| **Password** | `Graham` (case-sensitive) |
+| **Password** | Provided by your NTA administrator |
 | **Dashboard** | [grysngrhm-tech.github.io/nta-bot/dashboard.html](https://grysngrhm-tech.github.io/nta-bot/dashboard.html) |
 | **Browsers** | Chrome, Safari, Edge, Firefox |
 | **Devices** | Phone, tablet, desktop — no app install required |

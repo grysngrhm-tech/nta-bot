@@ -906,6 +906,22 @@
       line-height: 1.6;
     }
 
+    .welcome-doc-link {
+      font-size: 0.75rem;
+      margin-top: 0.5rem;
+      opacity: 0.5;
+    }
+
+    .welcome-doc-link a {
+      color: var(--text-muted);
+      text-decoration: none;
+    }
+
+    .welcome-doc-link a:hover {
+      color: var(--accent);
+      opacity: 1;
+    }
+
     /* Stacked Sections */
     .welcome-section {
       background: var(--bg-card);
@@ -1970,6 +1986,7 @@
             <img class="welcome-logo" src="assets/icons/nta-logo.svg" alt="Nutritional Therapy Association" onclick="startNewChat()">
             <h2>What can I help you find?</h2>
             <p class="welcome-tagline">I'm trained on NTA's official curriculum — the NTP and PHWC programs, scope of practice documents, and clinical tools. Ask me anything and I'll answer with citations from the source material.</p>
+            <p class="welcome-doc-link"><a href="https://github.com/grysngrhm-tech/nta-bot" target="_blank" rel="noopener">Learn how NTA Bot works</a></p>
           </div>
 
           <div class="welcome-section">
