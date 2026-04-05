@@ -1681,6 +1681,40 @@
       catch { return {}; }
     }
 
+    // Device info (computed once, cached for session)
+    function getDeviceInfo() {
+      const cached = sessionStorage.getItem('nta_device');
+      if (cached) { try { return JSON.parse(cached); } catch {} }
+
+      const ua = navigator.userAgent;
+      let browser = 'Unknown', os = 'Unknown', deviceType = 'Desktop';
+
+      // Browser detection
+      if (ua.includes('Edg/')) browser = 'Edge';
+      else if (ua.includes('Chrome/') && !ua.includes('Edg/')) browser = 'Chrome';
+      else if (ua.includes('Safari/') && !ua.includes('Chrome/')) browser = 'Safari';
+      else if (ua.includes('Firefox/')) browser = 'Firefox';
+
+      // OS detection
+      if (ua.includes('Windows')) os = 'Windows';
+      else if (ua.includes('Mac OS X') || ua.includes('Macintosh')) os = 'macOS';
+      else if (ua.includes('iPhone') || ua.includes('iPad')) os = 'iOS';
+      else if (ua.includes('Android')) os = 'Android';
+      else if (ua.includes('Linux')) os = 'Linux';
+      else if (ua.includes('CrOS')) os = 'ChromeOS';
+
+      // Device type
+      if (ua.includes('iPhone') || (ua.includes('Android') && ua.includes('Mobile'))) deviceType = 'Mobile';
+      else if (ua.includes('iPad') || (ua.includes('Android') && !ua.includes('Mobile'))) deviceType = 'Tablet';
+      else if (navigator.maxTouchPoints > 0 && screen.width < 1024) deviceType = 'Mobile';
+
+      const resolution = screen.width + 'x' + screen.height;
+
+      const info = { device_type: deviceType, browser, os, screen_resolution: resolution };
+      sessionStorage.setItem('nta_device', JSON.stringify(info));
+      return info;
+    }
+
     // Derive source types from source_topics array
     function deriveSourceTypes(sourceTopics) {
       if (!sourceTopics || sourceTopics.length === 0) return ['Web'];
@@ -1727,6 +1761,7 @@
       const answerSummary = (responseData.answer || '').substring(0, 300);
       const geo = getGeoData();
       const sourceTypes = deriveSourceTypes(sourceTopics);
+      const device = getDeviceInfo();
 
       // Fallback label from first source topic
       const fallbackLabel = sourceTopics.length > 0 ? sourceTopics[0].replace('Podcast > ', '') : 'General';
@@ -1744,6 +1779,10 @@
         session_id: getSessionId(),
         city: geo.city || null,
         country: geo.country || null,
+        device_type: device.device_type,
+        browser: device.browser,
+        os: device.os,
+        screen_resolution: device.screen_resolution,
         latency_ms: elapsedMs || null
       };
 
