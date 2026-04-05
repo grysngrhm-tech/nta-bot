@@ -1681,8 +1681,20 @@
       catch { return {}; }
     }
 
-    // Topic label via n8n webhook (async, non-blocking, 10s timeout)
-    async function generateTopicLabel(question) {
+    // Derive source types from source_topics array
+    function deriveSourceTypes(sourceTopics) {
+      if (!sourceTopics || sourceTopics.length === 0) return ['Web'];
+      const types = new Set();
+      for (const t of sourceTopics) {
+        if (t && t.startsWith('Podcast > ')) types.add('Podcast');
+        else types.add('Web');
+      }
+      return [...types];
+    }
+
+    // Topic classifier via n8n webhook (async, non-blocking, 10s timeout)
+    // Returns { topic_category, topic_label } or null
+    async function classifyTopic(question) {
       try {
         const controller = new AbortController();
         setTimeout(() => controller.abort(), 10000);
@@ -1694,7 +1706,10 @@
         });
         if (!resp.ok) return null;
         const data = await resp.json();
-        return data.topic_label || null;
+        return {
+          topic_category: data.topic_category || null,
+          topic_label: data.topic_label || null
+        };
       } catch (e) {
         return null;
       }
@@ -1711,8 +1726,9 @@
       const confidence = responseData.confidence?.level || 'Medium';
       const answerSummary = (responseData.answer || '').substring(0, 300);
       const geo = getGeoData();
+      const sourceTypes = deriveSourceTypes(sourceTopics);
 
-      // Log immediately with source_topics as fallback label
+      // Fallback label from first source topic
       const fallbackLabel = sourceTopics.length > 0 ? sourceTopics[0].replace('Podcast > ', '') : 'General';
 
       const logEntry = {
@@ -1723,31 +1739,36 @@
         source_documents: sourceDocuments,
         source_count: sources.length,
         topic_label: fallbackLabel,
+        topic_category: null,
+        source_types: sourceTypes,
         session_id: getSessionId(),
         city: geo.city || null,
         country: geo.country || null,
         latency_ms: elapsedMs || null
       };
 
-      // Log right away (topic label will be the fallback)
+      // Log right away with fallback label
       logToSupabase(logEntry);
 
-      // Try to get a better label from GPT-4o-mini (updates the row if successful)
-      generateTopicLabel(question).then(label => {
-        if (label && label !== fallbackLabel) {
-          // Update the log entry with the better label (fire-and-forget)
-          fetch(`${SUPABASE_URL}/rest/v1/nta_query_log?question=eq.${encodeURIComponent(question)}&session_id=eq.${encodeURIComponent(getSessionId())}&order=created_at.desc&limit=1`, {
-            method: 'PATCH',
-            headers: {
-              'apikey': SUPABASE_ANON_KEY,
-              'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-              'Content-Type': 'application/json',
-              'Prefer': 'return=minimal'
-            },
-            body: JSON.stringify({ topic_label: label }),
-            keepalive: true
-          }).catch(() => {});
-        }
+      // Async: get proper category + label from GPT-4o-mini, then PATCH
+      classifyTopic(question).then(result => {
+        if (!result) return;
+        const updates = {};
+        if (result.topic_label) updates.topic_label = result.topic_label;
+        if (result.topic_category) updates.topic_category = result.topic_category;
+        if (Object.keys(updates).length === 0) return;
+
+        fetch(`${SUPABASE_URL}/rest/v1/nta_query_log?question=eq.${encodeURIComponent(question)}&session_id=eq.${encodeURIComponent(getSessionId())}&order=created_at.desc&limit=1`, {
+          method: 'PATCH',
+          headers: {
+            'apikey': SUPABASE_ANON_KEY,
+            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+            'Content-Type': 'application/json',
+            'Prefer': 'return=minimal'
+          },
+          body: JSON.stringify(updates),
+          keepalive: true
+        }).catch(() => {});
       });
     }
 

@@ -31,7 +31,6 @@
       --confidence-low: #dc2626;
       --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
       --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1);
-      --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1);
       --radius-sm: 0.375rem;
       --radius-md: 0.5rem;
       --radius-lg: 0.75rem;
@@ -40,6 +39,7 @@
       --transition: 200ms ease;
       --gap-color: #e65100;
       --gap-bg: #fff3e0;
+      --row-border: #f0f0eb;
     }
 
     body {
@@ -77,12 +77,6 @@
       width: auto;
     }
 
-    .header-title {
-      font-size: 1.125rem;
-      font-weight: 700;
-      color: var(--text-primary);
-    }
-
     .header-divider {
       width: 1px;
       height: 24px;
@@ -116,7 +110,7 @@
       height: 16px;
     }
 
-    /* ===== MAIN CONTENT ===== */
+    /* ===== MAIN ===== */
     .main {
       max-width: 1080px;
       margin: 0 auto;
@@ -144,33 +138,113 @@
       margin-top: 0.125rem;
     }
 
-    /* ===== STATS ROW ===== */
+    /* ===== FILTER BAR ===== */
+    .active-filter-bar {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 1.25rem;
+      padding: 0.625rem 1rem;
+      background: var(--accent-subtle);
+      border: 1px solid var(--accent);
+      border-radius: var(--radius-lg);
+    }
+
+    .active-filter-bar .filter-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .active-filter-bar .filter-value {
+      font-size: 0.8125rem;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .active-filter-bar .filter-clear {
+      margin-left: auto;
+      background: none;
+      border: none;
+      color: var(--accent);
+      font-size: 0.8125rem;
+      font-weight: 700;
+      cursor: pointer;
+      padding: 0.125rem 0.375rem;
+      border-radius: var(--radius-sm);
+      transition: background var(--transition);
+    }
+
+    .active-filter-bar .filter-clear:hover {
+      background: rgba(74, 124, 89, 0.15);
+    }
+
+    /* ===== STATS ===== */
     .stats-row {
       display: flex;
-      gap: 1rem;
+      gap: 0.75rem;
       flex-wrap: wrap;
     }
 
     .stat-card {
       flex: 1;
-      min-width: 140px;
+      min-width: 120px;
       background: var(--bg-secondary);
       border: 1px solid var(--border);
       border-radius: var(--radius-lg);
-      padding: 1.25rem 1rem;
+      padding: 1rem 0.75rem;
       box-shadow: var(--shadow-sm);
       text-align: center;
+      transition: border-color var(--transition), box-shadow var(--transition);
+    }
+
+    .stat-card.clickable {
+      cursor: pointer;
+    }
+
+    .stat-card.clickable:hover {
+      box-shadow: var(--shadow-md);
+    }
+
+    .stat-card.active {
+      box-shadow: 0 0 0 2px var(--accent);
+    }
+
+    .stat-card.conf-high {
+      border-left: 4px solid var(--confidence-high);
+    }
+
+    .stat-card.conf-high .stat-value {
+      color: var(--confidence-high);
+    }
+
+    .stat-card.conf-medium {
+      border-left: 4px solid var(--confidence-medium);
+    }
+
+    .stat-card.conf-medium .stat-value {
+      color: var(--confidence-medium);
+    }
+
+    .stat-card.conf-low {
+      border-left: 4px solid var(--confidence-low);
+    }
+
+    .stat-card.conf-low .stat-value {
+      color: var(--confidence-low);
     }
 
     .stat-value {
-      font-size: 2rem;
+      font-size: 1.75rem;
       font-weight: 700;
       color: var(--accent);
       line-height: 1.1;
     }
 
     .stat-label {
-      font-size: 0.75rem;
+      font-size: 0.6875rem;
       font-weight: 600;
       color: var(--text-muted);
       text-transform: uppercase;
@@ -178,17 +252,51 @@
       margin-top: 0.375rem;
     }
 
+    .source-pills {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin-top: 0.75rem;
+    }
+
+    .source-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.375rem;
+      padding: 0.3rem 0.75rem;
+      border-radius: var(--radius-pill);
+      font-size: 0.75rem;
+      font-weight: 600;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      cursor: pointer;
+      transition: border-color var(--transition), box-shadow var(--transition);
+    }
+
+    .source-pill:hover {
+      border-color: var(--accent);
+    }
+
+    .source-pill.active {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 1px var(--accent);
+    }
+
+    .source-pill .sp-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+
+    .source-pill .sp-dot.web { background: #2563eb; }
+    .source-pill .sp-dot.podcast { background: #d97706; }
+    .source-pill .sp-dot.both { background: #7c3aed; }
+
     /* ===== CONTENT GAPS ===== */
     .gap-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
       gap: 1rem;
-    }
-
-    @media (max-width: 640px) {
-      .gap-grid {
-        grid-template-columns: 1fr;
-      }
     }
 
     .gap-card {
@@ -205,6 +313,12 @@
       font-weight: 700;
       color: var(--text-primary);
       margin-bottom: 0.25rem;
+      cursor: pointer;
+      transition: color var(--transition);
+    }
+
+    .gap-card-topic:hover {
+      color: var(--accent);
     }
 
     .gap-card-count {
@@ -223,7 +337,7 @@
       color: var(--text-secondary);
       line-height: 1.5;
       padding: 0.25rem 0;
-      border-top: 1px solid #f0f0eb;
+      border-top: 1px solid var(--row-border);
     }
 
     .gap-card-questions li:first-child {
@@ -258,8 +372,9 @@
       grid-template-columns: 1.5fr 1fr 0.75fr 0.75fr;
       padding: 0.75rem 1.25rem;
       align-items: center;
-      border-bottom: 1px solid #f0f0eb;
+      border-bottom: 1px solid var(--row-border);
       font-size: 0.875rem;
+      cursor: pointer;
       transition: background var(--transition);
     }
 
@@ -282,18 +397,18 @@
       gap: 0.5rem;
     }
 
-    .demand-bar {
-      height: 8px;
-      border-radius: 4px;
-      background: var(--accent);
-      transition: width 0.3s ease;
-    }
-
     .demand-bar-track {
       flex: 1;
       height: 8px;
       border-radius: 4px;
       background: #e8e8e2;
+    }
+
+    .demand-bar {
+      height: 8px;
+      border-radius: 4px;
+      background: var(--accent);
+      transition: width 0.3s ease;
     }
 
     .demand-count {
@@ -317,20 +432,9 @@
       white-space: nowrap;
     }
 
-    .gap-badge.high {
-      background: #fef2f2;
-      color: #dc2626;
-    }
-
-    .gap-badge.medium {
-      background: var(--gap-bg);
-      color: var(--gap-color);
-    }
-
-    .gap-badge.covered {
-      background: #f0fdf4;
-      color: var(--confidence-high);
-    }
+    .gap-badge.high { background: #fef2f2; color: #dc2626; }
+    .gap-badge.medium { background: var(--gap-bg); color: var(--gap-color); }
+    .gap-badge.covered { background: #f0fdf4; color: var(--confidence-high); }
 
     /* ===== TRENDING ===== */
     .trending-pills {
@@ -351,6 +455,12 @@
       border: 1px solid var(--border);
       color: var(--text-primary);
       box-shadow: var(--shadow-sm);
+      cursor: pointer;
+      transition: border-color var(--transition), box-shadow var(--transition);
+    }
+
+    .trending-pill:hover {
+      border-color: var(--accent);
     }
 
     .trending-pill .count {
@@ -371,30 +481,11 @@
       letter-spacing: 0.04em;
     }
 
-    .badge-new {
-      background: #dbeafe;
-      color: #1d4ed8;
-    }
+    .badge-new { background: #dbeafe; color: #1d4ed8; }
+    .badge-trending { background: #f0fdf4; color: var(--confidence-high); }
 
-    .badge-trending {
-      background: #f0fdf4;
-      color: var(--confidence-high);
-    }
-
-    /* ===== FEED ===== */
-    .feed-header-row {
-      display: flex;
-      align-items: baseline;
-      gap: 0.5rem;
-    }
-
-    .feed-total {
-      font-size: 0.8125rem;
-      color: var(--text-muted);
-      font-weight: 500;
-    }
-
-    .feed-list {
+    /* ===== SOURCE USAGE ===== */
+    .source-list {
       background: var(--bg-secondary);
       border: 1px solid var(--border);
       border-radius: var(--radius-lg);
@@ -402,81 +493,363 @@
       box-shadow: var(--shadow-sm);
     }
 
-    .feed-item {
+    .source-row {
+      display: grid;
+      grid-template-columns: 1fr 120px 50px 60px;
+      align-items: center;
+      padding: 0.625rem 1.25rem;
+      border-bottom: 1px solid var(--row-border);
+      font-size: 0.8125rem;
+      cursor: pointer;
+      transition: background var(--transition);
+      gap: 0.75rem;
+    }
+
+    .source-row:last-child {
+      border-bottom: none;
+    }
+
+    .source-row:hover {
+      background: var(--bg-primary);
+    }
+
+    .source-row-name {
+      font-weight: 600;
+      color: var(--text-primary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .source-bar-track {
+      height: 6px;
+      border-radius: 3px;
+      background: #e8e8e2;
+    }
+
+    .source-bar {
+      height: 6px;
+      border-radius: 3px;
+      background: var(--accent);
+      transition: width 0.3s ease;
+    }
+
+    .source-row-count {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-align: right;
+    }
+
+    .source-type-badge {
+      font-size: 0.625rem;
+      font-weight: 700;
+      padding: 0.15rem 0.4rem;
+      border-radius: var(--radius-sm);
+      text-transform: uppercase;
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    .source-type-badge.web { background: #dbeafe; color: #1d4ed8; }
+    .source-type-badge.podcast { background: #fef3c7; color: #92400e; }
+
+    .never-cited-note {
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+      padding: 0.75rem 1.25rem;
+      border-top: 1px solid var(--row-border);
+    }
+
+    /* ===== SESSION REPLAY ===== */
+    .session-list {
       display: flex;
-      align-items: flex-start;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .session-card {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .session-card-header {
+      display: flex;
+      align-items: center;
       gap: 0.75rem;
       padding: 0.875rem 1.25rem;
-      border-bottom: 1px solid #f0f0eb;
       cursor: pointer;
       transition: background var(--transition);
     }
 
-    .feed-item:last-child {
-      border-bottom: none;
-    }
-
-    .feed-item:hover {
+    .session-card-header:hover {
       background: var(--bg-primary);
     }
 
-    .feed-topic-pill {
-      font-size: 0.625rem;
+    .session-qcount {
+      font-size: 0.75rem;
       font-weight: 700;
-      color: #fff;
+      color: var(--bg-secondary);
+      background: var(--accent);
       padding: 0.2rem 0.5rem;
       border-radius: var(--radius-sm);
       white-space: nowrap;
-      flex-shrink: 0;
-      margin-top: 0.2rem;
-      letter-spacing: 0.02em;
-      text-transform: uppercase;
     }
 
-    .feed-center {
+    .session-meta {
       flex: 1;
       min-width: 0;
     }
 
-    .feed-question {
-      font-size: 0.875rem;
-      font-weight: 500;
+    .session-breadcrumb {
+      font-size: 0.8125rem;
+      font-weight: 600;
       color: var(--text-primary);
-      line-height: 1.45;
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
+      white-space: nowrap;
       overflow: hidden;
+      text-overflow: ellipsis;
     }
 
-    .feed-time {
+    .session-time {
       font-size: 0.75rem;
       color: var(--text-muted);
       margin-top: 0.125rem;
     }
 
-    .feed-right {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-end;
-      gap: 0.25rem;
+    .session-filter-btn {
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--accent);
+      font-size: 0.6875rem;
+      font-weight: 700;
+      padding: 0.25rem 0.5rem;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background var(--transition), border-color var(--transition);
+    }
+
+    .session-filter-btn:hover {
+      background: var(--accent-subtle);
+      border-color: var(--accent);
+    }
+
+    .session-chevron {
+      width: 16px;
+      height: 16px;
+      color: var(--text-muted);
+      transition: transform var(--transition);
       flex-shrink: 0;
     }
 
-    .feed-location {
+    .session-card.expanded .session-chevron {
+      transform: rotate(180deg);
+    }
+
+    .session-timeline {
+      display: none;
+      border-top: 1px solid var(--row-border);
+    }
+
+    .session-card.expanded .session-timeline {
+      display: block;
+    }
+
+    .timeline-row {
+      display: grid;
+      grid-template-columns: 60px auto 1fr;
+      gap: 0.75rem;
+      padding: 0.5rem 1.25rem;
+      border-bottom: 1px solid var(--row-border);
+      font-size: 0.8125rem;
+      align-items: start;
+    }
+
+    .timeline-row:last-child {
+      border-bottom: none;
+    }
+
+    .timeline-offset {
       font-size: 0.6875rem;
+      color: var(--text-muted);
+      font-weight: 600;
+      padding-top: 0.125rem;
+    }
+
+    .timeline-cat-pill {
+      font-size: 0.625rem;
+      font-weight: 700;
+      color: #fff;
+      padding: 0.15rem 0.4rem;
+      border-radius: var(--radius-sm);
+      white-space: nowrap;
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+    }
+
+    .timeline-question {
+      color: var(--text-secondary);
+      line-height: 1.45;
+    }
+
+    /* ===== DATA TABLE ===== */
+    .table-controls {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    .table-filter-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.375rem;
+      padding: 0.3rem 0.625rem;
+      border-radius: var(--radius-pill);
+      font-size: 0.75rem;
+      font-weight: 600;
+      background: var(--accent-subtle);
+      color: var(--accent);
+      border: 1px solid var(--accent);
+    }
+
+    .table-filter-pill button {
+      background: none;
+      border: none;
+      color: var(--accent);
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 0.875rem;
+      line-height: 1;
+      padding: 0;
+    }
+
+    .table-search {
+      flex: 1;
+      min-width: 180px;
+      max-width: 320px;
+      padding: 0.4rem 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      font-family: inherit;
+      font-size: 0.8125rem;
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      outline: none;
+      transition: border-color var(--transition);
+    }
+
+    .table-search:focus {
+      border-color: var(--accent);
+    }
+
+    .table-search::placeholder {
       color: var(--text-muted);
     }
 
-    .feed-meta {
+    .table-row-count {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      font-weight: 500;
+      margin-left: auto;
+      white-space: nowrap;
+    }
+
+    .data-table {
+      width: 100%;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .dt-header {
+      display: grid;
+      grid-template-columns: 100px 130px 1fr 80px 60px 100px;
+      padding: 0.625rem 1rem;
+      background: var(--bg-primary);
+      border-bottom: 1px solid var(--border);
+      font-size: 0.6875rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .dt-header-cell {
+      cursor: pointer;
+      user-select: none;
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      transition: color var(--transition);
+    }
+
+    .dt-header-cell:hover {
+      color: var(--text-primary);
+    }
+
+    .dt-header-cell.sorted {
+      color: var(--accent);
+    }
+
+    .sort-arrow {
+      font-size: 0.5rem;
+    }
+
+    .dt-row {
+      display: grid;
+      grid-template-columns: 100px 130px 1fr 80px 60px 100px;
+      padding: 0.625rem 1rem;
+      align-items: center;
+      border-bottom: 1px solid var(--row-border);
+      font-size: 0.8125rem;
+      cursor: pointer;
+      transition: background var(--transition);
+    }
+
+    .dt-row:hover {
+      background: var(--bg-primary);
+    }
+
+    .dt-row-time {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .dt-topic-pill {
+      font-size: 0.625rem;
+      font-weight: 700;
+      color: #fff;
+      padding: 0.15rem 0.4rem;
+      border-radius: var(--radius-sm);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 120px;
+      display: inline-block;
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+    }
+
+    .dt-question {
+      font-weight: 500;
+      color: var(--text-primary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .dt-confidence {
       display: flex;
       align-items: center;
       gap: 0.375rem;
-    }
-
-    .feed-sources {
-      font-size: 0.6875rem;
-      color: var(--text-muted);
+      font-size: 0.75rem;
     }
 
     .confidence-dot {
@@ -490,17 +863,31 @@
     .confidence-dot.medium { background: var(--confidence-medium); }
     .confidence-dot.low { background: var(--confidence-low); }
 
-    /* ===== FEED EXPANDED ===== */
-    .feed-expanded {
+    .dt-src {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-align: center;
+    }
+
+    .dt-location {
+      font-size: 0.6875rem;
+      color: var(--text-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Row expansion */
+    .dt-expanded {
       display: none;
-      padding: 0.75rem 1.25rem 0.875rem;
-      padding-left: calc(1.25rem + 0.75rem + 50px);
-      border-bottom: 1px solid #f0f0eb;
+      padding: 0.75rem 1rem 0.875rem;
+      padding-left: calc(1rem + 100px);
+      border-bottom: 1px solid var(--row-border);
       background: #fafaf7;
       animation: expandIn 0.2s ease;
     }
 
-    .feed-item.expanded + .feed-expanded {
+    .dt-row.expanded + .dt-expanded {
       display: block;
     }
 
@@ -509,47 +896,74 @@
       to { opacity: 1; transform: translateY(0); }
     }
 
-    .feed-answer-label {
+    .dt-exp-label {
       font-size: 0.6875rem;
       font-weight: 700;
       color: var(--text-muted);
       text-transform: uppercase;
       letter-spacing: 0.05em;
-      margin-bottom: 0.375rem;
+      margin-bottom: 0.25rem;
+      margin-top: 0.5rem;
     }
 
-    .feed-answer-text {
+    .dt-exp-label:first-child {
+      margin-top: 0;
+    }
+
+    .dt-exp-text {
       font-size: 0.8125rem;
       color: var(--text-secondary);
       line-height: 1.55;
-      margin-bottom: 0.5rem;
     }
 
-    .feed-sources-list {
+    .dt-exp-tags {
       display: flex;
       flex-wrap: wrap;
       gap: 0.375rem;
+      margin-top: 0.25rem;
     }
 
-    .feed-source-tag {
+    .dt-exp-tag {
       font-size: 0.6875rem;
       font-weight: 500;
       padding: 0.125rem 0.5rem;
       border-radius: var(--radius-sm);
       background: var(--accent-subtle);
       color: var(--accent);
+      cursor: pointer;
+      transition: background var(--transition);
     }
 
-    /* ===== EMPTY STATE ===== */
+    .dt-exp-tag:hover {
+      background: rgba(74, 124, 89, 0.2);
+    }
+
+    .dt-exp-pill {
+      font-size: 0.6875rem;
+      font-weight: 600;
+      padding: 0.125rem 0.5rem;
+      border-radius: var(--radius-sm);
+    }
+
+    .dt-exp-pill.web { background: #dbeafe; color: #1d4ed8; }
+    .dt-exp-pill.podcast { background: #fef3c7; color: #92400e; }
+
+    .dt-exp-meta {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      margin-top: 0.5rem;
+    }
+
+    .dt-exp-latency {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    /* ===== EMPTY / LOADING / MUTED ===== */
     .empty-state {
       text-align: center;
       padding: 4rem 2rem;
-    }
-
-    .empty-state-icon {
-      font-size: 3rem;
-      margin-bottom: 1rem;
-      opacity: 0.4;
     }
 
     .empty-state-title {
@@ -578,7 +992,6 @@
       border-radius: var(--radius-lg);
     }
 
-    /* ===== LOADING ===== */
     .loading-spinner {
       display: flex;
       align-items: center;
@@ -622,11 +1035,15 @@
       }
 
       .stat-card {
-        min-width: 100px;
+        min-width: 90px;
       }
 
       .stat-value {
-        font-size: 1.5rem;
+        font-size: 1.375rem;
+      }
+
+      .gap-grid {
+        grid-template-columns: 1fr;
       }
 
       .gap-table-header,
@@ -636,12 +1053,28 @@
         font-size: 0.8125rem;
       }
 
-      .feed-right {
+      .dt-header,
+      .dt-row {
+        grid-template-columns: 80px 100px 1fr 70px 50px;
+      }
+
+      .dt-header .dt-header-cell:nth-child(6),
+      .dt-row .dt-location {
         display: none;
       }
 
-      .feed-expanded {
-        padding-left: 1.25rem;
+      .dt-expanded {
+        padding-left: 1rem;
+      }
+
+      .source-row {
+        grid-template-columns: 1fr 80px 40px 50px;
+        padding: 0.5rem 0.75rem;
+      }
+
+      .timeline-row {
+        grid-template-columns: 50px auto 1fr;
+        padding: 0.5rem 0.75rem;
       }
     }
 
@@ -658,7 +1091,9 @@
   <!-- HEADER -->
   <header class="header">
     <div class="header-left">
-      <img src="assets/icons/nta-logo.svg" alt="NTA" class="header-logo">
+      <a href="index.html">
+        <img src="assets/icons/nta-logo.svg" alt="NTA" class="header-logo">
+      </a>
       <div class="header-divider"></div>
       <span class="header-subtitle">Analytics Dashboard</span>
     </div>
@@ -681,6 +1116,37 @@
     const SUPABASE_URL = 'https://wdouifomlipmlsksczsv.supabase.co';
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indkb3VpZm9tbGlwbWxza3NjenN2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcyMDQ3NTEsImV4cCI6MjA4Mjc4MDc1MX0.lVu6OnArZ_MFXFrx0ljn2GXfFtAM_Ru8xcTUXZbwqn8';
 
+    const CATEGORY_KEYWORDS = {
+      'Digestion & Gut Health': ['digestion', 'gut', 'microbiome', 'digestive'],
+      'Blood Sugar & Metabolism': ['blood sugar', 'metabolism', 'insulin', 'glucose'],
+      'Sleep & Recovery': ['sleep', 'recovery', 'circadian'],
+      'Stress & Adrenal Health': ['stress', 'adrenal', 'cortisol', 'hpa'],
+      'Nutrient-Dense Diet & Food Quality': ['nutrient', 'diet', 'food quality', 'sourcing', 'traditional'],
+      'Supplements & Nutrients': ['supplement', 'vitamin', 'mineral', 'nutrient'],
+      'Hormones & Endocrine': ['hormone', 'endocrine', 'thyroid', 'estrogen'],
+      'Mental Health & Brain': ['mental', 'brain', 'depression', 'anxiety', 'cognitive'],
+      'Fertility & Reproductive Health': ['fertility', 'reproductive', 'pregnancy', 'pcos'],
+      'NTP Program & Clinical Tools': ['ntp', 'naca', 'naq', 'nutri-q', 'clinical', 'practitioner'],
+      'PHWC Program & Coaching': ['phwc', 'coaching', 'behavior change', 'wellness coach'],
+      'Scope of Practice & Credentials': ['scope', 'credential', 'fntp', 'fca', 'board exam'],
+      'NTA Philosophy & Mission': ['philosophy', 'mission', 'bio-individuality', 'innate intelligence'],
+      'General Wellness': ['wellness', 'health', 'lifestyle']
+    };
+
+    // ===== STATE =====
+    let allLogs = [];
+    let knowledgeTopics = {};
+    let knowledgeDocNames = new Set();
+    let filterState = { type: null, value: null, label: null };
+    let searchQuery = '';
+    let sortField = 'created_at';
+    let sortDir = 'desc';
+    let tableOffset = 0;
+    const TABLE_PAGE = 50;
+    let tableLoading = false;
+    let tableDone = false;
+    let tableObserver = null;
+
     // ===== HELPERS =====
     function relativeTime(dateStr) {
       const now = new Date();
@@ -701,9 +1167,9 @@
       return `hsl(${h}, 45%, 45%)`;
     }
 
-    function truncate(str, len) {
+    function truncate(str, max) {
       if (!str) return '';
-      return str.length > len ? str.slice(0, len) + '...' : str;
+      return str.length > max ? str.slice(0, max) + '...' : str;
     }
 
     function escapeHtml(str) {
@@ -719,6 +1185,14 @@
       if (l === 'high') return 'high';
       if (l === 'medium') return 'medium';
       return 'low';
+    }
+
+    function confidenceNumeric(level) {
+      if (!level) return 0;
+      const l = level.toLowerCase();
+      if (l === 'high') return 3;
+      if (l === 'medium') return 2;
+      return 1;
     }
 
     function mode(arr) {
@@ -737,46 +1211,132 @@
       return maxVal;
     }
 
-    // ===== SUPABASE FETCH =====
-    async function supaFetch(path, opts = {}) {
-      const url = `${SUPABASE_URL}/rest/v1/${path}`;
-      const headers = {
-        'apikey': SUPABASE_KEY,
-        'Authorization': `Bearer ${SUPABASE_KEY}`,
-        'Content-Type': 'application/json',
-        ...opts.headers
-      };
-      const res = await fetch(url, { headers, ...opts });
-      if (!res.ok) throw new Error(`Supabase ${res.status}: ${await res.text()}`);
-      return res;
+    function formatDuration(ms) {
+      if (ms < 60000) return Math.floor(ms / 1000) + 's';
+      return Math.floor(ms / 60000) + 'm ' + Math.floor((ms % 60000) / 1000) + 's';
     }
 
-    async function supaGet(path, opts = {}) {
-      const res = await supaFetch(path, opts);
+    // ===== FILTER / SORT / SEARCH =====
+    function getFilteredLogs() {
+      let logs = allLogs;
+      if (filterState.type) {
+        logs = logs.filter(r => {
+          switch (filterState.type) {
+            case 'topic_category': return r.topic_category === filterState.value;
+            case 'topic_label': return r.topic_label === filterState.value;
+            case 'confidence': return (r.confidence_level || '').toLowerCase() === filterState.value;
+            case 'source_document': return (r.source_documents || []).includes(filterState.value);
+            case 'source_type': {
+              const types = r.source_types || [];
+              if (filterState.value === 'both') return types.includes('Web') && types.includes('Podcast');
+              if (filterState.value === 'Web') return types.includes('Web') && !types.includes('Podcast');
+              if (filterState.value === 'Podcast') return types.includes('Podcast') && !types.includes('Web');
+              return true;
+            }
+            case 'session_id': return r.session_id === filterState.value;
+            default: return true;
+          }
+        });
+      }
+      if (searchQuery) {
+        const q = searchQuery.toLowerCase();
+        logs = logs.filter(r =>
+          (r.question || '').toLowerCase().includes(q) ||
+          (r.topic_label || '').toLowerCase().includes(q) ||
+          (r.topic_category || '').toLowerCase().includes(q) ||
+          (r.answer_summary || '').toLowerCase().includes(q)
+        );
+      }
+      return logs;
+    }
+
+    function getSortedLogs(logs) {
+      const sorted = [...logs];
+      sorted.sort((a, b) => {
+        let av, bv;
+        switch (sortField) {
+          case 'created_at':
+            av = new Date(a.created_at).getTime();
+            bv = new Date(b.created_at).getTime();
+            break;
+          case 'topic_category':
+            av = (a.topic_category || '').toLowerCase();
+            bv = (b.topic_category || '').toLowerCase();
+            return sortDir === 'asc' ? av.localeCompare(bv) : bv.localeCompare(av);
+          case 'question':
+            av = (a.question || '').toLowerCase();
+            bv = (b.question || '').toLowerCase();
+            return sortDir === 'asc' ? av.localeCompare(bv) : bv.localeCompare(av);
+          case 'confidence_level':
+            av = confidenceNumeric(a.confidence_level);
+            bv = confidenceNumeric(b.confidence_level);
+            break;
+          case 'source_count':
+            av = a.source_count || 0;
+            bv = b.source_count || 0;
+            break;
+          case 'city':
+            av = (a.city || '').toLowerCase();
+            bv = (b.city || '').toLowerCase();
+            return sortDir === 'asc' ? av.localeCompare(bv) : bv.localeCompare(av);
+          default:
+            av = new Date(a.created_at).getTime();
+            bv = new Date(b.created_at).getTime();
+        }
+        return sortDir === 'asc' ? av - bv : bv - av;
+      });
+      return sorted;
+    }
+
+    function applyFilter(type, value, label) {
+      filterState = { type, value, label };
+      renderDashboard();
+      // Scroll to table
+      const table = document.getElementById('data-table-section');
+      if (table) table.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function clearFilter() {
+      filterState = { type: null, value: null, label: null };
+      renderDashboard();
+    }
+
+    function setSort(field) {
+      if (sortField === field) {
+        sortDir = sortDir === 'desc' ? 'asc' : 'desc';
+      } else {
+        sortField = field;
+        sortDir = field === 'created_at' ? 'desc' : 'asc';
+      }
+      renderDashboard();
+    }
+
+    // ===== SUPABASE FETCH =====
+    async function supaGet(path) {
+      const url = `${SUPABASE_URL}/rest/v1/${path}`;
+      const res = await fetch(url, {
+        headers: {
+          'apikey': SUPABASE_KEY,
+          'Authorization': `Bearer ${SUPABASE_KEY}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      if (!res.ok) throw new Error(`Supabase ${res.status}: ${await res.text()}`);
       return res.json();
     }
-
-    // ===== STATE =====
-    let allLogs = [];
-    let knowledgeTopics = [];
-    let feedOffset = 0;
-    const FEED_PAGE = 50;
-    let feedLoading = false;
-    let feedDone = false;
-    let totalCount = 0;
 
     // ===== DATA LOADING =====
     async function loadData() {
       try {
-        // Fetch initial data in parallel
         const [logs, chunks] = await Promise.all([
           supaGet('nta_query_log?select=*&order=created_at.desc&limit=500'),
           supaGet('nta_knowledge_chunks?select=section_hierarchy&limit=5000')
         ]);
 
         allLogs = logs || [];
-        totalCount = allLogs.length;
-        knowledgeTopics = buildKnowledgeIndex(chunks || []);
+        const chunkData = chunks || [];
+        knowledgeTopics = buildKnowledgeIndex(chunkData);
+        knowledgeDocNames = buildKnowledgeDocNames(chunkData);
 
         document.getElementById('loading').remove();
 
@@ -788,7 +1348,7 @@
       } catch (err) {
         console.error('Failed to load data:', err);
         document.getElementById('loading').innerHTML =
-          `<div style="color:var(--confidence-low);font-size:0.875rem;">Failed to load data. Check console for details.</div>`;
+          '<div style="color:var(--confidence-low);font-size:0.875rem;">Failed to load data. Check console for details.</div>';
       }
     }
 
@@ -806,25 +1366,37 @@
       return index;
     }
 
-    function fuzzySupply(topicLabel) {
-      if (!topicLabel) return 0;
-      const words = topicLabel.toLowerCase().split(/\s+/).filter(w => w.length > 3);
-      let best = 0;
+    function buildKnowledgeDocNames(chunks) {
+      const names = new Set();
+      for (const c of chunks) {
+        const hier = c.section_hierarchy;
+        if (hier && Array.isArray(hier) && hier.length > 0) {
+          // Use first element as a doc-level grouping
+          names.add(hier[0]);
+        }
+      }
+      return names;
+    }
+
+    function fuzzySupplyForCategory(category) {
+      const keywords = CATEGORY_KEYWORDS[category];
+      if (!keywords) return 0;
+      let total = 0;
       for (const [key, count] of Object.entries(knowledgeTopics)) {
-        for (const word of words) {
-          if (key.includes(word)) {
-            best = Math.max(best, count);
+        for (const kw of keywords) {
+          if (key.includes(kw)) {
+            total += count;
+            break; // count each knowledge key once per category
           }
         }
       }
-      return best;
+      return total;
     }
 
     // ===== RENDER EMPTY STATE =====
     function renderEmptyState() {
       document.getElementById('main').innerHTML = `
         <div class="empty-state">
-          <div class="empty-state-icon">&#128202;</div>
           <div class="empty-state-title">No questions yet</div>
           <div class="empty-state-text">
             Once users start chatting with NTA Bot, their questions and topic trends will appear here.
@@ -837,23 +1409,71 @@
       const main = document.getElementById('main');
       main.innerHTML = '';
 
-      renderStats(main);
-      renderContentGaps(main);
-      renderTopicGapAnalysis(main);
-      renderTrending(main);
-      renderFeed(main);
+      // Disconnect old observer
+      if (tableObserver) {
+        tableObserver.disconnect();
+        tableObserver = null;
+      }
+
+      const filtered = getFilteredLogs();
+
+      // Active filter bar (shown at top when a filter is active)
+      if (filterState.type) {
+        renderActiveFilter(main);
+      }
+
+      renderStats(main, filtered);
+      renderContentGaps(main, filtered);
+      renderTopicGapAnalysis(main, filtered);
+      renderTrending(main, filtered);
+      renderSourceUsage(main, filtered);
+      renderSessionReplay(main, filtered);
+      renderDataTable(main, filtered);
+    }
+
+    // ===== ACTIVE FILTER BAR =====
+    function renderActiveFilter(container) {
+      const bar = document.createElement('div');
+      bar.className = 'active-filter-bar';
+      const typeLabels = {
+        'topic_category': 'Category',
+        'topic_label': 'Topic',
+        'confidence': 'Confidence',
+        'source_document': 'Source',
+        'source_type': 'Source Type',
+        'session_id': 'Session'
+      };
+      bar.innerHTML = `
+        <span class="filter-label">${escapeHtml(typeLabels[filterState.type] || filterState.type)}:</span>
+        <span class="filter-value">${escapeHtml(filterState.label || filterState.value)}</span>
+        <button class="filter-clear" onclick="clearFilter()">Clear</button>`;
+      container.appendChild(bar);
     }
 
     // ===== 1. STATS =====
-    function renderStats(container) {
-      const total = totalCount || allLogs.length;
-      const sessions = new Set(allLogs.map(r => r.session_id).filter(Boolean)).size;
+    function renderStats(container, filtered) {
+      const total = filtered.length;
+      const sessions = new Set(filtered.map(r => r.session_id).filter(Boolean)).size;
 
-      const todayStart = new Date();
-      todayStart.setHours(0, 0, 0, 0);
-      const today = allLogs.filter(r => new Date(r.created_at) >= todayStart).length;
+      const highCount = filtered.filter(r => (r.confidence_level || '').toLowerCase() === 'high').length;
+      const medCount = filtered.filter(r => (r.confidence_level || '').toLowerCase() === 'medium').length;
+      const lowCount = filtered.filter(r => (r.confidence_level || '').toLowerCase() === 'low' || !r.confidence_level).length;
 
-      const topCountry = mode(allLogs.map(r => r.country)) || '\u2014';
+      const latencies = filtered.map(r => r.latency_ms).filter(v => v != null && v > 0);
+      const avgLatency = latencies.length > 0 ? (latencies.reduce((a, b) => a + b, 0) / latencies.length / 1000).toFixed(1) : '--';
+
+      // Source type counts
+      let webOnly = 0, podcastOnly = 0, bothCount = 0;
+      for (const r of filtered) {
+        const types = r.source_types || [];
+        const hasWeb = types.includes('Web');
+        const hasPod = types.includes('Podcast');
+        if (hasWeb && hasPod) bothCount++;
+        else if (hasWeb) webOnly++;
+        else if (hasPod) podcastOnly++;
+      }
+
+      const isConfFilter = filterState.type === 'confidence';
 
       const section = document.createElement('div');
       section.className = 'section';
@@ -867,21 +1487,43 @@
             <div class="stat-value">${sessions.toLocaleString()}</div>
             <div class="stat-label">Unique Sessions</div>
           </div>
-          <div class="stat-card">
-            <div class="stat-value">${today}</div>
-            <div class="stat-label">Questions Today</div>
+          <div class="stat-card clickable conf-high${isConfFilter && filterState.value === 'high' ? ' active' : ''}" onclick="applyFilter('confidence','high','High Confidence')">
+            <div class="stat-value">${highCount}</div>
+            <div class="stat-label">High Confidence</div>
+          </div>
+          <div class="stat-card clickable conf-medium${isConfFilter && filterState.value === 'medium' ? ' active' : ''}" onclick="applyFilter('confidence','medium','Medium Confidence')">
+            <div class="stat-value">${medCount}</div>
+            <div class="stat-label">Medium Confidence</div>
+          </div>
+          <div class="stat-card clickable conf-low${isConfFilter && filterState.value === 'low' ? ' active' : ''}" onclick="applyFilter('confidence','low','Low Confidence')">
+            <div class="stat-value">${lowCount}</div>
+            <div class="stat-label">Low Confidence</div>
           </div>
           <div class="stat-card">
-            <div class="stat-value" style="font-size:${topCountry.length > 4 ? '1.25rem' : '2rem'}">${escapeHtml(topCountry)}</div>
-            <div class="stat-label">Top Country</div>
+            <div class="stat-value">${avgLatency}${avgLatency !== '--' ? 's' : ''}</div>
+            <div class="stat-label">Avg Latency</div>
+          </div>
+        </div>
+        <div class="source-pills">
+          <div class="source-pill${filterState.type === 'source_type' && filterState.value === 'Web' ? ' active' : ''}" onclick="applyFilter('source_type','Web','Web Sources')">
+            <span class="sp-dot web"></span>
+            Web: ${webOnly}
+          </div>
+          <div class="source-pill${filterState.type === 'source_type' && filterState.value === 'Podcast' ? ' active' : ''}" onclick="applyFilter('source_type','Podcast','Podcast Sources')">
+            <span class="sp-dot podcast"></span>
+            Podcast: ${podcastOnly}
+          </div>
+          <div class="source-pill${filterState.type === 'source_type' && filterState.value === 'both' ? ' active' : ''}" onclick="applyFilter('source_type','both','Web + Podcast Sources')">
+            <span class="sp-dot both"></span>
+            Both: ${bothCount}
           </div>
         </div>`;
       container.appendChild(section);
     }
 
     // ===== 2. CONTENT GAPS =====
-    function renderContentGaps(container) {
-      const gapLogs = allLogs.filter(r =>
+    function renderContentGaps(container, filtered) {
+      const gapLogs = filtered.filter(r =>
         (r.confidence_level && r.confidence_level.toLowerCase() === 'low') ||
         r.source_count === 0 ||
         r.source_count == null
@@ -893,34 +1535,35 @@
       let inner = `
         <div class="section-header">
           <div class="section-title">Content Gaps</div>
-          <div class="section-subtitle">Questions the bot couldn't fully answer \u2014 potential podcast topics</div>
+          <div class="section-subtitle">Questions the bot couldn't fully answer &mdash; potential podcast topics</div>
         </div>`;
 
       if (gapLogs.length === 0) {
-        inner += `<div class="muted-message">No content gaps detected yet. As users ask questions, gaps will appear here.</div>`;
+        inner += '<div class="muted-message">No content gaps detected yet.</div>';
       } else {
         const grouped = {};
         for (const r of gapLogs) {
-          const topic = r.topic_label || 'Uncategorized';
-          if (!grouped[topic]) grouped[topic] = [];
-          grouped[topic].push(r);
+          const cat = r.topic_category || 'Uncategorized';
+          if (!grouped[cat]) grouped[cat] = [];
+          grouped[cat].push(r);
         }
 
         const sorted = Object.entries(grouped).sort((a, b) => b[1].length - a[1].length);
 
-        inner += `<div class="gap-grid">`;
-        for (const [topic, items] of sorted) {
+        inner += '<div class="gap-grid">';
+        for (const [cat, items] of sorted) {
           const recent = items.slice(0, 3);
+          const escapedCat = escapeHtml(cat);
           inner += `
             <div class="gap-card">
-              <div class="gap-card-topic">${escapeHtml(topic)}</div>
+              <div class="gap-card-topic" onclick="applyFilter('topic_category', '${cat.replace(/'/g, "\\'")}', '${escapedCat}')">${escapedCat}</div>
               <div class="gap-card-count">${items.length} unanswered question${items.length !== 1 ? 's' : ''}</div>
               <ul class="gap-card-questions">
-                ${recent.map(r => `<li>${escapeHtml(truncate(r.question, 100))}</li>`).join('')}
+                ${recent.map(r => '<li>' + escapeHtml(truncate(r.question, 100)) + '</li>').join('')}
               </ul>
             </div>`;
         }
-        inner += `</div>`;
+        inner += '</div>';
       }
 
       section.innerHTML = inner;
@@ -928,20 +1571,20 @@
     }
 
     // ===== 3. TOPIC GAP ANALYSIS =====
-    function renderTopicGapAnalysis(container) {
+    function renderTopicGapAnalysis(container, filtered) {
       const demandMap = {};
-      for (const r of allLogs) {
-        const t = r.topic_label || 'Uncategorized';
-        demandMap[t] = (demandMap[t] || 0) + 1;
+      for (const r of filtered) {
+        const cat = r.topic_category || 'Uncategorized';
+        demandMap[cat] = (demandMap[cat] || 0) + 1;
       }
 
       const rows = [];
       const maxDemand = Math.max(...Object.values(demandMap), 1);
 
-      for (const [topic, demand] of Object.entries(demandMap)) {
-        const supply = fuzzySupply(topic);
+      for (const [category, demand] of Object.entries(demandMap)) {
+        const supply = fuzzySupplyForCategory(category);
         const gapScore = demand - (supply / 10);
-        rows.push({ topic, demand, supply, gapScore });
+        rows.push({ category, demand, supply, gapScore });
       }
 
       rows.sort((a, b) => b.gapScore - a.gapScore);
@@ -952,30 +1595,33 @@
       let inner = `
         <div class="section-header">
           <div class="section-title">Topic Demand vs Coverage</div>
+          <div class="section-subtitle">Question frequency compared to knowledge base content</div>
         </div>`;
 
       if (rows.length === 0) {
-        inner += `<div class="muted-message">No topic data available yet.</div>`;
+        inner += '<div class="muted-message">No topic data available yet.</div>';
       } else {
         inner += `
           <div class="gap-table">
             <div class="gap-table-header">
-              <div>Topic</div>
+              <div>Category</div>
               <div>Demand</div>
               <div>Supply</div>
               <div>Status</div>
             </div>`;
 
-        for (const r of rows.slice(0, 20)) {
+        for (const r of rows) {
           const barPct = Math.round((r.demand / maxDemand) * 100);
           let badgeClass, badgeLabel;
           if (r.gapScore > 5) { badgeClass = 'high'; badgeLabel = 'High Gap'; }
           else if (r.gapScore > 1) { badgeClass = 'medium'; badgeLabel = 'Low Coverage'; }
           else { badgeClass = 'covered'; badgeLabel = 'Covered'; }
 
+          const escapedCat = escapeHtml(r.category);
+
           inner += `
-            <div class="gap-table-row">
-              <div class="gap-table-topic">${escapeHtml(r.topic)}</div>
+            <div class="gap-table-row" onclick="applyFilter('topic_category', '${r.category.replace(/'/g, "\\'")}', '${escapedCat}')">
+              <div class="gap-table-topic">${escapedCat}</div>
               <div class="demand-bar-wrapper">
                 <div class="demand-bar-track">
                   <div class="demand-bar" style="width:${barPct}%"></div>
@@ -987,15 +1633,15 @@
             </div>`;
         }
 
-        inner += `</div>`;
+        inner += '</div>';
       }
 
       section.innerHTML = inner;
       container.appendChild(section);
     }
 
-    // ===== 4. TRENDING =====
-    function renderTrending(container) {
+    // ===== 4. TRENDING THIS WEEK =====
+    function renderTrending(container, filtered) {
       const now = new Date();
       const oneWeekAgo = new Date(now.getTime() - 7 * 86400000);
       const twoWeeksAgo = new Date(now.getTime() - 14 * 86400000);
@@ -1003,24 +1649,24 @@
       const thisWeek = {};
       const lastWeek = {};
 
-      for (const r of allLogs) {
-        const t = r.topic_label;
-        if (!t) continue;
+      for (const r of filtered) {
+        const cat = r.topic_category;
+        if (!cat) continue;
         const d = new Date(r.created_at);
         if (d >= oneWeekAgo) {
-          thisWeek[t] = (thisWeek[t] || 0) + 1;
+          thisWeek[cat] = (thisWeek[cat] || 0) + 1;
         } else if (d >= twoWeeksAgo && d < oneWeekAgo) {
-          lastWeek[t] = (lastWeek[t] || 0) + 1;
+          lastWeek[cat] = (lastWeek[cat] || 0) + 1;
         }
       }
 
       const pills = [];
-      for (const [topic, count] of Object.entries(thisWeek)) {
-        const prev = lastWeek[topic] || 0;
+      for (const [cat, count] of Object.entries(thisWeek)) {
+        const prev = lastWeek[cat] || 0;
         let badge = '';
         if (prev === 0) badge = 'new';
         else if (count > prev) badge = 'trending';
-        pills.push({ topic, count, badge });
+        pills.push({ cat, count, badge });
       }
 
       pills.sort((a, b) => b.count - a.count);
@@ -1031,129 +1677,378 @@
       let inner = `
         <div class="section-header">
           <div class="section-title">Trending This Week</div>
+          <div class="section-subtitle">Week-over-week topic comparison</div>
         </div>`;
 
       if (pills.length === 0) {
-        inner += `<div class="muted-message">No activity in the last 7 days.</div>`;
+        inner += '<div class="muted-message">No activity in the last 7 days.</div>';
       } else {
-        inner += `<div class="trending-pills">`;
+        inner += '<div class="trending-pills">';
         for (const p of pills) {
           let badgeHtml = '';
-          if (p.badge === 'new') badgeHtml = `<span class="badge badge-new">New</span>`;
-          else if (p.badge === 'trending') badgeHtml = `<span class="badge badge-trending">\u2191 Trending</span>`;
+          if (p.badge === 'new') badgeHtml = '<span class="badge badge-new">New</span>';
+          else if (p.badge === 'trending') badgeHtml = '<span class="badge badge-trending">&#8593; Trending</span>';
+
           inner += `
-            <div class="trending-pill">
-              <span style="color:${topicColor(p.topic)}">${escapeHtml(p.topic)}</span>
+            <div class="trending-pill" onclick="applyFilter('topic_category', '${p.cat.replace(/'/g, "\\'")}', '${escapeHtml(p.cat)}')">
+              <span style="color:${topicColor(p.cat)}">${escapeHtml(p.cat)}</span>
               <span class="count">${p.count}</span>
               ${badgeHtml}
             </div>`;
         }
-        inner += `</div>`;
+        inner += '</div>';
       }
 
       section.innerHTML = inner;
       container.appendChild(section);
     }
 
-    // ===== 5. FEED =====
-    function renderFeed(container) {
+    // ===== 5. SOURCE USAGE =====
+    function renderSourceUsage(container, filtered) {
+      // Flatten all source_documents
+      const docCounts = {};
+      for (const r of filtered) {
+        const docs = r.source_documents || [];
+        for (const doc of docs) {
+          docCounts[doc] = (docCounts[doc] || 0) + 1;
+        }
+      }
+
+      const ranked = Object.entries(docCounts)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 15);
+
+      const maxCount = ranked.length > 0 ? ranked[0][1] : 1;
+
+      // "Never cited" — knowledge base docs that never appear in any log
+      const allCitedDocs = new Set();
+      for (const r of allLogs) {
+        for (const doc of (r.source_documents || [])) {
+          allCitedDocs.add(doc);
+        }
+      }
+      const neverCited = [...knowledgeDocNames].filter(d => !allCitedDocs.has(d)).length;
+
       const section = document.createElement('div');
       section.className = 'section';
-      section.id = 'feed-section';
 
-      const totalLabel = totalCount || allLogs.length;
-
-      section.innerHTML = `
+      let inner = `
         <div class="section-header">
-          <div class="feed-header-row">
-            <div class="section-title">Recent Questions</div>
-            <div class="feed-total">(${totalLabel.toLocaleString()} total)</div>
-          </div>
-        </div>
-        <div class="feed-list" id="feed-list"></div>
-        <div class="sentinel" id="feed-sentinel"></div>`;
+          <div class="section-title">Source Usage</div>
+          <div class="section-subtitle">Most-cited documents across answers</div>
+        </div>`;
 
-      container.appendChild(section);
+      if (ranked.length === 0) {
+        inner += '<div class="muted-message">No source citations recorded yet.</div>';
+      } else {
+        inner += '<div class="source-list">';
+        for (const [docName, count] of ranked) {
+          const barPct = Math.round((count / maxCount) * 100);
+          const isPodcast = /^Ep\b|^EP\b/.test(docName);
+          const typeClass = isPodcast ? 'podcast' : 'web';
+          const typeLabel = isPodcast ? 'Podcast' : 'Web';
+          const escapedName = escapeHtml(docName);
+          const truncName = escapeHtml(truncate(docName, 40));
 
-      feedOffset = 0;
-      feedDone = false;
-      loadFeedPage();
-
-      const observer = new IntersectionObserver(entries => {
-        if (entries[0].isIntersecting && !feedLoading && !feedDone) {
-          loadFeedPage();
+          inner += `
+            <div class="source-row" onclick="applyFilter('source_document', '${docName.replace(/'/g, "\\'")}', '${truncName}')">
+              <div class="source-row-name" title="${escapedName}">${escapedName}</div>
+              <div class="source-bar-track">
+                <div class="source-bar" style="width:${barPct}%"></div>
+              </div>
+              <div class="source-row-count">${count}</div>
+              <div><span class="source-type-badge ${typeClass}">${typeLabel}</span></div>
+            </div>`;
         }
-      }, { rootMargin: '200px' });
-      observer.observe(document.getElementById('feed-sentinel'));
+
+        if (neverCited > 0) {
+          inner += `<div class="never-cited-note">${neverCited} knowledge base section${neverCited !== 1 ? 's' : ''} never cited in any answer</div>`;
+        }
+
+        inner += '</div>';
+      }
+
+      section.innerHTML = inner;
+      container.appendChild(section);
     }
 
-    function loadFeedPage() {
-      if (feedLoading || feedDone) return;
-      feedLoading = true;
+    // ===== 6. SESSION REPLAY =====
+    function renderSessionReplay(container, filtered) {
+      // Group by session_id
+      const sessionMap = {};
+      for (const r of filtered) {
+        const sid = r.session_id;
+        if (!sid) continue;
+        if (!sessionMap[sid]) sessionMap[sid] = [];
+        sessionMap[sid].push(r);
+      }
 
-      const page = allLogs.slice(feedOffset, feedOffset + FEED_PAGE);
+      // Only multi-question sessions, sorted by most recent first
+      const multiSessions = Object.entries(sessionMap)
+        .filter(([, items]) => items.length >= 2)
+        .map(([sid, items]) => {
+          // Sort items within session by time ascending
+          items.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+          return { sid, items, firstTime: new Date(items[0].created_at) };
+        })
+        .sort((a, b) => b.firstTime - a.firstTime)
+        .slice(0, 10);
+
+      const section = document.createElement('div');
+      section.className = 'section';
+
+      let inner = `
+        <div class="section-header">
+          <div class="section-title">Session Replay</div>
+          <div class="section-subtitle">Multi-question conversations showing topic progression</div>
+        </div>`;
+
+      if (multiSessions.length === 0) {
+        inner += '<div class="muted-message">No multi-question sessions found.</div>';
+      } else {
+        inner += '<div class="session-list">';
+
+        for (const sess of multiSessions) {
+          const categories = [];
+          const seen = new Set();
+          for (const r of sess.items) {
+            const cat = r.topic_category || 'General';
+            if (!seen.has(cat)) {
+              seen.add(cat);
+              categories.push(cat);
+            }
+          }
+          const breadcrumb = categories.map(c => escapeHtml(c)).join(' &#8594; ');
+          const cardId = 'sess-' + sess.sid.replace(/[^a-zA-Z0-9]/g, '').slice(0, 12);
+
+          inner += `
+            <div class="session-card" id="${cardId}">
+              <div class="session-card-header" onclick="document.getElementById('${cardId}').classList.toggle('expanded')">
+                <span class="session-qcount">${sess.items.length}Q</span>
+                <div class="session-meta">
+                  <div class="session-breadcrumb">${breadcrumb}</div>
+                  <div class="session-time">${relativeTime(sess.items[0].created_at)}</div>
+                </div>
+                <button class="session-filter-btn" onclick="event.stopPropagation(); applyFilter('session_id', '${sess.sid.replace(/'/g, "\\'")}', 'Session')">Filter</button>
+                <svg class="session-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+              </div>
+              <div class="session-timeline">`;
+
+          const firstTime = new Date(sess.items[0].created_at).getTime();
+          for (const r of sess.items) {
+            const offset = new Date(r.created_at).getTime() - firstTime;
+            const cat = r.topic_category || 'General';
+            inner += `
+                <div class="timeline-row">
+                  <div class="timeline-offset">+${formatDuration(offset)}</div>
+                  <span class="timeline-cat-pill" style="background:${topicColor(cat)}">${escapeHtml(truncate(cat, 16))}</span>
+                  <div class="timeline-question">${escapeHtml(truncate(r.question, 120))}</div>
+                </div>`;
+          }
+
+          inner += `
+              </div>
+            </div>`;
+        }
+
+        inner += '</div>';
+      }
+
+      section.innerHTML = inner;
+      container.appendChild(section);
+    }
+
+    // ===== 7. DATA TABLE =====
+    function renderDataTable(container, filtered) {
+      const sorted = getSortedLogs(filtered);
+
+      const section = document.createElement('div');
+      section.className = 'section';
+      section.id = 'data-table-section';
+
+      // Controls
+      let controlsHtml = '<div class="table-controls">';
+
+      if (filterState.type) {
+        const typeLabels = {
+          'topic_category': 'Category',
+          'topic_label': 'Topic',
+          'confidence': 'Confidence',
+          'source_document': 'Source',
+          'source_type': 'Source Type',
+          'session_id': 'Session'
+        };
+        controlsHtml += `
+          <div class="table-filter-pill">
+            ${escapeHtml(typeLabels[filterState.type] || filterState.type)}: ${escapeHtml(filterState.label || filterState.value)}
+            <button onclick="clearFilter()">&times;</button>
+          </div>`;
+      }
+
+      controlsHtml += `
+        <input type="text" class="table-search" placeholder="Search questions, topics, answers..."
+          value="${escapeHtml(searchQuery)}"
+          oninput="handleSearch(this.value)">
+        <span class="table-row-count">Showing <span id="dt-shown">0</span> of ${sorted.length}</span>
+      </div>`;
+
+      // Sort arrows helper
+      function sortIndicator(field) {
+        if (sortField !== field) return '';
+        return sortDir === 'asc' ? ' <span class="sort-arrow">&#9650;</span>' : ' <span class="sort-arrow">&#9660;</span>';
+      }
+
+      function sortedClass(field) {
+        return sortField === field ? ' sorted' : '';
+      }
+
+      controlsHtml += `
+        <div class="data-table">
+          <div class="dt-header">
+            <div class="dt-header-cell${sortedClass('created_at')}" onclick="setSort('created_at')">Time${sortIndicator('created_at')}</div>
+            <div class="dt-header-cell${sortedClass('topic_category')}" onclick="setSort('topic_category')">Topic${sortIndicator('topic_category')}</div>
+            <div class="dt-header-cell${sortedClass('question')}" onclick="setSort('question')">Question${sortIndicator('question')}</div>
+            <div class="dt-header-cell${sortedClass('confidence_level')}" onclick="setSort('confidence_level')">Confidence${sortIndicator('confidence_level')}</div>
+            <div class="dt-header-cell${sortedClass('source_count')}" onclick="setSort('source_count')">Src${sortIndicator('source_count')}</div>
+            <div class="dt-header-cell${sortedClass('city')}" onclick="setSort('city')">Location${sortIndicator('city')}</div>
+          </div>
+          <div id="dt-body"></div>
+        </div>
+        <div class="sentinel" id="dt-sentinel"></div>`;
+
+      section.innerHTML = controlsHtml;
+      container.appendChild(section);
+
+      // Store sorted data for pagination
+      window._dtData = sorted;
+      tableOffset = 0;
+      tableDone = false;
+      tableLoading = false;
+
+      loadTablePage();
+
+      // IntersectionObserver for infinite scroll
+      const sentinel = document.getElementById('dt-sentinel');
+      if (sentinel) {
+        tableObserver = new IntersectionObserver(entries => {
+          if (entries[0].isIntersecting && !tableLoading && !tableDone) {
+            loadTablePage();
+          }
+        }, { rootMargin: '200px' });
+        tableObserver.observe(sentinel);
+      }
+    }
+
+    function loadTablePage() {
+      if (tableLoading || tableDone) return;
+      tableLoading = true;
+
+      const data = window._dtData || [];
+      const page = data.slice(tableOffset, tableOffset + TABLE_PAGE);
 
       if (!page || page.length === 0) {
-        feedDone = true;
-        feedLoading = false;
+        tableDone = true;
+        tableLoading = false;
+        updateShownCount();
         return;
       }
 
-      const list = document.getElementById('feed-list');
+      const body = document.getElementById('dt-body');
+      if (!body) { tableLoading = false; return; }
+
       for (const r of page) {
-        appendFeedItem(list, r);
+        appendTableRow(body, r);
       }
 
-      feedOffset += page.length;
-      if (page.length < FEED_PAGE) feedDone = true;
-      feedLoading = false;
+      tableOffset += page.length;
+      if (page.length < TABLE_PAGE) tableDone = true;
+      tableLoading = false;
+      updateShownCount();
     }
 
-    function appendFeedItem(list, r) {
-      const topic = r.topic_label || 'General';
+    function updateShownCount() {
+      const el = document.getElementById('dt-shown');
+      if (el) el.textContent = tableOffset;
+    }
+
+    function appendTableRow(body, r) {
+      const cat = r.topic_category || 'General';
       const conf = confidenceClass(r.confidence_level);
+      const confLabel = r.confidence_level || 'Low';
       const loc = [r.city, r.country].filter(Boolean).join(', ');
-      const itemId = 'fi-' + r.id;
 
-      const item = document.createElement('div');
-      item.className = 'feed-item';
-      item.setAttribute('data-id', r.id);
-      item.innerHTML = `
-        <span class="feed-topic-pill" style="background:${topicColor(topic)}">${escapeHtml(truncate(topic, 18))}</span>
-        <div class="feed-center">
-          <div class="feed-question">${escapeHtml(truncate(r.question, 150))}</div>
-          <div class="feed-time">${relativeTime(r.created_at)}</div>
-        </div>
-        <div class="feed-right">
-          ${loc ? `<span class="feed-location">${escapeHtml(loc)}</span>` : ''}
-          <div class="feed-meta">
-            <span class="feed-sources">${r.source_count != null ? r.source_count + ' src' : ''}</span>
-            <span class="confidence-dot ${conf}" title="${escapeHtml(r.confidence_level || 'unknown')}"></span>
-          </div>
-        </div>`;
+      const row = document.createElement('div');
+      row.className = 'dt-row';
+      row.innerHTML = `
+        <div class="dt-row-time">${relativeTime(r.created_at)}</div>
+        <div><span class="dt-topic-pill" style="background:${topicColor(cat)}" title="${escapeHtml(cat)}">${escapeHtml(truncate(cat, 16))}</span></div>
+        <div class="dt-question" title="${escapeHtml(r.question)}">${escapeHtml(truncate(r.question, 120))}</div>
+        <div class="dt-confidence"><span class="confidence-dot ${conf}"></span> ${escapeHtml(confLabel)}</div>
+        <div class="dt-src">${r.source_count != null ? r.source_count : '-'}</div>
+        <div class="dt-location">${escapeHtml(loc) || '-'}</div>`;
 
-      item.addEventListener('click', () => {
-        item.classList.toggle('expanded');
+      row.addEventListener('click', () => {
+        row.classList.toggle('expanded');
       });
 
-      list.appendChild(item);
+      body.appendChild(row);
 
       // Expanded detail
       const expanded = document.createElement('div');
-      expanded.className = 'feed-expanded';
+      expanded.className = 'dt-expanded';
 
       const sources = r.source_documents || [];
-      const sourceTags = sources.map(s => `<span class="feed-source-tag">${escapeHtml(s)}</span>`).join('');
+      const sourceTypes = r.source_types || [];
 
-      expanded.innerHTML = `
-        <div class="feed-answer-label">Answer Summary</div>
-        <div class="feed-answer-text">${r.answer_summary ? escapeHtml(r.answer_summary) : '<em style="color:var(--text-muted)">No summary recorded</em>'}</div>
-        ${sources.length > 0 ? `
-          <div class="feed-answer-label">Sources</div>
-          <div class="feed-sources-list">${sourceTags}</div>
-        ` : ''}`;
+      let expHtml = '';
 
-      list.appendChild(expanded);
+      // Answer summary
+      expHtml += '<div class="dt-exp-label">Answer Summary</div>';
+      expHtml += '<div class="dt-exp-text">' + (r.answer_summary ? escapeHtml(r.answer_summary) : '<em style="color:var(--text-muted)">No summary recorded</em>') + '</div>';
+
+      // Subtopic
+      if (r.topic_label) {
+        expHtml += '<div class="dt-exp-label">Subtopic</div>';
+        expHtml += '<div class="dt-exp-text">' + escapeHtml(r.topic_label) + '</div>';
+      }
+
+      // Source documents
+      if (sources.length > 0) {
+        expHtml += '<div class="dt-exp-label">Source Documents</div>';
+        expHtml += '<div class="dt-exp-tags">';
+        for (const s of sources) {
+          const truncS = escapeHtml(truncate(s, 40));
+          expHtml += `<span class="dt-exp-tag" onclick="event.stopPropagation(); applyFilter('source_document', '${s.replace(/'/g, "\\'")}', '${truncS}')">${escapeHtml(s)}</span>`;
+        }
+        expHtml += '</div>';
+      }
+
+      // Source types + latency
+      expHtml += '<div class="dt-exp-meta">';
+      if (sourceTypes.length > 0) {
+        for (const t of sourceTypes) {
+          const cls = t === 'Podcast' ? 'podcast' : 'web';
+          expHtml += `<span class="dt-exp-pill ${cls}">${escapeHtml(t)}</span>`;
+        }
+      }
+      if (r.latency_ms) {
+        expHtml += `<span class="dt-exp-latency">${r.latency_ms.toLocaleString()}ms</span>`;
+      }
+      expHtml += '</div>';
+
+      expanded.innerHTML = expHtml;
+      body.appendChild(expanded);
+    }
+
+    // ===== SEARCH DEBOUNCE =====
+    let searchTimer = null;
+
+    function handleSearch(value) {
+      clearTimeout(searchTimer);
+      searchTimer = setTimeout(() => {
+        searchQuery = value.trim();
+        renderDashboard();
+      }, 300);
     }
 
     // ===== INIT =====
