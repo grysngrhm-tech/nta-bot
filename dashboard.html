@@ -619,81 +619,6 @@
       margin-top: 0.125rem;
     }
 
-    .session-filter-btn {
-      background: none;
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      color: var(--accent);
-      font-size: 0.6875rem;
-      font-weight: 700;
-      padding: 0.25rem 0.5rem;
-      cursor: pointer;
-      white-space: nowrap;
-      transition: background var(--transition), border-color var(--transition);
-    }
-
-    .session-filter-btn:hover {
-      background: var(--accent-subtle);
-      border-color: var(--accent);
-    }
-
-    .session-chevron {
-      width: 16px;
-      height: 16px;
-      color: var(--text-muted);
-      transition: transform var(--transition);
-      flex-shrink: 0;
-    }
-
-    .session-card.expanded .session-chevron {
-      transform: rotate(180deg);
-    }
-
-    .session-timeline {
-      display: none;
-      border-top: 1px solid var(--row-border);
-    }
-
-    .session-card.expanded .session-timeline {
-      display: block;
-    }
-
-    .timeline-row {
-      display: grid;
-      grid-template-columns: 60px auto 1fr;
-      gap: 0.75rem;
-      padding: 0.5rem 1.25rem;
-      border-bottom: 1px solid var(--row-border);
-      font-size: 0.8125rem;
-      align-items: start;
-    }
-
-    .timeline-row:last-child {
-      border-bottom: none;
-    }
-
-    .timeline-offset {
-      font-size: 0.6875rem;
-      color: var(--text-muted);
-      font-weight: 600;
-      padding-top: 0.125rem;
-    }
-
-    .timeline-cat-pill {
-      font-size: 0.625rem;
-      font-weight: 700;
-      color: #fff;
-      padding: 0.15rem 0.4rem;
-      border-radius: var(--radius-sm);
-      white-space: nowrap;
-      text-transform: uppercase;
-      letter-spacing: 0.02em;
-    }
-
-    .timeline-question {
-      color: var(--text-secondary);
-      line-height: 1.45;
-    }
 
     /* ===== DATA TABLE ===== */
     .table-controls {
@@ -1209,11 +1134,6 @@
         }
       }
       return maxVal;
-    }
-
-    function formatDuration(ms) {
-      if (ms < 60000) return Math.floor(ms / 1000) + 's';
-      return Math.floor(ms / 60000) + 'm ' + Math.floor((ms % 60000) / 1000) + 's';
     }
 
     // ===== FILTER / SORT / SEARCH =====
@@ -1819,34 +1739,15 @@
             }
           }
           const breadcrumb = categories.map(c => escapeHtml(c)).join(' &#8594; ');
-          const cardId = 'sess-' + sess.sid.replace(/[^a-zA-Z0-9]/g, '').slice(0, 12);
 
           inner += `
-            <div class="session-card" id="${cardId}">
-              <div class="session-card-header" onclick="document.getElementById('${cardId}').classList.toggle('expanded')">
+            <div class="session-card clickable" onclick="applyFilter('session_id', '${sess.sid.replace(/'/g, "\\'")}', 'Session')">
+              <div class="session-card-header">
                 <span class="session-qcount">${sess.items.length}Q</span>
                 <div class="session-meta">
                   <div class="session-breadcrumb">${breadcrumb}</div>
                   <div class="session-time">${relativeTime(sess.items[0].created_at)}</div>
                 </div>
-                <button class="session-filter-btn" onclick="event.stopPropagation(); applyFilter('session_id', '${sess.sid.replace(/'/g, "\\'")}', 'Session')">Filter</button>
-                <svg class="session-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
-              </div>
-              <div class="session-timeline">`;
-
-          const firstTime = new Date(sess.items[0].created_at).getTime();
-          for (const r of sess.items) {
-            const offset = new Date(r.created_at).getTime() - firstTime;
-            const cat = r.topic_category || 'General';
-            inner += `
-                <div class="timeline-row">
-                  <div class="timeline-offset">+${formatDuration(offset)}</div>
-                  <span class="timeline-cat-pill" style="background:${topicColor(cat)}">${escapeHtml(truncate(cat, 16))}</span>
-                  <div class="timeline-question">${escapeHtml(truncate(r.question, 120))}</div>
-                </div>`;
-          }
-
-          inner += `
               </div>
             </div>`;
         }
