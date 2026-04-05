@@ -1,0 +1,15 @@
+# Internal documentation (kept locally, not published)
+CLAUDE.md
+NTA_RESEARCH.md
+docs/
+scripts/
+
+# Working files
+.podcast-work/
+.claude/
+.tmp*
+downloads/
+
+# OS files
+.DS_Store
+Thumbs.db
