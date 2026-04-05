@@ -110,11 +110,32 @@
       height: 16px;
     }
 
+    /* ===== HERO ===== */
+    .dash-hero {
+      text-align: center;
+      padding: 1.5rem 1rem 0.5rem;
+      max-width: 640px;
+      margin: 0 auto 1rem;
+    }
+
+    .dash-hero h2 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 0.375rem;
+    }
+
+    .dash-hero p {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
     /* ===== MAIN ===== */
     .main {
       max-width: 1080px;
       margin: 0 auto;
-      padding: 1.5rem;
+      padding: 0 1.5rem 1.5rem;
     }
 
     /* ===== SECTION ===== */
@@ -130,12 +151,90 @@
       font-size: 1.125rem;
       font-weight: 700;
       color: var(--text-primary);
+      display: inline;
     }
 
     .section-subtitle {
       font-size: 0.8125rem;
       color: var(--text-muted);
       margin-top: 0.125rem;
+    }
+
+    /* ===== INFO TOOLTIPS ===== */
+    .info-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      background: none;
+      color: var(--text-muted);
+      font-size: 0.625rem;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      margin-left: 0.375rem;
+      vertical-align: middle;
+      transition: all var(--transition);
+      position: relative;
+    }
+
+    .info-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: var(--accent-subtle);
+    }
+
+    .info-tooltip {
+      display: none;
+      position: absolute;
+      top: calc(100% + 8px);
+      left: 50%;
+      transform: translateX(-50%);
+      width: 320px;
+      padding: 0.75rem 1rem;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-lg);
+      font-size: 0.8125rem;
+      font-weight: 400;
+      color: var(--text-secondary);
+      line-height: 1.5;
+      text-align: left;
+      z-index: 100;
+      cursor: default;
+    }
+
+    .info-tooltip::before {
+      content: '';
+      position: absolute;
+      top: -6px;
+      left: 50%;
+      transform: translateX(-50%) rotate(45deg);
+      width: 10px;
+      height: 10px;
+      background: var(--bg-secondary);
+      border-left: 1px solid var(--border);
+      border-top: 1px solid var(--border);
+    }
+
+    .info-btn.open .info-tooltip {
+      display: block;
+    }
+
+    @media (max-width: 560px) {
+      .info-tooltip {
+        width: 260px;
+        left: 0;
+        transform: none;
+      }
+      .info-tooltip::before {
+        left: 9px;
+        transform: rotate(45deg);
+      }
     }
 
     /* ===== FILTER BAR ===== */
@@ -1363,6 +1462,33 @@
     }
 
     // ===== RENDER DASHBOARD =====
+    // Tooltip toggle
+    function toggleInfo(btn) {
+      // Close any other open tooltips first
+      document.querySelectorAll('.info-btn.open').forEach(b => {
+        if (b !== btn) b.classList.remove('open');
+      });
+      btn.classList.toggle('open');
+    }
+    // Close tooltips on click outside
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.info-btn')) {
+        document.querySelectorAll('.info-btn.open').forEach(b => b.classList.remove('open'));
+      }
+    });
+
+    // Section info helper — creates title + info button
+    function sectionHeader(title, subtitle, tooltip) {
+      return `
+        <div class="section-header">
+          <div>
+            <span class="section-title">${title}</span>
+            <button class="info-btn" onclick="event.stopPropagation(); toggleInfo(this)">?<div class="info-tooltip">${tooltip}</div></button>
+          </div>
+          ${subtitle ? `<div class="section-subtitle">${subtitle}</div>` : ''}
+        </div>`;
+    }
+
     function renderDashboard() {
       const main = document.getElementById('main');
       main.innerHTML = '';
@@ -1372,6 +1498,14 @@
         tableObserver.disconnect();
         tableObserver = null;
       }
+
+      // Hero
+      const hero = document.createElement('div');
+      hero.className = 'dash-hero';
+      hero.innerHTML = `
+        <h2>NTA Bot Insights</h2>
+        <p>Track what your team is asking, discover trending topics, see which content gets cited most, and identify opportunities for new podcast episodes and curriculum development.</p>`;
+      main.appendChild(hero);
 
       const filtered = getFilteredLogs();
 
@@ -1434,7 +1568,11 @@
 
       const section = document.createElement('div');
       section.className = 'section';
-      section.innerHTML = `
+      section.innerHTML = sectionHeader(
+        'Overview',
+        null,
+        '<strong>What:</strong> Key metrics at a glance — total questions, unique sessions, confidence breakdown, and average response time.<br><br><strong>How:</strong> Every question asked to NTA Bot is logged with its confidence level, source types, and response latency. These cards summarize the data in real time.<br><br><strong>Why:</strong> Click the confidence cards to filter the entire dashboard to just High, Medium, or Low confidence answers. The source type pills show whether answers come from web docs, podcast content, or both.'
+      ) + `
         <div class="stats-row">
           <div class="stat-card">
             <div class="stat-value">${total.toLocaleString()}</div>
@@ -1502,11 +1640,11 @@
       const section = document.createElement('div');
       section.className = 'section';
 
-      let inner = `
-        <div class="section-header">
-          <div class="section-title">Topic Demand vs Coverage</div>
-          <div class="section-subtitle">Question frequency compared to knowledge base content</div>
-        </div>`;
+      let inner = sectionHeader(
+        'Topic Demand vs Coverage',
+        'Question frequency compared to knowledge base content',
+        '<strong>What:</strong> Compares how often each topic is asked about (demand) against how much content exists in the knowledge base (supply).<br><br><strong>How:</strong> Topics are grouped into broad categories. Supply is estimated by matching category keywords against the knowledge base\'s section hierarchy.<br><br><strong>Why:</strong> High demand + low supply = an underserved topic that may need more content — a great signal for new podcast episodes or curriculum additions.'
+      );
 
       if (rows.length === 0) {
         inner += '<div class="muted-message">No topic data available yet.</div>';
@@ -1584,11 +1722,11 @@
       const section = document.createElement('div');
       section.className = 'section';
 
-      let inner = `
-        <div class="section-header">
-          <div class="section-title">Trending This Week</div>
-          <div class="section-subtitle">Week-over-week topic comparison</div>
-        </div>`;
+      let inner = sectionHeader(
+        'Trending This Week',
+        'Week-over-week topic comparison',
+        '<strong>What:</strong> Shows which topic categories are being asked about this week, and whether they\'re new or increasing.<br><br><strong>How:</strong> Compares the last 7 days against the previous 7 days. "New" means the topic didn\'t appear at all in the prior week. "Trending" means it\'s asked more frequently than before.<br><br><strong>Why:</strong> Spotting emerging interests early helps you create timely content. Click any topic to filter the table below.'
+      );
 
       if (pills.length === 0) {
         inner += '<div class="muted-message">No activity in the last 7 days.</div>';
@@ -1642,11 +1780,11 @@
       const section = document.createElement('div');
       section.className = 'section';
 
-      let inner = `
-        <div class="section-header">
-          <div class="section-title">Source Usage</div>
-          <div class="section-subtitle">Most-cited documents across answers</div>
-        </div>`;
+      let inner = sectionHeader(
+        'Source Usage',
+        'Most-cited documents across answers',
+        '<strong>What:</strong> Shows which reference documents and podcast episodes the bot cites most frequently when answering questions.<br><br><strong>How:</strong> Every answer cites specific source documents. This section counts how many times each document appears across all answers.<br><br><strong>Why:</strong> Reveals which content is doing the heavy lifting and which episodes or documents are never referenced — helping prioritize content updates. Click any document to filter the table.'
+      );
 
       if (ranked.length === 0) {
         inner += '<div class="muted-message">No source citations recorded yet.</div>';
@@ -1706,11 +1844,11 @@
       const section = document.createElement('div');
       section.className = 'section';
 
-      let inner = `
-        <div class="section-header">
-          <div class="section-title">Session Replay</div>
-          <div class="section-subtitle">Multi-question conversations with user profiles</div>
-        </div>`;
+      let inner = sectionHeader(
+        'Session Replay',
+        'Multi-question conversations with user profiles',
+        '<strong>What:</strong> Shows sessions where a user asked 2 or more questions, revealing their research journey and interests.<br><br><strong>How:</strong> Questions are grouped by session ID. Each card shows the user\'s device, location, topic progression, and session duration.<br><br><strong>Why:</strong> Understanding how users explore topics reveals deeper intent than individual questions. Click a session to filter the table to just that conversation.'
+      );
 
       if (multiSessions.length === 0) {
         inner += '<div class="muted-message">No multi-question sessions found.</div>';
@@ -1823,8 +1961,14 @@
       section.className = 'section';
       section.id = 'data-table-section';
 
+      let tableHeader = sectionHeader(
+        'All Questions',
+        null,
+        '<strong>What:</strong> A complete log of every question asked, with full metadata.<br><br><strong>How:</strong> Every question is logged automatically with its topic, confidence level, sources cited, user location, and device info. Click column headers to sort. Use the search box to find specific questions.<br><br><strong>Why:</strong> The raw data behind all the analytics above. Click any topic pill or source tag in the expanded rows to filter across the entire dashboard.'
+      );
+
       // Controls
-      let controlsHtml = '<div class="table-controls">';
+      let controlsHtml = tableHeader + '<div class="table-controls">';
 
       if (filterState.type) {
         const typeLabels = {
