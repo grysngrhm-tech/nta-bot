@@ -292,58 +292,6 @@
     .source-pill .sp-dot.podcast { background: #d97706; }
     .source-pill .sp-dot.both { background: #7c3aed; }
 
-    /* ===== CONTENT GAPS ===== */
-    .gap-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 1rem;
-    }
-
-    .gap-card {
-      background: var(--bg-secondary);
-      border: 1px solid var(--border);
-      border-left: 4px solid var(--gap-color);
-      border-radius: var(--radius-lg);
-      padding: 1rem 1.25rem;
-      box-shadow: var(--shadow-sm);
-    }
-
-    .gap-card-topic {
-      font-size: 0.9375rem;
-      font-weight: 700;
-      color: var(--text-primary);
-      margin-bottom: 0.25rem;
-      cursor: pointer;
-      transition: color var(--transition);
-    }
-
-    .gap-card-topic:hover {
-      color: var(--accent);
-    }
-
-    .gap-card-count {
-      font-size: 0.75rem;
-      font-weight: 600;
-      color: var(--gap-color);
-      margin-bottom: 0.625rem;
-    }
-
-    .gap-card-questions {
-      list-style: none;
-    }
-
-    .gap-card-questions li {
-      font-size: 0.8125rem;
-      color: var(--text-secondary);
-      line-height: 1.5;
-      padding: 0.25rem 0;
-      border-top: 1px solid var(--row-border);
-    }
-
-    .gap-card-questions li:first-child {
-      border-top: none;
-    }
-
     /* ===== TOPIC GAP TABLE ===== */
     .gap-table {
       width: 100%;
@@ -1433,7 +1381,6 @@
       }
 
       renderStats(main, filtered);
-      renderContentGaps(main, filtered);
       renderTopicGapAnalysis(main, filtered);
       renderTrending(main, filtered);
       renderSourceUsage(main, filtered);
@@ -1532,53 +1479,6 @@
     }
 
     // ===== 2. CONTENT GAPS =====
-    function renderContentGaps(container, filtered) {
-      const gapLogs = filtered.filter(r =>
-        (r.confidence_level && r.confidence_level.toLowerCase() === 'low') ||
-        r.source_count === 0 ||
-        r.source_count == null
-      );
-
-      const section = document.createElement('div');
-      section.className = 'section';
-
-      let inner = `
-        <div class="section-header">
-          <div class="section-title">Content Gaps</div>
-          <div class="section-subtitle">Questions the bot couldn't fully answer &mdash; potential podcast topics</div>
-        </div>`;
-
-      if (gapLogs.length === 0) {
-        inner += '<div class="muted-message">No content gaps detected yet.</div>';
-      } else {
-        const grouped = {};
-        for (const r of gapLogs) {
-          const cat = r.topic_category || 'Uncategorized';
-          if (!grouped[cat]) grouped[cat] = [];
-          grouped[cat].push(r);
-        }
-
-        const sorted = Object.entries(grouped).sort((a, b) => b[1].length - a[1].length);
-
-        inner += '<div class="gap-grid">';
-        for (const [cat, items] of sorted) {
-          const recent = items.slice(0, 3);
-          const escapedCat = escapeHtml(cat);
-          inner += `
-            <div class="gap-card">
-              <div class="gap-card-topic" onclick="applyFilter('topic_category', '${cat.replace(/'/g, "\\'")}', '${escapedCat}')">${escapedCat}</div>
-              <div class="gap-card-count">${items.length} unanswered question${items.length !== 1 ? 's' : ''}</div>
-              <ul class="gap-card-questions">
-                ${recent.map(r => '<li>' + escapeHtml(truncate(r.question, 100)) + '</li>').join('')}
-              </ul>
-            </div>`;
-        }
-        inner += '</div>';
-      }
-
-      section.innerHTML = inner;
-      container.appendChild(section);
-    }
 
     // ===== 3. TOPIC GAP ANALYSIS =====
     function renderTopicGapAnalysis(container, filtered) {
