@@ -1825,7 +1825,7 @@
             if (!seen.has(cat)) { seen.add(cat); categories.push(cat); }
           }
           const breadcrumb = categories.map(c => escapeHtml(c)).join(' &#8594; ');
-          const cardId = 'sess-' + sess.sid.replace(/[^a-zA-Z0-9]/g, '').slice(0, 12);
+          const cardId = 'sess-' + sess.sid.replace(/[^a-zA-Z0-9]/g, '').slice(-16);
 
           // User profile from first row (device info is same across session)
           const first = sess.items[0];
