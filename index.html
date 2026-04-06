@@ -753,6 +753,11 @@
       color: #059669;
     }
 
+    .authority-nih {
+      background: rgba(8, 145, 178, 0.1);
+      color: #0891b2;
+    }
+
     /* ===== SOURCE REQUIREMENTS ===== */
     .source-requirements {
       padding: 0.5rem 0.75rem 0.75rem 1rem;
@@ -1226,6 +1231,21 @@
     .coverage-source-name a:hover {
       color: var(--accent);
       text-decoration: underline;
+    }
+
+    .coverage-subgroup-label {
+      font-size: 0.6875rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      padding: 0.5rem 0 0.25rem 0;
+      margin-top: 0.25rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .coverage-subgroup-label:first-child {
+      border-top: none;
+      margin-top: 0;
+      padding-top: 0;
     }
 
     .coverage-source-count {
@@ -2070,19 +2090,51 @@
 
     // ===== KNOWLEDGE BASE TILE EXPANSION =====
     const TILE_SOURCES = {
-      web: [
-        { name: 'NTP Scope of Practice', url: 'https://www.nutritionaltherapy.com/ntp-scope-of-practice' },
-        { name: 'PHWC Scope of Practice', url: 'https://www.nutritionaltherapy.com/phwc-scope-of-practice' },
-        { name: 'Nutritional Therapy Practitioner Program', url: 'https://www.nutritionaltherapy.com/ntp' },
-        { name: 'NTP Student Information', url: 'https://www.nutritionaltherapy.com/ntp-student-information' },
-        { name: 'Professional Health & Wellness Coach Program', url: 'https://www.nutritionaltherapy.com/health-coach' },
-        { name: 'PHWC Student Information', url: 'https://www.nutritionaltherapy.com/phwc-student-information' },
-        { name: 'Functional Clinical Assessment (FCA)', url: 'https://www.nutritionaltherapy.com/fca' },
-        { name: 'Foundations of Healing', url: 'https://www.nutritionaltherapy.com/foundations' },
-        { name: 'NTA Health', url: 'https://www.nutritionaltherapy.com/nta-health' },
-        { name: 'All Programs & Courses', url: 'https://www.nutritionaltherapy.com/courses' },
-        { name: 'About the NTA', url: 'https://www.nutritionaltherapy.com/about' }
-      ],
+      web: {
+        nta: [
+          { name: 'NTP Scope of Practice', url: 'https://www.nutritionaltherapy.com/ntp-scope-of-practice' },
+          { name: 'PHWC Scope of Practice', url: 'https://www.nutritionaltherapy.com/phwc-scope-of-practice' },
+          { name: 'Nutritional Therapy Practitioner Program', url: 'https://www.nutritionaltherapy.com/ntp' },
+          { name: 'NTP Student Information', url: 'https://www.nutritionaltherapy.com/ntp-student-information' },
+          { name: 'Professional Health & Wellness Coach Program', url: 'https://www.nutritionaltherapy.com/health-coach' },
+          { name: 'PHWC Student Information', url: 'https://www.nutritionaltherapy.com/phwc-student-information' },
+          { name: 'Functional Clinical Assessment (FCA)', url: 'https://www.nutritionaltherapy.com/fca' },
+          { name: 'Foundations of Healing', url: 'https://www.nutritionaltherapy.com/foundations' },
+          { name: 'NTA Health', url: 'https://www.nutritionaltherapy.com/nta-health' },
+          { name: 'All Programs & Courses', url: 'https://www.nutritionaltherapy.com/courses' },
+          { name: 'About the NTA', url: 'https://www.nutritionaltherapy.com/about' }
+        ],
+        nih: [
+          { name: 'Vitamin A', chunks: 24, url: 'https://ods.od.nih.gov/factsheets/VitaminA-HealthProfessional/' },
+          { name: 'Thiamin (B1)', chunks: 23, url: 'https://ods.od.nih.gov/factsheets/Thiamin-HealthProfessional/' },
+          { name: 'Riboflavin (B2)', chunks: 19, url: 'https://ods.od.nih.gov/factsheets/Riboflavin-HealthProfessional/' },
+          { name: 'Niacin (B3)', chunks: 24, url: 'https://ods.od.nih.gov/factsheets/Niacin-HealthProfessional/' },
+          { name: 'Pantothenic Acid (B5)', chunks: 11, url: 'https://ods.od.nih.gov/factsheets/PantothenicAcid-HealthProfessional/' },
+          { name: 'Vitamin B6', chunks: 21, url: 'https://ods.od.nih.gov/factsheets/VitaminB6-HealthProfessional/' },
+          { name: 'Biotin (B7)', chunks: 16, url: 'https://ods.od.nih.gov/factsheets/Biotin-HealthProfessional/' },
+          { name: 'Folate (B9)', chunks: 37, url: 'https://ods.od.nih.gov/factsheets/Folate-HealthProfessional/' },
+          { name: 'Vitamin B12', chunks: 29, url: 'https://ods.od.nih.gov/factsheets/VitaminB12-HealthProfessional/' },
+          { name: 'Vitamin C', chunks: 27, url: 'https://ods.od.nih.gov/factsheets/VitaminC-HealthProfessional/' },
+          { name: 'Vitamin D', chunks: 45, url: 'https://ods.od.nih.gov/factsheets/VitaminD-HealthProfessional/' },
+          { name: 'Vitamin E', chunks: 22, url: 'https://ods.od.nih.gov/factsheets/VitaminE-HealthProfessional/' },
+          { name: 'Vitamin K', chunks: 22, url: 'https://ods.od.nih.gov/factsheets/VitaminK-HealthProfessional/' },
+          { name: 'Calcium', chunks: 33, url: 'https://ods.od.nih.gov/factsheets/Calcium-HealthProfessional/' },
+          { name: 'Chromium', chunks: 19, url: 'https://ods.od.nih.gov/factsheets/Chromium-HealthProfessional/' },
+          { name: 'Copper', chunks: 16, url: 'https://ods.od.nih.gov/factsheets/Copper-HealthProfessional/' },
+          { name: 'Iodine', chunks: 30, url: 'https://ods.od.nih.gov/factsheets/Iodine-HealthProfessional/' },
+          { name: 'Iron', chunks: 30, url: 'https://ods.od.nih.gov/factsheets/Iron-HealthProfessional/' },
+          { name: 'Magnesium', chunks: 28, url: 'https://ods.od.nih.gov/factsheets/Magnesium-HealthProfessional/' },
+          { name: 'Manganese', chunks: 13, url: 'https://ods.od.nih.gov/factsheets/Manganese-HealthProfessional/' },
+          { name: 'Molybdenum', chunks: 8, url: 'https://ods.od.nih.gov/factsheets/Molybdenum-HealthProfessional/' },
+          { name: 'Phosphorus', chunks: 19, url: 'https://ods.od.nih.gov/factsheets/Phosphorus-HealthProfessional/' },
+          { name: 'Potassium', chunks: 26, url: 'https://ods.od.nih.gov/factsheets/Potassium-HealthProfessional/' },
+          { name: 'Selenium', chunks: 30, url: 'https://ods.od.nih.gov/factsheets/Selenium-HealthProfessional/' },
+          { name: 'Zinc', chunks: 34, url: 'https://ods.od.nih.gov/factsheets/Zinc-HealthProfessional/' },
+          { name: 'Boron', chunks: 14, url: 'https://ods.od.nih.gov/factsheets/Boron-HealthProfessional/' },
+          { name: 'Choline', chunks: 18, url: 'https://ods.od.nih.gov/factsheets/Choline-HealthProfessional/' },
+          { name: 'Omega-3 Fatty Acids', chunks: 34, url: 'https://ods.od.nih.gov/factsheets/Omega3FattyAcids-HealthProfessional/' }
+        ]
+      },
       podcast: [
         { name: 'Ep. 000 - Introduction to The Nutritional Therapy and Wellness Podcast', url: 'https://podcasts.apple.com/us/podcast/ep-000-introduction-to-the-nutritional-therapy/id1733339864?i=1000647287082' },
         { name: 'Ep. 001 - The Nutritional Therapy Association', url: 'https://podcasts.apple.com/us/podcast/ep-001-the-nutritional-therapy-association/id1733339864?i=1000647354959' },
@@ -2171,36 +2223,82 @@
         { name: 'Ep. 084 - Be Before You Do', url: 'https://podcasts.apple.com/us/podcast/ep-084-be-before-you-do/id1733339864?i=1000747837867' },
         { name: 'Ep. 085 - Sugar, Sugar: Retrain to Regain Control', url: 'https://podcasts.apple.com/us/podcast/ep-085-sugar-sugar-retrain-to-regain-control/id1733339864?i=1000750109338' }
       ],
-      textbook: [
-        { name: 'Ch 1: An Introduction to the Human Body', chunks: 6, url: 'https://openstax.org/books/anatomy-and-physiology/pages/1-1-overview-of-anatomy-and-physiology' },
-        { name: 'Ch 2: The Chemical Level of Organization', chunks: 18, url: 'https://openstax.org/books/anatomy-and-physiology/pages/2-1-elements-and-atoms-the-building-blocks-of-matter' },
-        { name: 'Ch 3: The Cellular Level of Organization', chunks: 19, url: 'https://openstax.org/books/anatomy-and-physiology/pages/3-1-the-cell-membrane' },
-        { name: 'Ch 4: The Tissue Level of Organization', chunks: 10, url: 'https://openstax.org/books/anatomy-and-physiology/pages/4-1-types-of-tissues' },
-        { name: 'Ch 5: The Integumentary System', chunks: 9, url: 'https://openstax.org/books/anatomy-and-physiology/pages/5-1-layers-of-the-skin' },
-        { name: 'Ch 6: Bone Tissue and the Skeletal System', chunks: 6, url: 'https://openstax.org/books/anatomy-and-physiology/pages/6-1-the-functions-of-the-skeletal-system' },
-        { name: 'Ch 7: Axial Skeleton', chunks: 6, url: 'https://openstax.org/books/anatomy-and-physiology/pages/7-1-divisions-of-the-skeletal-system' },
-        { name: 'Ch 8: The Appendicular Skeleton', chunks: 6, url: 'https://openstax.org/books/anatomy-and-physiology/pages/8-1-the-pectoral-girdle' },
-        { name: 'Ch 9: Joints', chunks: 6, url: 'https://openstax.org/books/anatomy-and-physiology/pages/9-1-classification-of-joints' },
-        { name: 'Ch 10: Muscle Tissue', chunks: 10, url: 'https://openstax.org/books/anatomy-and-physiology/pages/10-1-overview-of-muscle-tissues' },
-        { name: 'Ch 11: The Muscular System', chunks: 7, url: 'https://openstax.org/books/anatomy-and-physiology/pages/11-1-interactions-of-skeletal-muscles-their-fascicle-arrangement-and-their-lever-systems' },
-        { name: 'Ch 12: The Nervous System and Nervous Tissue', chunks: 17, url: 'https://openstax.org/books/anatomy-and-physiology/pages/12-1-basic-structure-and-function-of-the-nervous-system' },
-        { name: 'Ch 13: Anatomy of the Nervous System', chunks: 11, url: 'https://openstax.org/books/anatomy-and-physiology/pages/13-1-the-embryologic-perspective' },
-        { name: 'Ch 14: The Somatic Nervous System', chunks: 13, url: 'https://openstax.org/books/anatomy-and-physiology/pages/14-1-sensory-perception' },
-        { name: 'Ch 15: The Autonomic Nervous System', chunks: 34, url: 'https://openstax.org/books/anatomy-and-physiology/pages/15-1-divisions-of-the-autonomic-nervous-system' },
-        { name: 'Ch 16: The Neurological Exam', chunks: 7, url: 'https://openstax.org/books/anatomy-and-physiology/pages/16-1-overview-of-the-neurological-exam' },
-        { name: 'Ch 17: The Endocrine System', chunks: 73, url: 'https://openstax.org/books/anatomy-and-physiology/pages/17-1-an-overview-of-the-endocrine-system' },
-        { name: 'Ch 18: The Cardiovascular System: Blood', chunks: 59, url: 'https://openstax.org/books/anatomy-and-physiology/pages/18-1-an-overview-of-blood' },
-        { name: 'Ch 19: The Cardiovascular System: The Heart', chunks: 24, url: 'https://openstax.org/books/anatomy-and-physiology/pages/19-1-heart-anatomy' },
-        { name: 'Ch 20: Blood Vessels and Circulation', chunks: 35, url: 'https://openstax.org/books/anatomy-and-physiology/pages/20-1-structure-and-function-of-blood-vessels' },
-        { name: 'Ch 21: The Lymphatic and Immune System', chunks: 66, url: 'https://openstax.org/books/anatomy-and-physiology/pages/21-1-anatomy-of-the-lymphatic-and-immune-systems' },
-        { name: 'Ch 22: The Respiratory System', chunks: 14, url: 'https://openstax.org/books/anatomy-and-physiology/pages/22-1-organs-and-structures-of-the-respiratory-system' },
-        { name: 'Ch 23: The Digestive System', chunks: 61, url: 'https://openstax.org/books/anatomy-and-physiology/pages/23-1-overview-of-the-digestive-system' },
-        { name: 'Ch 24: Metabolism and Nutrition', chunks: 50, url: 'https://openstax.org/books/anatomy-and-physiology/pages/24-1-overview-of-metabolic-reactions' },
-        { name: 'Ch 25: The Urinary System', chunks: 27, url: 'https://openstax.org/books/anatomy-and-physiology/pages/25-1-physical-characteristics-of-urine' },
-        { name: 'Ch 26: Fluid, Electrolyte, and Acid-Base Balance', chunks: 44, url: 'https://openstax.org/books/anatomy-and-physiology/pages/26-1-body-fluids-and-fluid-compartments' },
-        { name: 'Ch 27: The Reproductive System', chunks: 27, url: 'https://openstax.org/books/anatomy-and-physiology/pages/27-1-anatomy-and-physiology-of-the-male-reproductive-system' },
-        { name: 'Ch 28: Development and Inheritance', chunks: 16, url: 'https://openstax.org/books/anatomy-and-physiology/pages/28-1-fertilization' }
-      ],
+      textbook: {
+        anatomy_physiology: [
+          { name: 'Ch 1: An Introduction to the Human Body', chunks: 6, url: 'https://openstax.org/books/anatomy-and-physiology/pages/1-1-overview-of-anatomy-and-physiology' },
+          { name: 'Ch 2: The Chemical Level of Organization', chunks: 18, url: 'https://openstax.org/books/anatomy-and-physiology/pages/2-1-elements-and-atoms-the-building-blocks-of-matter' },
+          { name: 'Ch 3: The Cellular Level of Organization', chunks: 19, url: 'https://openstax.org/books/anatomy-and-physiology/pages/3-1-the-cell-membrane' },
+          { name: 'Ch 4: The Tissue Level of Organization', chunks: 10, url: 'https://openstax.org/books/anatomy-and-physiology/pages/4-1-types-of-tissues' },
+          { name: 'Ch 5: The Integumentary System', chunks: 9, url: 'https://openstax.org/books/anatomy-and-physiology/pages/5-1-layers-of-the-skin' },
+          { name: 'Ch 6: Bone Tissue and the Skeletal System', chunks: 6, url: 'https://openstax.org/books/anatomy-and-physiology/pages/6-1-the-functions-of-the-skeletal-system' },
+          { name: 'Ch 7: Axial Skeleton', chunks: 6, url: 'https://openstax.org/books/anatomy-and-physiology/pages/7-1-divisions-of-the-skeletal-system' },
+          { name: 'Ch 8: The Appendicular Skeleton', chunks: 6, url: 'https://openstax.org/books/anatomy-and-physiology/pages/8-1-the-pectoral-girdle' },
+          { name: 'Ch 9: Joints', chunks: 6, url: 'https://openstax.org/books/anatomy-and-physiology/pages/9-1-classification-of-joints' },
+          { name: 'Ch 10: Muscle Tissue', chunks: 10, url: 'https://openstax.org/books/anatomy-and-physiology/pages/10-1-overview-of-muscle-tissues' },
+          { name: 'Ch 11: The Muscular System', chunks: 7, url: 'https://openstax.org/books/anatomy-and-physiology/pages/11-1-interactions-of-skeletal-muscles-their-fascicle-arrangement-and-their-lever-systems' },
+          { name: 'Ch 12: The Nervous System and Nervous Tissue', chunks: 17, url: 'https://openstax.org/books/anatomy-and-physiology/pages/12-1-basic-structure-and-function-of-the-nervous-system' },
+          { name: 'Ch 13: Anatomy of the Nervous System', chunks: 11, url: 'https://openstax.org/books/anatomy-and-physiology/pages/13-1-the-embryologic-perspective' },
+          { name: 'Ch 14: The Somatic Nervous System', chunks: 13, url: 'https://openstax.org/books/anatomy-and-physiology/pages/14-1-sensory-perception' },
+          { name: 'Ch 15: The Autonomic Nervous System', chunks: 34, url: 'https://openstax.org/books/anatomy-and-physiology/pages/15-1-divisions-of-the-autonomic-nervous-system' },
+          { name: 'Ch 16: The Neurological Exam', chunks: 7, url: 'https://openstax.org/books/anatomy-and-physiology/pages/16-1-overview-of-the-neurological-exam' },
+          { name: 'Ch 17: The Endocrine System', chunks: 73, url: 'https://openstax.org/books/anatomy-and-physiology/pages/17-1-an-overview-of-the-endocrine-system' },
+          { name: 'Ch 18: The Cardiovascular System: Blood', chunks: 59, url: 'https://openstax.org/books/anatomy-and-physiology/pages/18-1-an-overview-of-blood' },
+          { name: 'Ch 19: The Cardiovascular System: The Heart', chunks: 24, url: 'https://openstax.org/books/anatomy-and-physiology/pages/19-1-heart-anatomy' },
+          { name: 'Ch 20: Blood Vessels and Circulation', chunks: 35, url: 'https://openstax.org/books/anatomy-and-physiology/pages/20-1-structure-and-function-of-blood-vessels' },
+          { name: 'Ch 21: The Lymphatic and Immune System', chunks: 66, url: 'https://openstax.org/books/anatomy-and-physiology/pages/21-1-anatomy-of-the-lymphatic-and-immune-systems' },
+          { name: 'Ch 22: The Respiratory System', chunks: 14, url: 'https://openstax.org/books/anatomy-and-physiology/pages/22-1-organs-and-structures-of-the-respiratory-system' },
+          { name: 'Ch 23: The Digestive System', chunks: 61, url: 'https://openstax.org/books/anatomy-and-physiology/pages/23-1-overview-of-the-digestive-system' },
+          { name: 'Ch 24: Metabolism and Nutrition', chunks: 50, url: 'https://openstax.org/books/anatomy-and-physiology/pages/24-1-overview-of-metabolic-reactions' },
+          { name: 'Ch 25: The Urinary System', chunks: 27, url: 'https://openstax.org/books/anatomy-and-physiology/pages/25-1-physical-characteristics-of-urine' },
+          { name: 'Ch 26: Fluid, Electrolyte, and Acid-Base Balance', chunks: 44, url: 'https://openstax.org/books/anatomy-and-physiology/pages/26-1-body-fluids-and-fluid-compartments' },
+          { name: 'Ch 27: The Reproductive System', chunks: 27, url: 'https://openstax.org/books/anatomy-and-physiology/pages/27-1-anatomy-and-physiology-of-the-male-reproductive-system' },
+          { name: 'Ch 28: Development and Inheritance', chunks: 16, url: 'https://openstax.org/books/anatomy-and-physiology/pages/28-1-fertilization' }
+        ],
+        principles_nutrition: [
+          { name: 'Ch 1: Nutrition and You', chunks: 36, url: 'https://oer.galileo.usg.edu/health-textbooks/5' },
+          { name: 'Ch 2: Energy-Yielding Macronutrients', chunks: 33, url: 'https://oer.galileo.usg.edu/health-textbooks/5' },
+          { name: 'Ch 3: Macronutrient Digestion', chunks: 7, url: 'https://oer.galileo.usg.edu/health-textbooks/5' },
+          { name: 'Ch 4: Macronutrient Uptake, Absorption & Transport', chunks: 19, url: 'https://oer.galileo.usg.edu/health-textbooks/5' },
+          { name: 'Ch 5: Common Digestive Problems', chunks: 13, url: 'https://oer.galileo.usg.edu/health-textbooks/5' },
+          { name: 'Ch 6: Macronutrient & Alcohol Metabolism', chunks: 12, url: 'https://oer.galileo.usg.edu/health-textbooks/5' },
+          { name: 'Ch 7: Integration of Macronutrient & Alcohol Metabolism', chunks: 8, url: 'https://oer.galileo.usg.edu/health-textbooks/5' },
+          { name: 'Ch 8: Micronutrients Overview & DRIs', chunks: 7, url: 'https://oer.galileo.usg.edu/health-textbooks/5' },
+          { name: 'Ch 9: Antioxidant Micronutrients', chunks: 22, url: 'https://oer.galileo.usg.edu/health-textbooks/5' },
+          { name: 'Ch 10: Macronutrient Metabolism Micronutrients', chunks: 22, url: 'https://oer.galileo.usg.edu/health-textbooks/5' },
+          { name: 'Ch 11: One-Carbon Metabolism Micronutrients', chunks: 12, url: 'https://oer.galileo.usg.edu/health-textbooks/5' },
+          { name: 'Ch 12: Blood, Bones & Teeth Micronutrients', chunks: 35, url: 'https://oer.galileo.usg.edu/health-textbooks/5' },
+          { name: 'Ch 13: Electrolyte Micronutrients', chunks: 10, url: 'https://oer.galileo.usg.edu/health-textbooks/5' },
+          { name: 'Ch 14: Achieving a Healthy Diet', chunks: 26, url: 'https://oer.galileo.usg.edu/health-textbooks/5' },
+          { name: 'Ch 15: Diet & Chronic Disease Prevention', chunks: 19, url: 'https://oer.galileo.usg.edu/health-textbooks/5' },
+          { name: 'Ch 16: Pregnancy and Nutrition', chunks: 9, url: 'https://oer.galileo.usg.edu/health-textbooks/5' },
+          { name: 'Ch 17: Nutrition: Infancy through Adolescence', chunks: 28, url: 'https://oer.galileo.usg.edu/health-textbooks/5' },
+          { name: 'Ch 18: Nutrition: Middle to Older Adult', chunks: 6, url: 'https://oer.galileo.usg.edu/health-textbooks/5' },
+          { name: 'Ch 19: Nutrition and Fitness', chunks: 16, url: 'https://oer.galileo.usg.edu/health-textbooks/5' },
+          { name: 'Ch 20: Nutrition and Society', chunks: 39, url: 'https://oer.galileo.usg.edu/health-textbooks/5' }
+        ],
+        nutrition_nurses: [
+          { name: 'Ch 1: Introduction to Nutrition', chunks: 25, url: 'https://openstax.org/books/nutrition/pages/1-1-what-is-nutrition' },
+          { name: 'Ch 2: Macronutrients', chunks: 20, url: 'https://openstax.org/books/nutrition/pages/2-1-carbohydrates' },
+          { name: 'Ch 3: Micronutrients', chunks: 20, url: 'https://openstax.org/books/nutrition/pages/3-1-vitamins' },
+          { name: 'Ch 4: The Digestive Process', chunks: 24, url: 'https://openstax.org/books/nutrition/pages/4-1-digestion' },
+          { name: 'Ch 5: Nutrition for Neurological Wellness', chunks: 27, url: 'https://openstax.org/books/nutrition/pages/5-1-assess-and-analyze-the-impact-of-nutrition-on-the-neurologic-system' },
+          { name: 'Ch 6: Neurological Health & Nutrition', chunks: 25, url: 'https://openstax.org/books/nutrition/pages/6-1-the-impact-of-nutrition-on-neurological-wellness-across-the-lifespan' },
+          { name: 'Ch 7: Nutrition for Endocrine Wellness', chunks: 14, url: 'https://openstax.org/books/nutrition/pages/7-1-assess-and-analyze-the-impact-of-nutrition-on-the-endocrine-system' },
+          { name: 'Ch 8: Endocrine Health & Nutrition', chunks: 32, url: 'https://openstax.org/books/nutrition/pages/8-1-the-impact-of-nutrition-on-endocrine-wellness-across-the-lifespan' },
+          { name: 'Ch 9: Nutrition for Hematologic Wellness', chunks: 12, url: 'https://openstax.org/books/nutrition/pages/9-1-assess-and-analyze-the-impact-of-nutrition-on-the-hematological-system' },
+          { name: 'Ch 10: Hematologic Health & Nutrition', chunks: 21, url: 'https://openstax.org/books/nutrition/pages/10-1-the-impact-of-nutrition-on-hematologic-wellness-across-the-lifespan' },
+          { name: 'Ch 11: Nutrition for Cardiovascular Wellness', chunks: 13, url: 'https://openstax.org/books/nutrition/pages/11-1-assess-and-analyze-the-impact-of-nutrition-on-the-cardiovascular-system' },
+          { name: 'Ch 12: Cardiovascular Health & Nutrition', chunks: 21, url: 'https://openstax.org/books/nutrition/pages/12-1-the-impact-of-nutrition-on-cardiovascular-wellness-across-the-lifespan' },
+          { name: 'Ch 13: Nutrition for Pulmonary Wellness', chunks: 19, url: 'https://openstax.org/books/nutrition/pages/13-1-assess-and-analyze-the-impact-of-nutrition-on-the-pulmonary-system' },
+          { name: 'Ch 14: Pulmonary Health & Nutrition', chunks: 25, url: 'https://openstax.org/books/nutrition/pages/14-1-the-impact-of-nutrition-on-pulmonary-wellness-across-the-lifespan' },
+          { name: 'Ch 15: Nutrition for Renal Wellness', chunks: 17, url: 'https://openstax.org/books/nutrition/pages/15-1-assess-and-analyze-the-impact-of-nutrition-on-the-renal-system' },
+          { name: 'Ch 16: Renal Health & Nutrition', chunks: 21, url: 'https://openstax.org/books/nutrition/pages/16-1-the-impact-of-nutrition-on-renal-wellness-across-the-lifespan' },
+          { name: 'Ch 17: Nutrition for GI Wellness', chunks: 15, url: 'https://openstax.org/books/nutrition/pages/17-1-assess-and-analyze-the-impact-of-nutrition-on-the-gastrointestinal-system' },
+          { name: 'Ch 18: GI Health & Nutrition', chunks: 17, url: 'https://openstax.org/books/nutrition/pages/18-1-the-impact-of-nutrition-on-gastrointestinal-wellness-across-the-lifespan' },
+          { name: 'Ch 19: Nutrition for Musculoskeletal Wellness', chunks: 16, url: 'https://openstax.org/books/nutrition/pages/19-1-assess-and-analyze-the-impact-of-nutrition-on-the-musculoskeletal-and-integumentary-systems' },
+          { name: 'Ch 20: Musculoskeletal Health & Nutrition', chunks: 21, url: 'https://openstax.org/books/nutrition/pages/20-1-the-impact-of-nutrition-on-musculoskeletal-and-integumentary-wellness-across-the-lifespan' }
+        ]
+      },
       curriculum: [
         { name: 'NTP Program \u2014 Full curriculum modules and lesson content', chunks: 0 },
         { name: 'PHWC Program \u2014 Coaching frameworks and monthly curriculum', chunks: 0 },
@@ -2218,11 +2316,23 @@
       if (container.children.length > 0) return; // already populated
 
       if (type === 'web') {
-        container.innerHTML = TILE_SOURCES.web.map(s =>
+        const webData = TILE_SOURCES.web;
+        let html = '<div class="coverage-subgroup-label">NTA Website</div>';
+        html += webData.nta.map(s =>
           `<div class="coverage-source-item">
             <span class="coverage-source-name"><a href="${s.url}" target="_blank" rel="noopener">${s.name}</a></span>
           </div>`
         ).join('');
+        if (webData.nih.length > 0) {
+          html += '<div class="coverage-subgroup-label">NIH Office of Dietary Supplements</div>';
+          html += webData.nih.map(s =>
+            `<div class="coverage-source-item">
+              <span class="coverage-source-name"><a href="${s.url}" target="_blank" rel="noopener">${s.name}</a></span>
+              ${s.chunks ? `<span class="coverage-source-count">${s.chunks} chunks</span>` : ''}
+            </div>`
+          ).join('');
+        }
+        container.innerHTML = html;
       } else if (type === 'podcast') {
         container.innerHTML = TILE_SOURCES.podcast.map(s =>
           `<div class="coverage-source-item">
@@ -2230,12 +2340,20 @@
           </div>`
         ).join('');
       } else if (type === 'textbook') {
-        container.innerHTML = TILE_SOURCES.textbook.map(s =>
-          `<div class="coverage-source-item">
-            <span class="coverage-source-name"><a href="${s.url}" target="_blank" rel="noopener">${s.name}</a></span>
-            <span class="coverage-source-count">${s.chunks} chunks</span>
-          </div>`
-        ).join('');
+        const tbData = TILE_SOURCES.textbook;
+        const renderGroup = (label, items) => {
+          if (!items || items.length === 0) return '';
+          return `<div class="coverage-subgroup-label">${label}</div>` + items.map(s =>
+            `<div class="coverage-source-item">
+              <span class="coverage-source-name"><a href="${s.url}" target="_blank" rel="noopener">${s.name}</a></span>
+              <span class="coverage-source-count">${s.chunks} chunks</span>
+            </div>`
+          ).join('');
+        };
+        container.innerHTML =
+          renderGroup('Anatomy & Physiology', tbData.anatomy_physiology) +
+          renderGroup('Principles of Nutrition', tbData.principles_nutrition) +
+          renderGroup('Nutrition for Nurses', tbData.nutrition_nurses);
       } else if (type === 'curriculum') {
         const sources = TILE_SOURCES.curriculum;
         container.innerHTML = sources.map(s =>
@@ -2441,10 +2559,10 @@
               <div class="coverage-card" onclick="expandTile(this, 'web')">
                 <div class="coverage-card-header">
                   <span class="coverage-badge" style="background:rgba(59,130,246,0.1);color:#3b82f6;">Web</span>
-                  <span class="coverage-card-title">NTA Website Content</span>
+                  <span class="coverage-card-title">Web Resources</span>
                   <span class="coverage-card-toggle"></span>
                 </div>
-                <p class="coverage-card-desc">Programs, credentials, scope of practice for NTP/FNTP/PHWC, the Five Foundations, NTA philosophy, bio-individuality, terminology glossary, and all certifications compared.</p>
+                <p class="coverage-card-desc">NTA website content covering programs, scope of practice, and philosophy. Plus NIH Office of Dietary Supplements fact sheets on vitamins, minerals, and nutrient biochemistry.</p>
                 <div class="coverage-card-expand" id="expand-web"></div>
               </div>
               <div class="coverage-card" onclick="expandTile(this, 'podcast')">
@@ -2459,10 +2577,10 @@
               <div class="coverage-card" onclick="expandTile(this, 'textbook')">
                 <div class="coverage-card-header">
                   <span class="coverage-badge textbook">Textbook</span>
-                  <span class="coverage-card-title">Anatomy &amp; Physiology</span>
+                  <span class="coverage-card-title">Textbooks</span>
                   <span class="coverage-card-toggle"></span>
                 </div>
-                <p class="coverage-card-desc">OpenStax A&amp;P textbook covering digestive, endocrine, immune, cardiovascular, respiratory, urinary, and reproductive systems plus metabolism, blood, and electrolyte balance.</p>
+                <p class="coverage-card-desc">OpenStax Anatomy &amp; Physiology, Principles of Nutrition (macronutrient biochemistry, metabolism, micronutrient functions), and Nutrition for Nurses (clinical nutrition by body system).</p>
                 <div class="coverage-card-expand" id="expand-textbook"></div>
               </div>
               <div class="coverage-card muted">
@@ -2667,22 +2785,27 @@
       const hierarchy = firstSection.section_hierarchy || [];
 
       // Badge from first section
+      const isNIHSource = hierarchy[0] === 'NIH';
       const isTextbookSource = hierarchy[0] === 'Textbook';
       const isPodcastSource = hierarchy[0] === 'Podcast';
-      const badgeClass = isTextbookSource ? 'authority-textbook' : isPodcastSource ? 'authority-podcast' : 'authority-web';
-      const badgeLabel = isTextbookSource ? 'Textbook' : isPodcastSource ? 'Podcast' : 'Web';
+      const badgeClass = isNIHSource ? 'authority-nih' : isTextbookSource ? 'authority-textbook' : isPodcastSource ? 'authority-podcast' : 'authority-web';
+      const badgeLabel = isNIHSource ? 'NIH' : isTextbookSource ? 'Textbook' : isPodcastSource ? 'Podcast' : 'Web';
 
       // External link (shown once at card level, not per section)
       const firstUrl = sections.find(s => s.source_url)?.source_url || null;
+      const isNIH = firstUrl && firstUrl.includes('ods.od.nih.gov');
       const isTextbook = firstUrl && firstUrl.includes('openstax.org');
+      const isGHC = firstUrl && firstUrl.includes('alg.manifoldapp.org');
       const isPodcast = firstUrl && firstUrl.includes('podcasts.apple.com');
-      const linkLabel = isTextbook ? 'View on OpenStax' : isPodcast ? 'Listen on Apple Podcasts' : 'View on NTA website';
-      const linkIcon = isTextbook
+      const linkLabel = isNIH ? 'View on NIH website' : isTextbook ? 'View on OpenStax' : isGHC ? 'View textbook' : isPodcast ? 'Listen on Apple Podcasts' : 'View on NTA website';
+      const linkIcon = isNIH
+        ? '<path d="M9 12h6m-3-3v6m-7 4h14a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2z"></path>'
+        : isTextbook || isGHC
         ? '<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>'
         : isPodcast
         ? '<path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle>'
         : '<path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line>';
-      const ccBadge = isTextbook ? '<span style="font-size:0.6rem;color:#6b7280;margin-left:0.25rem;">CC BY 4.0</span>' : '';
+      const ccBadge = isTextbook ? '<span style="font-size:0.6rem;color:#6b7280;margin-left:0.25rem;">CC BY 4.0</span>' : isGHC ? '<span style="font-size:0.6rem;color:#6b7280;margin-left:0.25rem;">CC BY-SA 4.0</span>' : '';
       const headerLink = firstUrl ? `
             <a class="view-source-link source-url-link" href="${escapeHtml(firstUrl)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${linkIcon}</svg>
@@ -2761,11 +2884,12 @@
 
       const pageHtml = pageNumber ? `<span class="page-badge">Page ${pageNumber}</span>` : '';
 
-      // Dynamic badge: detect textbook vs podcast vs web sources
+      // Dynamic badge: detect source type from hierarchy
+      const isNIHSource = hierarchy[0] === 'NIH';
       const isTextbookSource = hierarchy[0] === 'Textbook';
       const isPodcastSource = hierarchy[0] === 'Podcast';
-      const badgeClass = isTextbookSource ? 'authority-textbook' : isPodcastSource ? 'authority-podcast' : 'authority-web';
-      const badgeLabel = isTextbookSource ? 'Textbook' : isPodcastSource ? 'Podcast' : 'Web';
+      const badgeClass = isNIHSource ? 'authority-nih' : isTextbookSource ? 'authority-textbook' : isPodcastSource ? 'authority-podcast' : 'authority-web';
+      const badgeLabel = isNIHSource ? 'NIH' : isTextbookSource ? 'Textbook' : isPodcastSource ? 'Podcast' : 'Web';
 
       const isTextbook = sourceUrl && sourceUrl.includes('openstax.org');
       const isPodcast = sourceUrl && sourceUrl.includes('podcasts.apple.com');

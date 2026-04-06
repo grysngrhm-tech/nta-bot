@@ -1,0 +1,32 @@
+{
+  "fact_sheets": [
+    { "name": "Vitamin A", "slug": "VitaminA-HealthProfessional" },
+    { "name": "Thiamin", "slug": "Thiamin-HealthProfessional" },
+    { "name": "Riboflavin", "slug": "Riboflavin-HealthProfessional" },
+    { "name": "Niacin", "slug": "Niacin-HealthProfessional" },
+    { "name": "Pantothenic Acid", "slug": "PantothenicAcid-HealthProfessional" },
+    { "name": "Vitamin B6", "slug": "VitaminB6-HealthProfessional" },
+    { "name": "Biotin", "slug": "Biotin-HealthProfessional" },
+    { "name": "Folate", "slug": "Folate-HealthProfessional" },
+    { "name": "Vitamin B12", "slug": "VitaminB12-HealthProfessional" },
+    { "name": "Vitamin C", "slug": "VitaminC-HealthProfessional" },
+    { "name": "Vitamin D", "slug": "VitaminD-HealthProfessional" },
+    { "name": "Vitamin E", "slug": "VitaminE-HealthProfessional" },
+    { "name": "Vitamin K", "slug": "VitaminK-HealthProfessional" },
+    { "name": "Calcium", "slug": "Calcium-HealthProfessional" },
+    { "name": "Chromium", "slug": "Chromium-HealthProfessional" },
+    { "name": "Copper", "slug": "Copper-HealthProfessional" },
+    { "name": "Iodine", "slug": "Iodine-HealthProfessional" },
+    { "name": "Iron", "slug": "Iron-HealthProfessional" },
+    { "name": "Magnesium", "slug": "Magnesium-HealthProfessional" },
+    { "name": "Manganese", "slug": "Manganese-HealthProfessional" },
+    { "name": "Molybdenum", "slug": "Molybdenum-HealthProfessional" },
+    { "name": "Phosphorus", "slug": "Phosphorus-HealthProfessional" },
+    { "name": "Potassium", "slug": "Potassium-HealthProfessional" },
+    { "name": "Selenium", "slug": "Selenium-HealthProfessional" },
+    { "name": "Zinc", "slug": "Zinc-HealthProfessional" },
+    { "name": "Boron", "slug": "Boron-HealthProfessional" },
+    { "name": "Choline", "slug": "Choline-HealthProfessional" },
+    { "name": "Omega-3 Fatty Acids", "slug": "Omega3FattyAcids-HealthProfessional" }
+  ]
+}

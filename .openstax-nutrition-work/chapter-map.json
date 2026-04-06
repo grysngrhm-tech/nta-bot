@@ -1,0 +1,408 @@
+{
+  "chapters": [
+    {
+      "number": 1,
+      "title": "Introduction to Nutrition for Nurses",
+      "sections": [
+        {
+          "title": "1.1 What Is Nutrition?",
+          "slug": "1-1-what-is-nutrition"
+        },
+        {
+          "title": "1.2 Interdisciplinary Teams and Nutrition in Nursing Practice",
+          "slug": "1-2-interdisciplinary-teams-and-nutrition-in-nursing-practice"
+        },
+        {
+          "title": "1.3 Nutrition and Population Health",
+          "slug": "1-3-nutrition-and-population-health"
+        },
+        {
+          "title": "1.4 Vulnerable Populations",
+          "slug": "1-4-vulnerable-populations"
+        },
+        {
+          "title": "1.5 Evidence-Based Practice and Nutrition",
+          "slug": "1-5-evidence-based-practice-and-nutrition"
+        }
+      ]
+    },
+    {
+      "number": 2,
+      "title": "A Holistic View of Macronutrients",
+      "sections": [
+        {
+          "title": "2.1 Carbohydrates",
+          "slug": "2-1-carbohydrates"
+        },
+        {
+          "title": "2.2 Fats",
+          "slug": "2-2-fats"
+        },
+        {
+          "title": "2.3 Protein",
+          "slug": "2-3-protein"
+        },
+        {
+          "title": "2.4 Hydration",
+          "slug": "2-4-hydration"
+        }
+      ]
+    },
+    {
+      "number": 3,
+      "title": "A Holistic View of Micronutrients",
+      "sections": [
+        {
+          "title": "3.1 Vitamins",
+          "slug": "3-1-vitamins"
+        },
+        {
+          "title": "3.2 Minerals",
+          "slug": "3-2-minerals"
+        },
+        {
+          "title": "3.3 Supplements",
+          "slug": "3-3-supplements"
+        }
+      ]
+    },
+    {
+      "number": 4,
+      "title": "The Digestive Process",
+      "sections": [
+        {
+          "title": "4.1 Digestion",
+          "slug": "4-1-digestion"
+        },
+        {
+          "title": "4.2 Physical Assessment of Digestive Organs",
+          "slug": "4-2-physical-assessment-of-digestive-organs"
+        },
+        {
+          "title": "4.3 The Function of Digestive Organs",
+          "slug": "4-3-the-function-of-digestive-organs"
+        },
+        {
+          "title": "4.4 The Nurse\u2019s Role in the Promotion of Gut Health",
+          "slug": "4-4-the-nurses-role-in-the-promotion-of-gut-health"
+        }
+      ]
+    },
+    {
+      "number": 5,
+      "title": "Applying Clinical Judgment to Promote Nutrition for Neurological Wellness",
+      "sections": [
+        {
+          "title": "5.1 Assess and Analyze the Impact of Nutrition on the Neurologic System",
+          "slug": "5-1-assess-and-analyze-the-impact-of-nutrition-on-the-neurologic-system"
+        },
+        {
+          "title": "5.2 Plan Nutritional Strategies to Impact Neurologic Wellness",
+          "slug": "5-2-plan-nutritional-strategies-to-impact-neurologic-wellness"
+        },
+        {
+          "title": "5.3 Implement Nutritional Strategies to Impact Neurologic Wellness",
+          "slug": "5-3-implement-nutritional-strategies-to-impact-neurologic-wellness"
+        },
+        {
+          "title": "5.4 Evaluate Nutritional Strategies to Impact Neurologic Wellness",
+          "slug": "5-4-evaluate-nutritional-strategies-to-impact-neurologic-wellness"
+        }
+      ]
+    },
+    {
+      "number": 6,
+      "title": "Special Nutritional Considerations for Neurological Health",
+      "sections": [
+        {
+          "title": "6.1 The Impact of Nutrition on Neurological Wellness Across the Lifespan",
+          "slug": "6-1-the-impact-of-nutrition-on-neurological-wellness-across-the-lifespan"
+        },
+        {
+          "title": "6.2 Nutrition and Chronic Neurological Illnesses",
+          "slug": "6-2-nutrition-and-chronic-neurological-illnesses"
+        },
+        {
+          "title": "6.3 Neurologic Condition Treatments, Medications, and Nutrition",
+          "slug": "6-3-neurologic-condition-treatments-medications-and-nutrition"
+        }
+      ]
+    },
+    {
+      "number": 7,
+      "title": "Applying Clinical Judgment to Promote Nutrition for Endocrine Wellness",
+      "sections": [
+        {
+          "title": "7.1 Assess and Analyze the Impact of Nutrition on the Endocrine System",
+          "slug": "7-1-assess-and-analyze-the-impact-of-nutrition-on-the-endocrine-system"
+        },
+        {
+          "title": "7.2 Plan Nutritional Strategies to Impact Endocrine Wellness",
+          "slug": "7-2-plan-nutritional-strategies-to-impact-endocrine-wellness"
+        },
+        {
+          "title": "7.3 Implement Nutritional Strategies to Impact Endocrine Wellness",
+          "slug": "7-3-implement-nutritional-strategies-to-impact-endocrine-wellness"
+        },
+        {
+          "title": "7.4 Evaluate Nutritional Strategies to Impact Endocrine Wellness",
+          "slug": "7-4-evaluate-nutritional-strategies-to-impact-endocrine-wellness"
+        }
+      ]
+    },
+    {
+      "number": 8,
+      "title": "Special Nutritional Considerations for Endocrine Health",
+      "sections": [
+        {
+          "title": "8.1 The Impact of Nutrition on Endocrine Wellness Across the Lifespan",
+          "slug": "8-1-the-impact-of-nutrition-on-endocrine-wellness-across-the-lifespan"
+        },
+        {
+          "title": "8.2 Nutrition and Chronic Endocrine Illnesses",
+          "slug": "8-2-nutrition-and-chronic-endocrine-illnesses"
+        },
+        {
+          "title": "8.3 Treatments and Nutrition",
+          "slug": "8-3-treatments-and-nutrition"
+        }
+      ]
+    },
+    {
+      "number": 9,
+      "title": "Applying Clinical Judgment to Promote Nutrition for Hematologic Wellness",
+      "sections": [
+        {
+          "title": "9.1 Assess and Analyze the Impact of Nutrition on the Hematological System",
+          "slug": "9-1-assess-and-analyze-the-impact-of-nutrition-on-the-hematological-system"
+        },
+        {
+          "title": "9.2 Plan Nutritional Strategies to Impact Hematological Wellness",
+          "slug": "9-2-plan-nutritional-strategies-to-impact-hematological-wellness"
+        },
+        {
+          "title": "9.3 Implement Nutritional Strategies to Impact Hematological Wellness",
+          "slug": "9-3-implement-nutritional-strategies-to-impact-hematological-wellness"
+        },
+        {
+          "title": "9.4 Evaluate Nutritional Strategies to Impact Hematological Wellness",
+          "slug": "9-4-evaluate-nutritional-strategies-to-impact-hematological-wellness"
+        }
+      ]
+    },
+    {
+      "number": 10,
+      "title": "Special Nutritional Considerations for Hematologic Health",
+      "sections": [
+        {
+          "title": "10.1 The Impact of Nutrition on Hematologic Wellness Across the Lifespan",
+          "slug": "10-1-the-impact-of-nutrition-on-hematologic-wellness-across-the-lifespan"
+        },
+        {
+          "title": "10.2 Nutrition and Chronic Hematologic Illness",
+          "slug": "10-2-nutrition-and-chronic-hematologic-illness"
+        },
+        {
+          "title": "10.3 Treatments and Nutrition",
+          "slug": "10-3-treatments-and-nutrition"
+        }
+      ]
+    },
+    {
+      "number": 11,
+      "title": "Applying Clinical Judgment to Promote Nutrition for Cardiovascular Wellness",
+      "sections": [
+        {
+          "title": "11.1 Assess and Analyze the Impact of Nutrition on the Cardiovascular System",
+          "slug": "11-1-assess-and-analyze-the-impact-of-nutrition-on-the-cardiovascular-system"
+        },
+        {
+          "title": "11.2 Plan Nutritional Strategies to Impact Cardiovascular Wellness",
+          "slug": "11-2-plan-nutritional-strategies-to-impact-cardiovascular-wellness"
+        },
+        {
+          "title": "11.3 Implement Nutritional Strategies to Impact Cardiovascular Wellness",
+          "slug": "11-3-implement-nutritional-strategies-to-impact-cardiovascular-wellness"
+        },
+        {
+          "title": "11.4 Evaluate Nutritional Strategies to Impact Cardiovascular Wellness",
+          "slug": "11-4-evaluate-nutritional-strategies-to-impact-cardiovascular-wellness"
+        }
+      ]
+    },
+    {
+      "number": 12,
+      "title": "Special Nutritional Considerations for Cardiovascular Health",
+      "sections": [
+        {
+          "title": "12.1 The Impact of Nutrition on Cardiovascular Wellness Across the Lifespan",
+          "slug": "12-1-the-impact-of-nutrition-on-cardiovascular-wellness-across-the-lifespan"
+        },
+        {
+          "title": "12.2 Nutrition and Long-Term Cardiovascular Illnesses",
+          "slug": "12-2-nutrition-and-long-term-cardiovascular-illnesses"
+        },
+        {
+          "title": "12.3 Treatments and Nutrition",
+          "slug": "12-3-treatments-and-nutrition"
+        }
+      ]
+    },
+    {
+      "number": 13,
+      "title": "Applying Clinical Judgment to Promote Nutrition for Pulmonary Wellness",
+      "sections": [
+        {
+          "title": "13.1 Assess and Analyze the Impact of Nutrition on the Pulmonary System",
+          "slug": "13-1-assess-and-analyze-the-impact-of-nutrition-on-the-pulmonary-system"
+        },
+        {
+          "title": "13.2 Plan Nutritional Strategies to Impact Pulmonary Wellness",
+          "slug": "13-2-plan-nutritional-strategies-to-impact-pulmonary-wellness"
+        },
+        {
+          "title": "13.3 Implement Nutritional Strategies to Impact Pulmonary Wellness",
+          "slug": "13-3-implement-nutritional-strategies-to-impact-pulmonary-wellness"
+        },
+        {
+          "title": "13.4 Evaluate Nutritional Strategies to Impact Pulmonary Wellness",
+          "slug": "13-4-evaluate-nutritional-strategies-to-impact-pulmonary-wellness"
+        }
+      ]
+    },
+    {
+      "number": 14,
+      "title": "Special Nutritional Considerations for Pulmonary Health",
+      "sections": [
+        {
+          "title": "14.1 The Impact of Nutrition on Pulmonary Wellness Across the Lifespan",
+          "slug": "14-1-the-impact-of-nutrition-on-pulmonary-wellness-across-the-lifespan"
+        },
+        {
+          "title": "14.2 Nutrition and Chronic Pulmonary Illnesses",
+          "slug": "14-2-nutrition-and-chronic-pulmonary-illnesses"
+        },
+        {
+          "title": "14.3 Treatments and Nutrition",
+          "slug": "14-3-treatments-and-nutrition"
+        }
+      ]
+    },
+    {
+      "number": 15,
+      "title": "Applying Clinical Judgment to Promote Nutrition for Renal Wellness",
+      "sections": [
+        {
+          "title": "15.1 Assess and Analyze the Impact of Nutrition on the Renal System",
+          "slug": "15-1-assess-and-analyze-the-impact-of-nutrition-on-the-renal-system"
+        },
+        {
+          "title": "15.2 Plan Nutritional Strategies to Impact Renal Wellness",
+          "slug": "15-2-plan-nutritional-strategies-to-impact-renal-wellness"
+        },
+        {
+          "title": "15.3 Implement Nutritional Strategies to Impact Renal Wellness",
+          "slug": "15-3-implement-nutritional-strategies-to-impact-renal-wellness"
+        },
+        {
+          "title": "15.4 Evaluate Nutritional Strategies to Impact Renal Wellness",
+          "slug": "15-4-evaluate-nutritional-strategies-to-impact-renal-wellness"
+        }
+      ]
+    },
+    {
+      "number": 16,
+      "title": "Special Nutritional Considerations for Renal Health",
+      "sections": [
+        {
+          "title": "16.1 The Impact of Nutrition on Renal Wellness Across the Lifespan",
+          "slug": "16-1-the-impact-of-nutrition-on-renal-wellness-across-the-lifespan"
+        },
+        {
+          "title": "16.2 Nutrition and Chronic Renal Illness",
+          "slug": "16-2-nutrition-and-chronic-renal-illness"
+        }
+      ]
+    },
+    {
+      "number": 17,
+      "title": "Applying Clinical Judgment to Promote Nutrition for Gastrointestinal Wellness",
+      "sections": [
+        {
+          "title": "17.1 Assess and Analyze the Impact of Nutrition on the Gastrointestinal System",
+          "slug": "17-1-assess-and-analyze-the-impact-of-nutrition-on-the-gastrointestinal-system"
+        },
+        {
+          "title": "17.2 Plan Nutritional Strategies to Impact Gastrointestinal Wellness",
+          "slug": "17-2-plan-nutritional-strategies-to-impact-gastrointestinal-wellness"
+        },
+        {
+          "title": "17.3 Implement Nutritional Strategies to Impact Gastrointestinal Wellness",
+          "slug": "17-3-implement-nutritional-strategies-to-impact-gastrointestinal-wellness"
+        },
+        {
+          "title": "17.4 Evaluate Nutritional Strategies to Impact Gastrointestinal Wellness",
+          "slug": "17-4-evaluate-nutritional-strategies-to-impact-gastrointestinal-wellness"
+        }
+      ]
+    },
+    {
+      "number": 18,
+      "title": "Special Nutritional Considerations for Gastrointestinal Health",
+      "sections": [
+        {
+          "title": "18.1 The Impact of Nutrition on Gastrointestinal Wellness Across the Lifespan",
+          "slug": "18-1-the-impact-of-nutrition-on-gastrointestinal-wellness-across-the-lifespan"
+        },
+        {
+          "title": "18.2 Nutrition and Chronic Gastrointestinal Illnesses",
+          "slug": "18-2-nutrition-and-chronic-gastrointestinal-illnesses"
+        },
+        {
+          "title": "18.3 Treatments and Nutrition",
+          "slug": "18-3-treatments-and-nutrition"
+        }
+      ]
+    },
+    {
+      "number": 19,
+      "title": "Applying Clinical Judgment to Promote Nutrition for Musculoskeletal and Integumentary Wellness",
+      "sections": [
+        {
+          "title": "19.1 Assess and Analyze the Impact of Nutrition on the Musculoskeletal and Integumentary Systems",
+          "slug": "19-1-assess-and-analyze-the-impact-of-nutrition-on-the-musculoskeletal-and-integumentary-systems"
+        },
+        {
+          "title": "19.2 Plan Nutritional Strategies to Impact Musculoskeletal and Integumentary Wellness",
+          "slug": "19-2-plan-nutritional-strategies-to-impact-musculoskeletal-and-integumentary-wellness"
+        },
+        {
+          "title": "19.3 Implement Nutritional Strategies to Impact Musculoskeletal and Integumentary Wellness",
+          "slug": "19-3-implement-nutritional-strategies-to-impact-musculoskeletal-and-integumentary-wellness"
+        },
+        {
+          "title": "19.4 Evaluate Nutritional Strategies to Impact Musculoskeletal and Integumentary Wellness",
+          "slug": "19-4-evaluate-nutritional-strategies-to-impact-musculoskeletal-and-integumentary-wellness"
+        }
+      ]
+    },
+    {
+      "number": 20,
+      "title": "Special Nutritional Considerations for Musculoskeletal and Integumentary Health",
+      "sections": [
+        {
+          "title": "20.1 The Impact of Nutrition on Musculoskeletal and Integumentary Wellness Across the Lifespan",
+          "slug": "20-1-the-impact-of-nutrition-on-musculoskeletal-and-integumentary-wellness-across-the-lifespan"
+        },
+        {
+          "title": "20.2 Nutrition and Chronic Musculoskeletal and Integumentary Illness",
+          "slug": "20-2-nutrition-and-chronic-musculoskeletal-and-integumentary-illness"
+        },
+        {
+          "title": "20.3 Treatments and Nutrition",
+          "slug": "20-3-treatments-and-nutrition"
+        }
+      ]
+    }
+  ]
+}
