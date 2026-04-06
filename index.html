@@ -2127,11 +2127,17 @@
     // ===== KNOWLEDGE BASE TILE EXPANSION =====
     const TILE_SOURCES = {
       web: [
-        { name: 'Scope of Practice Reference \u2014 NTP, FNTP & PHWC', chunks: 24, url: 'https://www.nutritionaltherapy.com/ntp-scope-of-practice/' },
-        { name: 'NTP Curriculum Deep Dive \u2014 Five Foundations & Clinical Application', chunks: 45, url: 'https://www.nutritionaltherapy.com/nutritional-therapy-practitioner/' },
-        { name: 'PHWC Curriculum Deep Dive \u2014 Coaching Foundations & Behavior Change', chunks: 34, url: 'https://www.nutritionaltherapy.com/health-and-wellness-coach/' },
-        { name: 'NTA Programs and Credentials Guide', chunks: 36, url: 'https://www.nutritionaltherapy.com/programs/' },
-        { name: 'NTA Philosophy and Terminology Reference', chunks: 48, url: 'https://www.nutritionaltherapy.com/about-us/' }
+        { name: 'NTP Scope of Practice', url: 'https://www.nutritionaltherapy.com/ntp-scope-of-practice' },
+        { name: 'PHWC Scope of Practice', url: 'https://www.nutritionaltherapy.com/phwc-scope-of-practice' },
+        { name: 'Nutritional Therapy Practitioner Program', url: 'https://www.nutritionaltherapy.com/ntp' },
+        { name: 'NTP Student Information', url: 'https://www.nutritionaltherapy.com/ntp-student-information' },
+        { name: 'Professional Health & Wellness Coach Program', url: 'https://www.nutritionaltherapy.com/health-coach' },
+        { name: 'PHWC Student Information', url: 'https://www.nutritionaltherapy.com/phwc-student-information' },
+        { name: 'Functional Clinical Assessment (FCA)', url: 'https://www.nutritionaltherapy.com/fca' },
+        { name: 'Foundations of Healing', url: 'https://www.nutritionaltherapy.com/foundations' },
+        { name: 'NTA Health', url: 'https://www.nutritionaltherapy.com/nta-health' },
+        { name: 'All Programs & Courses', url: 'https://www.nutritionaltherapy.com/courses' },
+        { name: 'About the NTA', url: 'https://www.nutritionaltherapy.com/about' }
       ],
       textbook: [
         { name: 'Ch 1: An Introduction to the Human Body', chunks: 6, url: 'https://openstax.org/books/anatomy-and-physiology/pages/1-1-overview-of-anatomy-and-physiology' },
@@ -2179,9 +2185,14 @@
       const container = document.getElementById('expand-' + type);
       if (container.children.length > 0) return; // already populated
 
-      if (type === 'web' || type === 'textbook') {
-        const sources = TILE_SOURCES[type];
-        container.innerHTML = sources.map(s =>
+      if (type === 'web') {
+        container.innerHTML = TILE_SOURCES.web.map(s =>
+          `<div class="coverage-source-item">
+            <span class="coverage-source-name"><a href="${s.url}" target="_blank" rel="noopener">${s.name}</a></span>
+          </div>`
+        ).join('');
+      } else if (type === 'textbook') {
+        container.innerHTML = TILE_SOURCES.textbook.map(s =>
           `<div class="coverage-source-item">
             <span class="coverage-source-name"><a href="${s.url}" target="_blank" rel="noopener">${s.name}</a></span>
             <span class="coverage-source-count">${s.chunks} chunks</span>
