@@ -1147,6 +1147,150 @@
       border-style: dashed;
     }
 
+    .coverage-card {
+      cursor: pointer;
+      transition: all 0.25s ease;
+    }
+
+    .coverage-card:hover {
+      border-color: var(--accent);
+    }
+
+    .coverage-grid.has-expanded .coverage-card:not(.expanded) {
+      display: none;
+    }
+
+    .coverage-card.expanded {
+      grid-column: 1 / -1;
+      cursor: default;
+    }
+
+    .coverage-card-expand {
+      display: none;
+      margin-top: 0.625rem;
+      border-top: 1px solid var(--border);
+      padding-top: 0.5rem;
+      max-height: 320px;
+      overflow-y: auto;
+    }
+
+    .coverage-card.expanded .coverage-card-expand {
+      display: block;
+    }
+
+    .coverage-card.expanded .coverage-card-desc {
+      display: none;
+    }
+
+    .coverage-expand-close {
+      float: right;
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: 0;
+      font-size: 1rem;
+      line-height: 1;
+    }
+
+    .coverage-expand-close:hover {
+      color: var(--text-primary);
+    }
+
+    .coverage-source-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.375rem 0;
+      border-bottom: 1px solid rgba(0,0,0,0.05);
+      gap: 0.5rem;
+    }
+
+    .coverage-source-item:last-child {
+      border-bottom: none;
+    }
+
+    .coverage-source-name {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      font-weight: 500;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .coverage-source-name a {
+      color: var(--text-secondary);
+      text-decoration: none;
+    }
+
+    .coverage-source-name a:hover {
+      color: var(--accent);
+      text-decoration: underline;
+    }
+
+    .coverage-source-count {
+      font-size: 0.625rem;
+      color: var(--text-muted);
+      flex-shrink: 0;
+    }
+
+    .coverage-topic-group {
+      border-bottom: 1px solid rgba(0,0,0,0.05);
+    }
+
+    .coverage-topic-group:last-child {
+      border-bottom: none;
+    }
+
+    .coverage-topic-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.375rem 0;
+      cursor: pointer;
+      gap: 0.5rem;
+    }
+
+    .coverage-topic-header:hover .coverage-source-name {
+      color: var(--accent);
+    }
+
+    .coverage-topic-episodes {
+      display: none;
+      padding: 0 0 0.375rem 0.75rem;
+    }
+
+    .coverage-topic-group.open .coverage-topic-episodes {
+      display: block;
+    }
+
+    .coverage-topic-chevron {
+      width: 12px;
+      height: 12px;
+      color: var(--text-muted);
+      transition: transform 0.2s ease;
+      flex-shrink: 0;
+    }
+
+    .coverage-topic-group.open .coverage-topic-chevron {
+      transform: rotate(90deg);
+    }
+
+    .coverage-episode-item {
+      padding: 0.25rem 0;
+    }
+
+    .coverage-episode-item a {
+      font-size: 0.6875rem;
+      color: var(--text-muted);
+      text-decoration: none;
+    }
+
+    .coverage-episode-item a:hover {
+      color: var(--accent);
+      text-decoration: underline;
+    }
+
     /* ===== WELCOME DISCLAIMER ===== */
     .welcome-disclaimer {
       font-size: 0.6875rem;
@@ -1980,6 +2124,138 @@
       });
     }
 
+    // ===== KNOWLEDGE BASE TILE EXPANSION =====
+    const TILE_SOURCES = {
+      web: [
+        { name: 'Scope of Practice Reference \u2014 NTP, FNTP & PHWC', chunks: 24, url: 'https://www.nutritionaltherapy.com/nutritional-therapy-practitioner/' },
+        { name: 'NTP Curriculum Deep Dive \u2014 Five Foundations & Clinical Application', chunks: 45, url: 'https://www.nutritionaltherapy.com/nutritional-therapy-practitioner/' },
+        { name: 'PHWC Curriculum Deep Dive \u2014 Coaching Foundations & Behavior Change', chunks: 34, url: 'https://www.nutritionaltherapy.com/health-and-wellness-coach/' },
+        { name: 'NTA Programs and Credentials Guide', chunks: 36, url: 'https://www.nutritionaltherapy.com/programs/' },
+        { name: 'NTA Philosophy and Terminology Reference', chunks: 48, url: 'https://www.nutritionaltherapy.com/about/' }
+      ],
+      textbook: [
+        { name: 'Ch 1: An Introduction to the Human Body', chunks: 6, url: 'https://openstax.org/books/anatomy-and-physiology/pages/1-1-overview-of-anatomy-and-physiology' },
+        { name: 'Ch 2: The Chemical Level of Organization', chunks: 18, url: 'https://openstax.org/books/anatomy-and-physiology/pages/2-1-elements-and-atoms-the-building-blocks-of-matter' },
+        { name: 'Ch 3: The Cellular Level of Organization', chunks: 19, url: 'https://openstax.org/books/anatomy-and-physiology/pages/3-1-the-cell-membrane' },
+        { name: 'Ch 4: The Tissue Level of Organization', chunks: 10, url: 'https://openstax.org/books/anatomy-and-physiology/pages/4-1-types-of-tissues' },
+        { name: 'Ch 5: The Integumentary System', chunks: 9, url: 'https://openstax.org/books/anatomy-and-physiology/pages/5-1-layers-of-the-skin' },
+        { name: 'Ch 6: Bone Tissue and the Skeletal System', chunks: 6, url: 'https://openstax.org/books/anatomy-and-physiology/pages/6-1-the-functions-of-the-skeletal-system' },
+        { name: 'Ch 7: Axial Skeleton', chunks: 6, url: 'https://openstax.org/books/anatomy-and-physiology/pages/7-1-divisions-of-the-skeletal-system' },
+        { name: 'Ch 8: The Appendicular Skeleton', chunks: 6, url: 'https://openstax.org/books/anatomy-and-physiology/pages/8-1-the-pectoral-girdle' },
+        { name: 'Ch 9: Joints', chunks: 6, url: 'https://openstax.org/books/anatomy-and-physiology/pages/9-1-classification-of-joints' },
+        { name: 'Ch 10: Muscle Tissue', chunks: 10, url: 'https://openstax.org/books/anatomy-and-physiology/pages/10-1-overview-of-muscle-tissues' },
+        { name: 'Ch 11: The Muscular System', chunks: 7, url: 'https://openstax.org/books/anatomy-and-physiology/pages/11-1-interactions-of-skeletal-muscles-their-fascicle-arrangement-and-their-lever-systems' },
+        { name: 'Ch 12: The Nervous System and Nervous Tissue', chunks: 17, url: 'https://openstax.org/books/anatomy-and-physiology/pages/12-1-basic-structure-and-function-of-the-nervous-system' },
+        { name: 'Ch 13: Anatomy of the Nervous System', chunks: 11, url: 'https://openstax.org/books/anatomy-and-physiology/pages/13-1-the-embryologic-perspective' },
+        { name: 'Ch 14: The Somatic Nervous System', chunks: 13, url: 'https://openstax.org/books/anatomy-and-physiology/pages/14-1-sensory-perception' },
+        { name: 'Ch 15: The Autonomic Nervous System', chunks: 34, url: 'https://openstax.org/books/anatomy-and-physiology/pages/15-1-divisions-of-the-autonomic-nervous-system' },
+        { name: 'Ch 16: The Neurological Exam', chunks: 7, url: 'https://openstax.org/books/anatomy-and-physiology/pages/16-1-overview-of-the-neurological-exam' },
+        { name: 'Ch 17: The Endocrine System', chunks: 73, url: 'https://openstax.org/books/anatomy-and-physiology/pages/17-1-an-overview-of-the-endocrine-system' },
+        { name: 'Ch 18: The Cardiovascular System: Blood', chunks: 59, url: 'https://openstax.org/books/anatomy-and-physiology/pages/18-1-an-overview-of-blood' },
+        { name: 'Ch 19: The Cardiovascular System: The Heart', chunks: 24, url: 'https://openstax.org/books/anatomy-and-physiology/pages/19-1-heart-anatomy' },
+        { name: 'Ch 20: Blood Vessels and Circulation', chunks: 35, url: 'https://openstax.org/books/anatomy-and-physiology/pages/20-1-structure-and-function-of-blood-vessels' },
+        { name: 'Ch 21: The Lymphatic and Immune System', chunks: 66, url: 'https://openstax.org/books/anatomy-and-physiology/pages/21-1-anatomy-of-the-lymphatic-and-immune-systems' },
+        { name: 'Ch 22: The Respiratory System', chunks: 14, url: 'https://openstax.org/books/anatomy-and-physiology/pages/22-1-organs-and-structures-of-the-respiratory-system' },
+        { name: 'Ch 23: The Digestive System', chunks: 61, url: 'https://openstax.org/books/anatomy-and-physiology/pages/23-1-overview-of-the-digestive-system' },
+        { name: 'Ch 24: Metabolism and Nutrition', chunks: 50, url: 'https://openstax.org/books/anatomy-and-physiology/pages/24-1-overview-of-metabolic-reactions' },
+        { name: 'Ch 25: The Urinary System', chunks: 27, url: 'https://openstax.org/books/anatomy-and-physiology/pages/25-1-physical-characteristics-of-urine' },
+        { name: 'Ch 26: Fluid, Electrolyte, and Acid-Base Balance', chunks: 44, url: 'https://openstax.org/books/anatomy-and-physiology/pages/26-1-body-fluids-and-fluid-compartments' },
+        { name: 'Ch 27: The Reproductive System', chunks: 27, url: 'https://openstax.org/books/anatomy-and-physiology/pages/27-1-anatomy-and-physiology-of-the-male-reproductive-system' },
+        { name: 'Ch 28: Development and Inheritance', chunks: 16, url: 'https://openstax.org/books/anatomy-and-physiology/pages/28-1-fertilization' }
+      ],
+      curriculum: [
+        { name: 'NTP Program \u2014 Full curriculum modules and lesson content', chunks: 0 },
+        { name: 'PHWC Program \u2014 Coaching frameworks and monthly curriculum', chunks: 0 },
+        { name: 'Clinical Application Guides \u2014 NACA process, FCA, functional labs', chunks: 0 },
+        { name: 'Assessment Tools \u2014 NAQ, Symptom Burden Graph, Nutri-Q workflows', chunks: 0 }
+      ]
+    };
+
+    function expandTile(card, type) {
+      if (card.classList.contains('expanded')) return;
+      const grid = document.getElementById('coverageGrid');
+      grid.classList.add('has-expanded');
+      card.classList.add('expanded');
+      const container = document.getElementById('expand-' + type);
+      if (container.children.length > 0) return; // already populated
+
+      if (type === 'web' || type === 'textbook') {
+        const sources = TILE_SOURCES[type];
+        container.innerHTML = sources.map(s =>
+          `<div class="coverage-source-item">
+            <span class="coverage-source-name"><a href="${s.url}" target="_blank" rel="noopener">${s.name}</a></span>
+            <span class="coverage-source-count">${s.chunks} chunks</span>
+          </div>`
+        ).join('');
+      } else if (type === 'curriculum') {
+        const sources = TILE_SOURCES.curriculum;
+        container.innerHTML = sources.map(s =>
+          `<div class="coverage-source-item">
+            <span class="coverage-source-name" style="color:var(--text-muted)">${s.name}</span>
+          </div>`
+        ).join('');
+      } else if (type === 'podcast') {
+        container.innerHTML = '<div style="font-size:0.75rem;color:var(--text-muted);padding:0.5rem 0;">Loading episodes...</div>';
+        loadPodcastTopics(container);
+      }
+    }
+
+    function collapseTile(card) {
+      card.classList.remove('expanded');
+      const grid = document.getElementById('coverageGrid');
+      grid.classList.remove('has-expanded');
+    }
+
+    async function loadPodcastTopics(container) {
+      try {
+        const SUPA_URL = 'https://wdouifomlipmlsksczsv.supabase.co';
+        const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indkb3VpZm9tbGlwbWxza3NjenN2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcyMDQ3NTEsImV4cCI6MjA4Mjc4MDc1MX0.UGsHCrMbaVm04dBf5GwbRPdVhRFCjm_MHznYN5M5TQ8';
+        const resp = await fetch(
+          SUPA_URL + '/rest/v1/nta_knowledge_chunks?select=document_name,section_hierarchy,source_url&document_type=eq.reference&section_hierarchy->>0=eq.Podcast&limit=2000',
+          { headers: { 'apikey': SUPA_KEY, 'Authorization': 'Bearer ' + SUPA_KEY } }
+        );
+        const chunks = await resp.json();
+
+        // Group by topic (hierarchy[1]), then by episode (document_name)
+        const topics = {};
+        for (const c of chunks) {
+          const topic = (c.section_hierarchy && c.section_hierarchy[1]) || 'Other';
+          if (!topics[topic]) topics[topic] = {};
+          const ep = c.document_name || 'Unknown';
+          if (!topics[topic][ep]) topics[topic][ep] = { count: 0, url: c.source_url };
+          topics[topic][ep].count++;
+        }
+
+        // Sort topics by total chunk count descending
+        const sorted = Object.entries(topics).sort((a, b) => {
+          const aTotal = Object.values(a[1]).reduce((s, e) => s + e.count, 0);
+          const bTotal = Object.values(b[1]).reduce((s, e) => s + e.count, 0);
+          return bTotal - aTotal;
+        });
+
+        container.innerHTML = sorted.map(([topic, episodes]) => {
+          const epCount = Object.keys(episodes).length;
+          const epList = Object.entries(episodes)
+            .sort((a, b) => b[1].count - a[1].count)
+            .map(([name, data]) =>
+              data.url
+                ? `<div class="coverage-episode-item"><a href="${data.url}" target="_blank" rel="noopener">${name}</a></div>`
+                : `<div class="coverage-episode-item"><span style="font-size:0.6875rem;color:var(--text-muted)">${name}</span></div>`
+            ).join('');
+          return `<div class="coverage-topic-group" onclick="event.stopPropagation(); this.classList.toggle('open')">
+            <div class="coverage-topic-header">
+              <span class="coverage-source-name">${topic}</span>
+              <span class="coverage-source-count">${epCount} episode${epCount !== 1 ? 's' : ''}</span>
+              <svg class="coverage-topic-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            </div>
+            <div class="coverage-topic-episodes">${epList}</div>
+          </div>`;
+        }).join('');
+      } catch (e) {
+        container.innerHTML = '<div style="font-size:0.75rem;color:var(--text-muted);">Could not load episodes.</div>';
+      }
+    }
+
     // ===== QUESTION LIBRARY =====
     // Question library organized around NTA's Five Foundations and actual curriculum modules
     const questionLibrary = {
@@ -2165,34 +2441,42 @@
 
           <div class="welcome-section">
             <h3>Knowledge Base</h3>
-            <div class="coverage-grid">
-              <div class="coverage-card">
+            <div class="coverage-grid" id="coverageGrid">
+              <div class="coverage-card" onclick="expandTile(this, 'web')">
                 <div class="coverage-card-header">
                   <span class="coverage-badge" style="background:rgba(59,130,246,0.1);color:#3b82f6;">Web</span>
                   <span class="coverage-card-title">NTA Website Content</span>
+                  <button class="coverage-expand-close" onclick="event.stopPropagation(); collapseTile(this.closest('.coverage-card'));">&times;</button>
                 </div>
                 <p class="coverage-card-desc">Programs, credentials, scope of practice for NTP/FNTP/PHWC, the Five Foundations, NTA philosophy, bio-individuality, terminology glossary, and all certifications compared.</p>
+                <div class="coverage-card-expand" id="expand-web"></div>
               </div>
-              <div class="coverage-card">
+              <div class="coverage-card" onclick="expandTile(this, 'podcast')">
                 <div class="coverage-card-header">
                   <span class="coverage-badge podcast">Podcast</span>
                   <span class="coverage-card-title">Podcast Library &mdash; 86 Episodes</span>
+                  <button class="coverage-expand-close" onclick="event.stopPropagation(); collapseTile(this.closest('.coverage-card'));">&times;</button>
                 </div>
                 <p class="coverage-card-desc">The Nutritional Therapy and Wellness Podcast covering digestion, blood sugar, hormones, fertility, mental health, food quality, supplements, and practitioner development.</p>
+                <div class="coverage-card-expand" id="expand-podcast"></div>
               </div>
-              <div class="coverage-card">
+              <div class="coverage-card" onclick="expandTile(this, 'textbook')">
                 <div class="coverage-card-header">
                   <span class="coverage-badge textbook">Textbook</span>
                   <span class="coverage-card-title">Anatomy &amp; Physiology</span>
+                  <button class="coverage-expand-close" onclick="event.stopPropagation(); collapseTile(this.closest('.coverage-card'));">&times;</button>
                 </div>
                 <p class="coverage-card-desc">OpenStax A&amp;P textbook covering digestive, endocrine, immune, cardiovascular, respiratory, urinary, and reproductive systems plus metabolism, blood, and electrolyte balance.</p>
+                <div class="coverage-card-expand" id="expand-textbook"></div>
               </div>
-              <div class="coverage-card muted">
+              <div class="coverage-card muted" onclick="expandTile(this, 'curriculum')">
                 <div class="coverage-card-header">
                   <span class="coverage-badge coming-soon">Coming Soon</span>
                   <span class="coverage-card-title">NTP &amp; PHWC Curriculum</span>
+                  <button class="coverage-expand-close" onclick="event.stopPropagation(); collapseTile(this.closest('.coverage-card'));">&times;</button>
                 </div>
                 <p class="coverage-card-desc">Full NTP and PHWC curriculum modules, lesson content, clinical application guides, and coaching frameworks &mdash; coming once curriculum access is finalized.</p>
+                <div class="coverage-card-expand" id="expand-curriculum"></div>
               </div>
             </div>
           </div>
