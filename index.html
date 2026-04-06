@@ -2276,11 +2276,7 @@
         });
 
         const sourceCards = Object.entries(grouped).map(([docName, sections]) => {
-          if (sections.length === 1) {
-            return renderSourceItem(sections[0], sections[0]._originalIndex, messageId);
-          } else {
-            return renderGroupedSource(docName, sections, messageId);
-          }
+          return renderGroupedSource(docName, sections, messageId);
         }).join('');
 
         sourcesHtml = `
@@ -2399,7 +2395,7 @@
               <div class="source-group-name">${escapeHtml(docName)}</div>
               <div class="source-group-meta">
                 <span class="authority-badge ${badgeClass}">${badgeLabel}</span>
-                <span class="source-group-count">${sections.length} sections</span>
+                ${sections.length > 1 ? `<span class="source-group-count">${sections.length} sections</span>` : ''}
               </div>
             </div>
             <svg class="source-group-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
