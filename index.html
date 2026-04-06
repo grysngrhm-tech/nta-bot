@@ -577,8 +577,97 @@
       box-shadow: var(--shadow-sm);
     }
 
-    .source-item:last-child {
+    .source-item:last-child, .source-group:last-child {
       margin-bottom: 0;
+    }
+
+    /* ===== GROUPED SOURCE ACCORDION ===== */
+    .source-group {
+      background: var(--bg-source);
+      border-radius: var(--radius-md);
+      margin-bottom: 0.625rem;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+    }
+
+    .source-group-header {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.75rem;
+      cursor: pointer;
+      user-select: none;
+      transition: background 0.15s ease;
+    }
+
+    .source-group-header:hover {
+      background: rgba(0,0,0,0.02);
+    }
+
+    .source-group-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .source-group-name {
+      font-size: 0.8125rem;
+      font-weight: 500;
+      color: var(--text-primary);
+      line-height: 1.4;
+    }
+
+    .source-group-meta {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 0.125rem;
+    }
+
+    .source-group-count {
+      font-size: 0.6875rem;
+      color: var(--text-muted);
+    }
+
+    .source-group-chevron {
+      width: 16px;
+      height: 16px;
+      color: var(--text-muted);
+      transition: transform 0.2s ease;
+      flex-shrink: 0;
+    }
+
+    .source-group.expanded .source-group-chevron {
+      transform: rotate(90deg);
+    }
+
+    .source-group-body {
+      display: none;
+      border-top: 1px solid var(--border);
+    }
+
+    .source-group.expanded .source-group-body {
+      display: block;
+    }
+
+    .source-group-section {
+      padding: 0.5rem 0.75rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .source-group-section:last-child {
+      border-bottom: none;
+    }
+
+    .source-group-section-title {
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+      margin-bottom: 0.375rem;
+    }
+
+    .source-group-section .source-actions {
+      padding: 0;
     }
 
     .source-header {
@@ -2178,10 +2267,26 @@
       let sourcesHtml = '';
       const validSources = sources.filter(s => s && (s.content || s.section_title || s.document_name));
       if (validSources.length > 0) {
+        // Group sources by document_name
+        const grouped = {};
+        validSources.forEach((source, index) => {
+          const key = source.document_name || 'Unknown';
+          if (!grouped[key]) grouped[key] = [];
+          grouped[key].push({ ...source, _originalIndex: index });
+        });
+
+        const sourceCards = Object.entries(grouped).map(([docName, sections]) => {
+          if (sections.length === 1) {
+            return renderSourceItem(sections[0], sections[0]._originalIndex, messageId);
+          } else {
+            return renderGroupedSource(docName, sections, messageId);
+          }
+        }).join('');
+
         sourcesHtml = `
           <div class="sources-section">
             <div class="sources-title">Sources & References</div>
-            ${validSources.map((source, index) => renderSourceItem(source, index, messageId)).join('')}
+            ${sourceCards}
           </div>
         `;
       }
@@ -2224,6 +2329,85 @@
               </div>
             </div>
             ${sourcesHtml}
+          </div>
+        </div>
+      `;
+    }
+
+    function renderGroupedSource(docName, sections, messageId) {
+      const groupId = `${messageId}-group-${docName.replace(/[^a-zA-Z0-9]/g, '-')}`;
+      const firstSection = sections[0];
+      const hierarchy = firstSection.section_hierarchy || [];
+
+      // Badge from first section
+      const isTextbookSource = hierarchy[0] === 'Textbook';
+      const isPodcastSource = hierarchy[0] === 'Podcast';
+      const badgeClass = isTextbookSource ? 'authority-textbook' : isPodcastSource ? 'authority-podcast' : 'authority-web';
+      const badgeLabel = isTextbookSource ? 'Textbook' : isPodcastSource ? 'Podcast' : 'Web';
+
+      // Build section rows
+      const sectionRows = sections.map(source => {
+        const title = source.section_title || 'Section';
+        const content = source.content || 'Source content not available.';
+        const sourceUrl = source.source_url || null;
+        const sourceId = `${messageId}-source-${source._originalIndex}`;
+
+        // Build breadcrumb for modal
+        const pathParts = [docName];
+        if (hierarchy.length > 0) pathParts.push(...hierarchy);
+        if (title && !hierarchy.includes(title) && title !== docName) pathParts.push(title);
+        const fullPath = pathParts.join(' \u203a ');
+        sourceDataStore[sourceId] = { path: fullPath, content, sourceUrl };
+
+        // External link
+        const isTextbook = sourceUrl && sourceUrl.includes('openstax.org');
+        const isPodcast = sourceUrl && sourceUrl.includes('podcasts.apple.com');
+        const linkLabel = isTextbook ? 'View on OpenStax' : isPodcast ? 'Listen on Apple Podcasts' : 'View on NTA website';
+        const linkIcon = isTextbook
+          ? '<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>'
+          : isPodcast
+          ? '<path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle>'
+          : '<path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line>';
+        const ccBadge = isTextbook ? '<span style="font-size:0.6rem;color:#6b7280;margin-left:0.25rem;">CC BY 4.0</span>' : '';
+        const extLink = sourceUrl ? `
+              <a class="view-source-link source-url-link" href="${escapeHtml(sourceUrl)}" target="_blank" rel="noopener">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${linkIcon}</svg>
+                ${linkLabel}
+              </a>${ccBadge}` : '';
+
+        return `
+          <div class="source-group-section">
+            <div class="source-group-section-title">${escapeHtml(title)}</div>
+            <div class="source-actions">
+              <button class="view-source-link" onclick="openSourceModal('${sourceId}')">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                  <polyline points="14 2 14 8 20 8"></polyline>
+                  <line x1="16" y1="13" x2="8" y2="13"></line>
+                  <line x1="16" y1="17" x2="8" y2="17"></line>
+                </svg>
+                View source text
+              </button>${extLink}
+            </div>
+          </div>`;
+      }).join('');
+
+      return `
+        <div class="source-group" id="${groupId}">
+          <div class="source-group-header" onclick="this.parentElement.classList.toggle('expanded')">
+            <div class="source-group-info">
+              <div class="source-group-name">${escapeHtml(docName)}</div>
+              <div class="source-group-meta">
+                <span class="authority-badge ${badgeClass}">${badgeLabel}</span>
+                <span class="source-group-count">${sections.length} sections</span>
+              </div>
+            </div>
+            <svg class="source-group-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+          </div>
+          <div class="source-group-body">
+            ${sectionRows}
           </div>
         </div>
       `;
