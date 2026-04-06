@@ -1145,6 +1145,7 @@
     .coverage-card.muted {
       opacity: 0.55;
       border-style: dashed;
+      cursor: default;
     }
 
     .coverage-card {
@@ -1152,7 +1153,7 @@
       transition: all 0.25s ease;
     }
 
-    .coverage-card:hover {
+    .coverage-card:not(.muted):hover {
       border-color: var(--accent);
     }
 
@@ -1162,7 +1163,6 @@
 
     .coverage-card.expanded {
       grid-column: 1 / -1;
-      cursor: default;
     }
 
     .coverage-card-expand {
@@ -1182,19 +1182,19 @@
       display: none;
     }
 
-    .coverage-expand-close {
-      float: right;
-      background: none;
-      border: none;
+    .coverage-card-toggle {
+      margin-left: auto;
+      font-size: 0.75rem;
       color: var(--text-muted);
-      cursor: pointer;
-      padding: 0;
-      font-size: 1rem;
-      line-height: 1;
+      flex-shrink: 0;
     }
 
-    .coverage-expand-close:hover {
-      color: var(--text-primary);
+    .coverage-card-toggle::after {
+      content: '\203a';
+    }
+
+    .coverage-card.expanded .coverage-card-toggle::after {
+      content: '\d7';
     }
 
     .coverage-source-item {
@@ -2127,11 +2127,11 @@
     // ===== KNOWLEDGE BASE TILE EXPANSION =====
     const TILE_SOURCES = {
       web: [
-        { name: 'Scope of Practice Reference \u2014 NTP, FNTP & PHWC', chunks: 24, url: 'https://www.nutritionaltherapy.com/nutritional-therapy-practitioner/' },
+        { name: 'Scope of Practice Reference \u2014 NTP, FNTP & PHWC', chunks: 24, url: 'https://www.nutritionaltherapy.com/ntp-scope-of-practice/' },
         { name: 'NTP Curriculum Deep Dive \u2014 Five Foundations & Clinical Application', chunks: 45, url: 'https://www.nutritionaltherapy.com/nutritional-therapy-practitioner/' },
         { name: 'PHWC Curriculum Deep Dive \u2014 Coaching Foundations & Behavior Change', chunks: 34, url: 'https://www.nutritionaltherapy.com/health-and-wellness-coach/' },
         { name: 'NTA Programs and Credentials Guide', chunks: 36, url: 'https://www.nutritionaltherapy.com/programs/' },
-        { name: 'NTA Philosophy and Terminology Reference', chunks: 48, url: 'https://www.nutritionaltherapy.com/about/' }
+        { name: 'NTA Philosophy and Terminology Reference', chunks: 48, url: 'https://www.nutritionaltherapy.com/about-us/' }
       ],
       textbook: [
         { name: 'Ch 1: An Introduction to the Human Body', chunks: 6, url: 'https://openstax.org/books/anatomy-and-physiology/pages/1-1-overview-of-anatomy-and-physiology' },
@@ -2172,7 +2172,7 @@
     };
 
     function expandTile(card, type) {
-      if (card.classList.contains('expanded')) return;
+      if (card.classList.contains('expanded')) { collapseTile(card); return; }
       const grid = document.getElementById('coverageGrid');
       grid.classList.add('has-expanded');
       card.classList.add('expanded');
@@ -2211,7 +2211,7 @@
         const SUPA_URL = 'https://wdouifomlipmlsksczsv.supabase.co';
         const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indkb3VpZm9tbGlwbWxza3NjenN2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcyMDQ3NTEsImV4cCI6MjA4Mjc4MDc1MX0.UGsHCrMbaVm04dBf5GwbRPdVhRFCjm_MHznYN5M5TQ8';
         const resp = await fetch(
-          SUPA_URL + '/rest/v1/nta_knowledge_chunks?select=document_name,section_hierarchy,source_url&document_type=eq.reference&section_hierarchy->>0=eq.Podcast&limit=2000',
+          SUPA_URL + '/rest/v1/nta_knowledge_chunks?select=document_name,section_hierarchy,source_url&document_type=eq.reference&section_hierarchy=cs.%7B%22Podcast%22%7D&limit=2000',
           { headers: { 'apikey': SUPA_KEY, 'Authorization': 'Bearer ' + SUPA_KEY } }
         );
         const chunks = await resp.json();
@@ -2446,7 +2446,7 @@
                 <div class="coverage-card-header">
                   <span class="coverage-badge" style="background:rgba(59,130,246,0.1);color:#3b82f6;">Web</span>
                   <span class="coverage-card-title">NTA Website Content</span>
-                  <button class="coverage-expand-close" onclick="event.stopPropagation(); collapseTile(this.closest('.coverage-card'));">&times;</button>
+                  <span class="coverage-card-toggle"></span>
                 </div>
                 <p class="coverage-card-desc">Programs, credentials, scope of practice for NTP/FNTP/PHWC, the Five Foundations, NTA philosophy, bio-individuality, terminology glossary, and all certifications compared.</p>
                 <div class="coverage-card-expand" id="expand-web"></div>
@@ -2455,7 +2455,7 @@
                 <div class="coverage-card-header">
                   <span class="coverage-badge podcast">Podcast</span>
                   <span class="coverage-card-title">Podcast Library &mdash; 86 Episodes</span>
-                  <button class="coverage-expand-close" onclick="event.stopPropagation(); collapseTile(this.closest('.coverage-card'));">&times;</button>
+                  <span class="coverage-card-toggle"></span>
                 </div>
                 <p class="coverage-card-desc">The Nutritional Therapy and Wellness Podcast covering digestion, blood sugar, hormones, fertility, mental health, food quality, supplements, and practitioner development.</p>
                 <div class="coverage-card-expand" id="expand-podcast"></div>
@@ -2464,19 +2464,17 @@
                 <div class="coverage-card-header">
                   <span class="coverage-badge textbook">Textbook</span>
                   <span class="coverage-card-title">Anatomy &amp; Physiology</span>
-                  <button class="coverage-expand-close" onclick="event.stopPropagation(); collapseTile(this.closest('.coverage-card'));">&times;</button>
+                  <span class="coverage-card-toggle"></span>
                 </div>
                 <p class="coverage-card-desc">OpenStax A&amp;P textbook covering digestive, endocrine, immune, cardiovascular, respiratory, urinary, and reproductive systems plus metabolism, blood, and electrolyte balance.</p>
                 <div class="coverage-card-expand" id="expand-textbook"></div>
               </div>
-              <div class="coverage-card muted" onclick="expandTile(this, 'curriculum')">
+              <div class="coverage-card muted">
                 <div class="coverage-card-header">
                   <span class="coverage-badge coming-soon">Coming Soon</span>
                   <span class="coverage-card-title">NTP &amp; PHWC Curriculum</span>
-                  <button class="coverage-expand-close" onclick="event.stopPropagation(); collapseTile(this.closest('.coverage-card'));">&times;</button>
                 </div>
                 <p class="coverage-card-desc">Full NTP and PHWC curriculum modules, lesson content, clinical application guides, and coaching frameworks &mdash; coming once curriculum access is finalized.</p>
-                <div class="coverage-card-expand" id="expand-curriculum"></div>
               </div>
             </div>
           </div>
