@@ -43,27 +43,43 @@ The bot is password-protected and intended for internal use by NTA staff.
 
 ## Knowledge Base
 
-NTA Bot searches across **1,820 curated entries** from three source categories:
+NTA Bot searches across **1,820 curated entries** from three source categories. None of this content is scraped or dumped in raw — each source goes through a processing pipeline that breaks it into focused, searchable chunks and tags it with metadata so the bot knows where every piece of information came from.
 
 ### NTA Curriculum & Reference — 187 entries
 
-Content from NTA's website covering scope of practice, the NTP and PHWC programs, credentials (NTP, FNTP, PHWC, FCA, Foundations of Healing, Career Compass), NTA philosophy, and a complete terminology glossary. Each entry links back to nutritionaltherapy.com.
+Content from NTA's website — scope of practice, the NTP and PHWC programs, credentials, philosophy, and terminology — manually structured into reference documents, then split at section boundaries so each chunk covers one focused topic. Each entry links back to nutritionaltherapy.com.
 
 ### Podcast Library — 990 entries from 86 episodes
 
-Every episode of the **Nutritional Therapy and Wellness Podcast**, transcribed and processed to extract factual, educational content organized by topic — digestion, blood sugar, hormones, fertility, mental health, food quality, supplements, practitioner development, and more. Each citation links directly to the episode on Apple Podcasts.
+Every episode of the **Nutritional Therapy and Wellness Podcast** was transcribed using OpenAI's Whisper speech-to-text model, then processed through GPT-4o to extract factual, educational content — not raw transcripts with filler and chitchat, but distilled reference entries organized by topic (digestion, blood sugar, hormones, fertility, mental health, supplements, and more). Each citation links directly to the episode on Apple Podcasts.
 
 ### Anatomy & Physiology Textbook — 643 entries from 28 chapters
 
-Selected chapters from **OpenStax Anatomy & Physiology** (1st edition, CC BY 4.0), covering the same foundational science as NTA's assigned A&P text. Key systems indexed in depth: digestive, endocrine, immune, cardiovascular, respiratory, urinary, reproductive, plus metabolism, blood, and electrolyte balance. Every chapter has at least breadcrumb coverage. Each citation links to the exact section on openstax.org.
+Selected chapters from **OpenStax Anatomy & Physiology** (1st edition, CC BY 4.0), the same foundational science as NTA's assigned A&P text. The textbook content was sourced from an open-source markdown port, programmatically cleaned to remove review questions and pedagogical filler, then chunked at section boundaries. Key systems are indexed in depth: digestive, endocrine, immune, cardiovascular, respiratory, urinary, reproductive, plus metabolism, blood, and electrolyte balance. Every chapter has at least breadcrumb coverage so the bot can point you in the right direction. Each citation links to the exact section on openstax.org.
 
 ## How It Works
 
-1. **You ask a question** — type or tap the microphone to use voice-to-text.
+NTA Bot uses a technique called **Retrieval-Augmented Generation (RAG)** — instead of relying on what an AI model memorized during training, it *searches* a curated knowledge base for every question and builds the answer from what it finds. This means the bot only says things it can trace back to a specific source, and it can be updated with new content at any time without retraining anything.
 
-2. **The bot searches its knowledge base** — it uses AI-powered semantic search to find the most relevant content across all three source categories. It understands the *meaning* of your question, not just keywords — so "how does sugar affect the brain" finds content about dopamine pathways even if those exact words weren't used. A reranking step then scores results for relevance and ensures source diversity.
+Here's what happens when you ask a question:
 
-3. **AI writes the answer** — OpenAI's GPT-5.4 synthesizes a clear, well-formatted answer using only the retrieved content. Answers include bold terms, bulleted lists, and short paragraphs for easy scanning. Every answer includes collapsible source cards you can expand to view the original text and click through to the source.
+### 1. You ask a question
+
+Type it in, or tap the microphone to use voice-to-text.
+
+### 2. Your question is converted into a vector
+
+Before the bot can search, it needs to translate your question into something a computer can compare against its knowledge base. It does this using an **embedding model** — an AI that reads your question and converts it into a list of 3,072 numbers (called a *vector*) that represent the meaning of what you asked. Think of it like coordinates on a map: questions that mean similar things end up near each other in this mathematical space.
+
+Every chunk in the knowledge base has already been converted into the same kind of vector when it was first loaded. So searching becomes a matter of finding which chunks are "closest" to your question in meaning-space — not just matching keywords, but understanding that "how does sugar affect the brain" is conceptually close to content about dopamine reward pathways even if those exact words never appear.
+
+### 3. The bot searches and ranks results
+
+The bot runs a **hybrid search** that combines vector similarity (meaning-based) with traditional keyword matching, pulling 30 candidate chunks from across all three source categories. Then a second AI model (GPT-5.4 Mini) **reranks** those 30 candidates by reading each one and scoring how well it actually answers your specific question. A diversity step ensures the final results include content from different source types (curriculum, podcast, textbook) when relevant — so you're not just getting 8 podcast results when a textbook chapter has the definitive answer.
+
+### 4. AI writes the answer
+
+The top 8 ranked chunks are passed to **GPT-5.4**, which reads them all and synthesizes a clear, well-formatted answer. The model is instructed to answer only from the retrieved content — never from its own training knowledge — and to write in a direct, scannable style with bold terms, lists, and short paragraphs. Every answer includes collapsible source cards you can expand to view the original text or click through to the source.
 
 ## Features
 
@@ -108,8 +124,15 @@ NTA Bot is actively maintained. The knowledge base can be expanded with new curr
 
 For feedback, feature requests, or bug reports, contact **Grayson Graham**.
 
-## How It's Built
+## Technical Architecture
 
-NTA Bot is a Retrieval-Augmented Generation (RAG) application. Content from NTA's curriculum, podcast, and OpenStax A&P textbook (CC BY 4.0) is stored as 3072-dimensional AI embeddings with contextual retrieval prefixes. Each question triggers a hybrid vector + full-text search, followed by GPT-5.4 Mini relevance reranking and source diversity enforcement. The top results are passed to GPT-5.4 Standard, which synthesizes a formatted, source-grounded answer.
+NTA Bot is a single-page web app hosted on GitHub Pages. There's no backend server — just static HTML/CSS/JS that talks to two cloud services:
+
+- **n8n** (workflow automation) — handles the RAG pipeline: receives questions, orchestrates the search and AI calls, returns structured JSON responses
+- **Supabase** (PostgreSQL database) — stores all 1,820 knowledge chunks with their vector embeddings, runs the hybrid search, and logs analytics
+
+The AI models are accessed via OpenAI's API: **GPT-5.4 Standard** for writing answers, **GPT-5.4 Mini** for reranking search results, and **text-embedding-3-large** for converting text into searchable vectors. The textbook content is from OpenStax Anatomy & Physiology, used under a CC BY 4.0 license.
+
+Every chunk in the knowledge base has a **contextual retrieval prefix** — a short AI-generated sentence that describes what the chunk covers and where it fits in its parent document. This helps the search engine understand chunks that would be ambiguous in isolation.
 
 Designed and built by **Grayson Graham**.
