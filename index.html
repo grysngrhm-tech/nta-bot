@@ -1243,29 +1243,42 @@
 
     /* ===== TYPING INDICATOR ===== */
     .typing-indicator {
+      position: relative;
       padding: 1rem;
       background: var(--bg-bot-msg);
       border: 1px solid var(--border);
       border-radius: var(--radius-lg);
       border-bottom-left-radius: var(--radius-sm);
-      min-width: 280px;
-      max-width: 400px;
-    }
-
-    .typing-progress-track {
-      height: 3px;
-      background: var(--border);
-      border-radius: 2px;
+      min-width: 240px;
+      max-width: 360px;
       overflow: hidden;
-      margin-bottom: 0.75rem;
     }
 
-    .typing-progress-bar {
-      height: 100%;
-      background: var(--accent);
-      border-radius: 2px;
-      width: 0%;
-      transition: width 1s linear;
+    .typing-indicator::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      padding: 1.5px;
+      background: conic-gradient(
+        from 0deg,
+        var(--accent) 0%,
+        var(--accent) var(--glow-progress, 0%),
+        transparent var(--glow-progress, 0%),
+        transparent 100%
+      );
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      transition: --glow-progress 1.5s linear;
+      opacity: 0.6;
+    }
+
+    @property --glow-progress {
+      syntax: '<percentage>';
+      inherits: false;
+      initial-value: 0%;
     }
 
     .typing-content {
@@ -1299,9 +1312,6 @@
     }
 
     .typing-status {
-      display: flex;
-      flex-direction: column;
-      gap: 0.125rem;
       min-width: 0;
     }
 
@@ -1316,21 +1326,11 @@
       opacity: 0;
     }
 
-    .typing-detail {
-      font-size: 0.6875rem;
-      color: var(--text-muted);
-      line-height: 1.4;
-      transition: opacity 0.3s ease;
-    }
-
-    .typing-detail.fade {
-      opacity: 0;
-    }
-
     .typing-retry {
       font-size: 0.75rem;
       color: var(--confidence-medium);
       font-weight: 500;
+      margin-top: 0.125rem;
     }
 
     /* ===== INPUT AREA ===== */
@@ -2611,65 +2611,50 @@
 
     // ===== TYPING INDICATOR =====
     const TYPING_STAGES = [
-      { at: 0, progress: 5, messages: [
+      { at: 0, glow: 3, messages: [
         'Searching the knowledge base...',
         'Scanning 1,820 entries...',
-        'Looking through the archives...'
+        'Flipping through the archives...',
+        'Rummaging through the curriculum...',
+        'Consulting the sources...'
       ]},
-      { at: 4, progress: 20, messages: [
+      { at: 5, glow: 15, messages: [
         'Found some matches, ranking by relevance...',
-        'Evaluating 30 candidates...',
-        'Sorting through the results...'
+        'Sorting the best results to the top...',
+        'Sifting through 30 candidates...',
+        'Separating the wheat from the chaff...',
+        'Winnowing down the results...'
       ]},
-      { at: 10, progress: 40, messages: [
-        'Reading the best sources...',
+      { at: 12, glow: 35, messages: [
+        'Reading through the top sources...',
         'Cross-referencing curriculum and textbook...',
-        'Pulling together the key details...'
+        'Connecting the dots across sources...',
+        'Steeping in the research like a good herbal tea...',
+        'Slow and steady, like bone broth on a Sunday...'
       ]},
-      { at: 18, progress: 65, messages: [
+      { at: 20, glow: 60, messages: [
         'Writing your answer...',
         'Crafting a response...',
-        'Putting it all together...'
+        'Putting it all together...',
+        'Fermenting the perfect response...',
+        'Letting the answer culture like a fine kraut...',
+        'Soaking this one overnight for better nutrient absorption...'
       ]},
-      { at: 30, progress: 85, messages: [
+      { at: 32, glow: 82, messages: [
         'Almost there, adding citations...',
-        'Finishing up with source links...',
-        'Polishing the final response...'
+        'Linking back to the source material...',
+        'Finishing up with references...',
+        'Garnishing with source links...',
+        'Plating the final response...'
       ]},
-      { at: 45, progress: 92, messages: [
+      { at: 45, glow: 92, messages: [
         'This is a thorough one \u2014 hang tight...',
-        'Detailed question, detailed answer \u2014 almost done...',
-        'Still working \u2014 good things take time...'
+        'Good things take time \u2014 like sourdough...',
+        'Detailed question deserves a detailed answer...',
+        'Still simmering \u2014 almost ready to serve...',
+        'Low and slow, just like we like it...'
       ]}
     ];
-
-    const FUN_FACTS = [
-      'The knowledge base covers all 28 chapters of a college A&P textbook.',
-      'Every podcast episode was transcribed by AI and distilled into searchable facts.',
-      'The bot checks 30 potential sources and ranks them before picking the best 8.',
-      'Each chunk in the knowledge base has an AI-generated context sentence to improve search accuracy.',
-      'The NTA\'s Five Foundations are nutrient-dense diet, digestion, blood sugar regulation, sleep, and stress management.',
-      'The search engine converts your question into 3,072 numbers to find the closest matches by meaning.',
-      'NTA Bot knows the scope of practice differences between NTPs, FNTPs, and PHWCs down to specific clinical boundaries.',
-      'The textbook content includes Tier 1 through Tier 4 coverage \u2014 from full chapters to breadcrumb overviews.',
-      'Bio-individuality means each person is biologically unique. No universal diet fits everyone.',
-      'The podcast library covers 23 topic categories from digestion to detoxification.',
-      'Every answer is grounded in source material \u2014 the bot never answers from general knowledge.',
-      'The NTA was founded in 1997 and has trained thousands of nutritional therapy practitioners.',
-      'Chunks are embedded at 3,072 dimensions \u2014 that\'s 3,072 numbers representing the meaning of each piece of text.'
-    ];
-
-    let _typingFactIndex = -1;
-    function getRandomFact() {
-      // Cycle through facts without repeating until all shown
-      if (_typingFactIndex < 0) {
-        _typingFactIndex = 0;
-        FUN_FACTS.sort(() => Math.random() - 0.5); // shuffle once per session
-      }
-      const fact = FUN_FACTS[_typingFactIndex % FUN_FACTS.length];
-      _typingFactIndex++;
-      return fact;
-    }
 
     let _typingCurrentStage = -1;
 
@@ -2684,20 +2669,15 @@
     function renderTypingIndicator(message, retryInfo) {
       const stageMessage = message || 'Searching the knowledge base...';
       const retryHtml = retryInfo ? `<div class="typing-retry">${retryInfo}</div>` : '';
-      const fact = getRandomFact();
       return `
         <div class="message message-bot" id="typingIndicator">
-          <div class="typing-indicator">
-            <div class="typing-progress-track">
-              <div class="typing-progress-bar" id="typingProgress"></div>
-            </div>
+          <div class="typing-indicator" style="--glow-progress: 0%">
             <div class="typing-content">
               <div class="typing-dots">
                 <div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>
               </div>
               <div class="typing-status">
                 <div class="typing-message">${escapeHtml(stageMessage)}</div>
-                <div class="typing-detail" id="typingDetail">${escapeHtml(fact)}</div>
                 ${retryHtml}
               </div>
             </div>
@@ -2714,36 +2694,24 @@
       chatArea.insertAdjacentHTML('beforeend', renderTypingIndicator(message, retryInfo));
       scrollToBottom();
       typingStartTime = Date.now();
-      // Initial progress nudge
-      requestAnimationFrame(() => {
-        const bar = document.getElementById('typingProgress');
-        if (bar) bar.style.width = '5%';
-      });
       if (typingIntervalId) clearInterval(typingIntervalId);
       typingIntervalId = setInterval(() => {
         const elapsed = Math.floor((Date.now() - typingStartTime) / 1000);
         if (retryInfo) return;
         const stage = getStageForElapsed(elapsed);
         const stageIndex = TYPING_STAGES.indexOf(stage);
-        // Update progress bar
-        const bar = document.getElementById('typingProgress');
-        if (bar) bar.style.width = stage.progress + '%';
+        // Update glow progress
+        const indicator = document.querySelector('#typingIndicator .typing-indicator');
+        if (indicator) indicator.style.setProperty('--glow-progress', stage.glow + '%');
         // Update message when stage changes
         if (stageIndex !== _typingCurrentStage) {
           _typingCurrentStage = stageIndex;
           const messageEl = document.querySelector('#typingIndicator .typing-message');
-          const detailEl = document.getElementById('typingDetail');
           if (messageEl) {
             messageEl.classList.add('fade');
-            if (detailEl) detailEl.classList.add('fade');
             setTimeout(() => {
-              const pick = stage.messages[Math.floor(Math.random() * stage.messages.length)];
-              messageEl.textContent = pick;
+              messageEl.textContent = stage.messages[Math.floor(Math.random() * stage.messages.length)];
               messageEl.classList.remove('fade');
-              if (detailEl) {
-                detailEl.textContent = getRandomFact();
-                detailEl.classList.remove('fade');
-              }
             }, 300);
           }
         }
@@ -2768,10 +2736,10 @@
       typingStartTime = null;
       const indicator = document.getElementById('typingIndicator');
       if (indicator) {
-        // Flash progress to 100% before removing
-        const bar = indicator.querySelector('.typing-progress-bar');
-        if (bar) { bar.style.transition = 'width 0.3s ease'; bar.style.width = '100%'; }
-        setTimeout(() => indicator.remove(), 350);
+        // Flash glow to 100% before removing
+        const glow = indicator.querySelector('.typing-indicator');
+        if (glow) glow.style.setProperty('--glow-progress', '100%');
+        setTimeout(() => indicator.remove(), 400);
       }
     }
 
