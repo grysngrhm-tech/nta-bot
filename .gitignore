@@ -4,9 +4,15 @@ NTA_RESEARCH.md
 docs/
 scripts/
 
+# Proprietary curriculum content (NEVER push to public repo)
+Curriculum/
+
 # Working files
 .podcast-work/
 .openstax-work/
+.nih-work/
+.ghc-work/
+.openstax-nutrition-work/
 .claude/
 .tmp*
 downloads/

@@ -758,6 +758,11 @@
       color: #0891b2;
     }
 
+    .authority-curriculum {
+      background: rgba(180, 120, 60, 0.12);
+      color: #92600e;
+    }
+
     /* ===== SOURCE REQUIREMENTS ===== */
     .source-requirements {
       padding: 0.5rem 0.75rem 0.75rem 1rem;
@@ -1140,6 +1145,11 @@
     .coverage-badge.textbook {
       background: rgba(16, 185, 129, 0.1);
       color: #059669;
+    }
+
+    .coverage-badge.curriculum {
+      background: rgba(180, 120, 60, 0.12);
+      color: #92600e;
     }
 
     .coverage-badge.coming-soon {
@@ -2276,6 +2286,19 @@
           { name: 'Ch 19: Nutrition and Fitness', chunks: 16, url: 'https://med.libretexts.org/Bookshelves/Nutrition/An_Introduction_to_Nutrition_(Zimmerman)' },
           { name: 'Ch 20: Nutrition and Society', chunks: 39, url: 'https://med.libretexts.org/Bookshelves/Nutrition/An_Introduction_to_Nutrition_(Zimmerman)/14%3A_Food_Politics_and_Perspectives' }
         ],
+        gaby: [
+          { name: 'Part 1: Fundamentals', chunks: 52, url: '#' },
+          { name: 'Part 2A: Vitamins', chunks: 85, url: '#' },
+          { name: 'Part 2B: Minerals', chunks: 56, url: '#' },
+          { name: 'Part 2C: Amino Acids', chunks: 19, url: '#' },
+          { name: 'Part 2D: Other Therapeutic Agents', chunks: 48, url: '#' },
+          { name: 'Part 3: Cardiovascular Disease', chunks: 126, url: '#' },
+          { name: 'Part 5: Gastroenterology', chunks: 95, url: '#' },
+          { name: 'Part 7: Neurology', chunks: 79, url: '#' },
+          { name: 'Part 10: Dermatology', chunks: 99, url: '#' },
+          { name: 'Part 19: Psychiatry', chunks: 102, url: '#' },
+          { name: 'Parts 4,6,8-9,11-18,20-26', chunks: 659, url: '#' }
+        ],
         nutrition_nurses: [
           { name: 'Ch 1: Introduction to Nutrition', chunks: 25, url: 'https://openstax.org/books/nutrition/pages/1-1-what-is-nutrition' },
           { name: 'Ch 2: Macronutrients', chunks: 20, url: 'https://openstax.org/books/nutrition/pages/2-1-carbohydrates' },
@@ -2299,12 +2322,39 @@
           { name: 'Ch 20: Musculoskeletal Health & Nutrition', chunks: 21, url: 'https://openstax.org/books/nutrition/pages/20-1-the-impact-of-nutrition-on-musculoskeletal-and-integumentary-wellness-across-the-lifespan' }
         ]
       },
-      curriculum: [
-        { name: 'NTP Program \u2014 Full curriculum modules and lesson content', chunks: 0 },
-        { name: 'PHWC Program \u2014 Coaching frameworks and monthly curriculum', chunks: 0 },
-        { name: 'Clinical Application Guides \u2014 NACA process, FCA, functional labs', chunks: 0 },
-        { name: 'Assessment Tools \u2014 NAQ, Symptom Burden Graph, Nutri-Q workflows', chunks: 0 }
-      ]
+      curriculum: {
+        ntp: [
+          { name: 'Digestion', chunks: 245 },
+          { name: 'Blood Sugar Regulation', chunks: 136 },
+          { name: 'Bioindividual Nutrition', chunks: 92 },
+          { name: 'Supplements', chunks: 92 },
+          { name: 'Nutrient-Dense Diet', chunks: 80 },
+          { name: 'Stress Management', chunks: 60 },
+          { name: 'Case Study Intensive', chunks: 55 },
+          { name: 'NACA Unit 10', chunks: 48 },
+          { name: 'Foundations Review & Practicum', chunks: 46 },
+          { name: 'Anatomy & Physiology', chunks: 44 },
+          { name: 'Sleep', chunks: 37 },
+          { name: 'Lab Interpretation', chunks: 31 },
+          { name: 'NACA Unit 6', chunks: 24 },
+          { name: 'NACA Unit 7', chunks: 6 },
+          { name: 'NACA Unit 9', chunks: 5 },
+          { name: 'NACA Unit 8', chunks: 4 }
+        ],
+        phwc: [
+          { name: 'Weeks 1-9', chunks: 247 },
+          { name: 'Weeks 13-18', chunks: 115 },
+          { name: 'Weeks 20-29', chunks: 169 }
+        ],
+        foh: [
+          { name: 'Nutrient-Dense Diet', chunks: 59 },
+          { name: 'Digestion', chunks: 33 },
+          { name: 'Blood Sugar Regulation', chunks: 33 },
+          { name: 'Stress Management', chunks: 39 },
+          { name: 'Sleep', chunks: 31 },
+          { name: 'Connecting the Foundations', chunks: 12 }
+        ]
+      }
     };
 
     function expandTile(card, type) {
@@ -2353,14 +2403,26 @@
         container.innerHTML =
           renderGroup('Anatomy & Physiology', tbData.anatomy_physiology) +
           renderGroup('Principles of Nutrition', tbData.principles_nutrition) +
+          renderGroup('Nutritional Medicine (Dr. Gaby)', tbData.gaby) +
           renderGroup('Nutrition for Nurses', tbData.nutrition_nurses);
       } else if (type === 'curriculum') {
-        const sources = TILE_SOURCES.curriculum;
-        container.innerHTML = sources.map(s =>
-          `<div class="coverage-source-item">
-            <span class="coverage-source-name" style="color:var(--text-muted)">${s.name}</span>
-          </div>`
-        ).join('');
+        const curData = TILE_SOURCES.curriculum;
+        const renderGroup = (label, items) => {
+          if (!items || items.length === 0) return '';
+          return `<div class="coverage-subgroup-label">${label}</div>` + items.map(s =>
+            `<div class="coverage-source-item">
+              <span class="coverage-source-name">${s.name}</span>
+              ${s.chunks ? `<span class="coverage-source-count">${s.chunks} chunks</span>` : ''}
+            </div>`
+          ).join('');
+        };
+        container.innerHTML =
+          renderGroup('NTP Program', curData.ntp) +
+          renderGroup('PHWC Program', curData.phwc) +
+          renderGroup('FOH — Foundations of Healing', curData.foh);
+        if (!container.innerHTML) {
+          container.innerHTML = '<div class="coverage-source-item"><span class="coverage-source-name" style="color:var(--text-muted)">Curriculum content being loaded...</span></div>';
+        }
       }
     }
 
@@ -2583,12 +2645,14 @@
                 <p class="coverage-card-desc">OpenStax Anatomy &amp; Physiology, Principles of Nutrition (macronutrient biochemistry, metabolism, micronutrient functions), and Nutrition for Nurses (clinical nutrition by body system).</p>
                 <div class="coverage-card-expand" id="expand-textbook"></div>
               </div>
-              <div class="coverage-card muted">
+              <div class="coverage-card" onclick="expandTile(this, 'curriculum')">
                 <div class="coverage-card-header">
-                  <span class="coverage-badge coming-soon">Coming Soon</span>
-                  <span class="coverage-card-title">NTP &amp; PHWC Curriculum</span>
+                  <span class="coverage-badge curriculum">Curriculum</span>
+                  <span class="coverage-card-title">NTP, PHWC &amp; FOH Curriculum</span>
+                  <span class="coverage-card-toggle"></span>
                 </div>
-                <p class="coverage-card-desc">Full NTP and PHWC curriculum modules, lesson content, clinical application guides, and coaching frameworks &mdash; coming once curriculum access is finalized.</p>
+                <p class="coverage-card-desc">Full NTP lecture transcripts (digestion, blood sugar, stress, sleep, supplements, clinical application), PHWC coaching program (client-centered skills, behavior change), and Foundations of Healing.</p>
+                <div class="coverage-card-expand" id="expand-curriculum"></div>
               </div>
             </div>
           </div>
@@ -2785,11 +2849,12 @@
       const hierarchy = firstSection.section_hierarchy || [];
 
       // Badge from first section
+      const isCurriculumSource = hierarchy[0] && hierarchy[0].endsWith('Curriculum');
       const isNIHSource = hierarchy[0] === 'NIH';
       const isTextbookSource = hierarchy[0] === 'Textbook';
       const isPodcastSource = hierarchy[0] === 'Podcast';
-      const badgeClass = isNIHSource ? 'authority-nih' : isTextbookSource ? 'authority-textbook' : isPodcastSource ? 'authority-podcast' : 'authority-web';
-      const badgeLabel = isNIHSource ? 'NIH' : isTextbookSource ? 'Textbook' : isPodcastSource ? 'Podcast' : 'Web';
+      const badgeClass = isCurriculumSource ? 'authority-curriculum' : isNIHSource ? 'authority-nih' : isTextbookSource ? 'authority-textbook' : isPodcastSource ? 'authority-podcast' : 'authority-web';
+      const badgeLabel = isCurriculumSource ? 'Curriculum' : isNIHSource ? 'NIH' : isTextbookSource ? 'Textbook' : isPodcastSource ? 'Podcast' : 'Web';
 
       // External link (shown once at card level, not per section)
       const firstUrl = sections.find(s => s.source_url)?.source_url || null;
@@ -2885,11 +2950,12 @@
       const pageHtml = pageNumber ? `<span class="page-badge">Page ${pageNumber}</span>` : '';
 
       // Dynamic badge: detect source type from hierarchy
+      const isCurriculumSource = hierarchy[0] && hierarchy[0].endsWith('Curriculum');
       const isNIHSource = hierarchy[0] === 'NIH';
       const isTextbookSource = hierarchy[0] === 'Textbook';
       const isPodcastSource = hierarchy[0] === 'Podcast';
-      const badgeClass = isNIHSource ? 'authority-nih' : isTextbookSource ? 'authority-textbook' : isPodcastSource ? 'authority-podcast' : 'authority-web';
-      const badgeLabel = isNIHSource ? 'NIH' : isTextbookSource ? 'Textbook' : isPodcastSource ? 'Podcast' : 'Web';
+      const badgeClass = isCurriculumSource ? 'authority-curriculum' : isNIHSource ? 'authority-nih' : isTextbookSource ? 'authority-textbook' : isPodcastSource ? 'authority-podcast' : 'authority-web';
+      const badgeLabel = isCurriculumSource ? 'Curriculum' : isNIHSource ? 'NIH' : isTextbookSource ? 'Textbook' : isPodcastSource ? 'Podcast' : 'Web';
 
       const isTextbook = sourceUrl && sourceUrl.includes('openstax.org');
       const isPodcast = sourceUrl && sourceUrl.includes('podcasts.apple.com');
