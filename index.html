@@ -1254,31 +1254,17 @@
       overflow: hidden;
     }
 
-    .typing-indicator::before {
+    .typing-indicator::after {
       content: '';
       position: absolute;
-      inset: 0;
-      border-radius: inherit;
-      padding: 1.5px;
-      background: conic-gradient(
-        from 0deg,
-        var(--accent) 0%,
-        var(--accent) var(--glow-progress, 0%),
-        transparent var(--glow-progress, 0%),
-        transparent 100%
-      );
-      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-      mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-      -webkit-mask-composite: xor;
-      mask-composite: exclude;
-      transition: --glow-progress 1.5s linear;
-      opacity: 0.6;
-    }
-
-    @property --glow-progress {
-      syntax: '<percentage>';
-      inherits: false;
-      initial-value: 0%;
+      bottom: 0;
+      left: 0;
+      height: 2px;
+      background: var(--accent);
+      border-radius: 0 2px 0 0;
+      width: var(--progress, 0%);
+      transition: width 1.5s ease-out;
+      opacity: 0.7;
     }
 
     .typing-content {
@@ -2671,7 +2657,7 @@
       const retryHtml = retryInfo ? `<div class="typing-retry">${retryInfo}</div>` : '';
       return `
         <div class="message message-bot" id="typingIndicator">
-          <div class="typing-indicator" style="--glow-progress: 0%">
+          <div class="typing-indicator" style="--progress: 0%">
             <div class="typing-content">
               <div class="typing-dots">
                 <div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>
@@ -2702,7 +2688,7 @@
         const stageIndex = TYPING_STAGES.indexOf(stage);
         // Update glow progress
         const indicator = document.querySelector('#typingIndicator .typing-indicator');
-        if (indicator) indicator.style.setProperty('--glow-progress', stage.glow + '%');
+        if (indicator) indicator.style.setProperty('--progress', stage.glow + '%');
         // Update message when stage changes
         if (stageIndex !== _typingCurrentStage) {
           _typingCurrentStage = stageIndex;
@@ -2738,7 +2724,7 @@
       if (indicator) {
         // Flash glow to 100% before removing
         const glow = indicator.querySelector('.typing-indicator');
-        if (glow) glow.style.setProperty('--glow-progress', '100%');
+        if (glow) glow.style.setProperty('--progress', '100%');
         setTimeout(() => indicator.remove(), 400);
       }
     }
