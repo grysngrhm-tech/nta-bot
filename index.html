@@ -1137,6 +1137,16 @@
       color: #059669;
     }
 
+    .coverage-badge.coming-soon {
+      background: rgba(0, 0, 0, 0.06);
+      color: var(--text-muted);
+    }
+
+    .coverage-card.muted {
+      opacity: 0.55;
+      border-style: dashed;
+    }
+
     /* ===== WELCOME DISCLAIMER ===== */
     .welcome-disclaimer {
       font-size: 0.6875rem;
@@ -2149,7 +2159,8 @@
           <div class="welcome-hero">
             <img class="welcome-logo" src="assets/icons/nta-logo.svg" alt="Nutritional Therapy Association" onclick="startNewChat()">
             <h2>What can I help you find?</h2>
-            <p class="welcome-tagline">I search NTA's curriculum, 86 podcast episodes, and a college A&P textbook to answer your questions with citations and links back to the source material.</p>
+            <p class="welcome-tagline">NTA Bot is your AI-powered knowledge assistant. Ask any question about NTA curriculum, programs, scope of practice, health topics, or anatomy &amp; physiology and get a clear, sourced answer in seconds.</p>
+            <p class="welcome-tagline">Every answer is grounded in NTA's own materials &mdash; not the open internet. The bot searches across 1,820 curated entries from the NTA website, all 86 podcast episodes, and a college A&amp;P textbook, then writes a response with clickable citations so you can always verify where the information came from.</p>
             <p class="welcome-doc-link"><a href="https://github.com/grysngrhm-tech/nta-bot" target="_blank" rel="noopener">Learn how NTA Bot works</a></p>
           </div>
 
@@ -2158,31 +2169,31 @@
             <div class="coverage-grid">
               <div class="coverage-card">
                 <div class="coverage-card-header">
-                  <span class="coverage-badge ntp">NTP/PHWC</span>
-                  <span class="coverage-card-title">NTP &amp; PHWC Program Content</span>
+                  <span class="coverage-badge ref">Website</span>
+                  <span class="coverage-card-title">NTA Website Content</span>
                 </div>
-                <p class="coverage-card-desc">The Five Foundations of Health, clinical application (NACA, NAQ, Nutri-Q), coaching foundations, motivational interviewing, behavior change, and program structure for both certifications.</p>
+                <p class="coverage-card-desc">Programs, credentials, scope of practice for NTP/FNTP/PHWC, the Five Foundations, NTA philosophy, bio-individuality, terminology glossary, and all certifications compared.</p>
               </div>
               <div class="coverage-card">
                 <div class="coverage-card-header">
                   <span class="coverage-badge podcast">Podcast</span>
                   <span class="coverage-card-title">Podcast Library &mdash; 86 Episodes</span>
                 </div>
-                <p class="coverage-card-desc">The Body Wisdom Podcast covering digestion, blood sugar, hormones, fertility, mental health, food quality, traditional preparation, supplements, and practitioner development.</p>
-              </div>
-              <div class="coverage-card">
-                <div class="coverage-card-header">
-                  <span class="coverage-badge ref">REF</span>
-                  <span class="coverage-card-title">Scope, Philosophy &amp; Reference</span>
-                </div>
-                <p class="coverage-card-desc">NTP/FNTP/PHWC scope of practice, bio-individuality, food-first approach, root-cause thinking, board eligibility, FCA, terminology glossary, and all programs compared.</p>
+                <p class="coverage-card-desc">The Nutritional Therapy and Wellness Podcast covering digestion, blood sugar, hormones, fertility, mental health, food quality, supplements, and practitioner development.</p>
               </div>
               <div class="coverage-card">
                 <div class="coverage-card-header">
                   <span class="coverage-badge textbook">Textbook</span>
                   <span class="coverage-card-title">Anatomy &amp; Physiology</span>
                 </div>
-                <p class="coverage-card-desc">OpenStax A&amp;P covering digestive, endocrine, immune, cardiovascular, respiratory, urinary, and reproductive systems plus metabolism, blood, and electrolyte balance.</p>
+                <p class="coverage-card-desc">OpenStax A&amp;P textbook covering digestive, endocrine, immune, cardiovascular, respiratory, urinary, and reproductive systems plus metabolism, blood, and electrolyte balance.</p>
+              </div>
+              <div class="coverage-card muted">
+                <div class="coverage-card-header">
+                  <span class="coverage-badge coming-soon">Coming Soon</span>
+                  <span class="coverage-card-title">NTP &amp; PHWC Curriculum</span>
+                </div>
+                <p class="coverage-card-desc">Full NTP and PHWC curriculum modules, lesson content, clinical application guides, and coaching frameworks &mdash; coming once curriculum access is finalized.</p>
               </div>
             </div>
           </div>
