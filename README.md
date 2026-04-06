@@ -5,7 +5,7 @@
 <h1 align="center">NTA Bot</h1>
 
 <p align="center">
-  Your AI-powered curriculum reference tool<br>
+  AI-powered knowledge assistant for NTA employees<br>
   <a href="https://grysngrhm-tech.github.io/nta-bot/">Open NTA Bot</a>
 </p>
 
@@ -13,127 +13,84 @@
 
 ## What is NTA Bot?
 
-NTA Bot is an AI assistant built exclusively for NTA employees. It answers questions about NTA curriculum, programs, scope of practice, clinical tools, health topics, and anatomy & physiology — drawing from NTA's own published content and a college A&P textbook.
+NTA Bot is an AI assistant built for NTA employees. Ask it anything about NTA curriculum, programs, scope of practice, health topics, or anatomy & physiology — it searches across 1,820 pieces of curated content and gives you a clear answer with clickable source citations.
 
-Unlike general AI tools like ChatGPT, NTA Bot doesn't use the open internet or make things up. Every answer is grounded in actual source materials, and every response includes clickable citations so you can verify where the information came from.
+Unlike general AI tools, NTA Bot doesn't use the open internet or make things up. Every answer is grounded in NTA's own materials and a licensed college A&P textbook, and every claim is traceable to a specific source you can click to verify.
 
 The bot is password-protected and intended for internal use by NTA staff.
 
 ## What Can You Ask?
 
-NTA Bot handles a wide range of questions about NTA's curriculum and programs. Here are some examples:
-
-**Curriculum & Foundations**
+**Curriculum & Programs**
 - "What are the Five Foundations of Health?"
-- "How does the north-to-south digestive process work?"
 - "What does the PHWC curriculum cover in Month 4?"
-
-**Programs & Credentials**
-- "What's the difference between an NTP and a PHWC?"
-- "What is Lingual-Neural Testing and who can perform it?"
-- "What are the requirements for NBHWC board certification?"
+- "What's the difference between an NTP and an FNTP?"
 
 **Scope of Practice**
 - "Can an NTP diagnose or treat disease?"
 - "Why can a PHWC not make food recommendations?"
 - "What can an FNTP do that an NTP cannot?"
 
-**Clinical Tools**
-- "What is the NACA process?"
-- "How does the Symptom Burden Graph help identify client priorities?"
-- "What functional lab tests are covered in the NTP curriculum?"
+**Health & Wellness Topics**
+- "Why do people feel shaky when they skip meals?"
+- "How does chronic inflammation start, and can diet reduce it?"
+- "What nutrients does your body need to make healthy red blood cells?"
 
-**Health & Wellness Topics (from the podcast)**
-- "How does blood sugar regulation affect sleep?"
-- "What is SIBO and what are its root causes?"
-- "How do seed oils contribute to sunburn susceptibility?"
-
-**Anatomy & Physiology (from the textbook)**
+**Anatomy & Physiology**
 - "How does the liver produce bile?"
-- "What hormones does the adrenal gland release?"
-- "How does the immune system distinguish self from non-self?"
+- "How do the kidneys filter blood and reabsorb nutrients?"
+- "What happens to blood sugar at a cellular level when someone skips meals?"
 
 ## Knowledge Base
 
-NTA Bot's answers come from three categories of content:
+NTA Bot searches across **1,820 curated entries** from three source categories:
 
-### Website Reference Content — 187 entries
+### NTA Curriculum & Reference — 187 entries
 
-Comprehensive reference material created from NTA's public website, covering:
+Content from NTA's website covering scope of practice, the NTP and PHWC programs, credentials (NTP, FNTP, PHWC, FCA, Foundations of Healing, Career Compass), NTA philosophy, and a complete terminology glossary. Each entry links back to nutritionaltherapy.com.
 
-- **Scope of Practice** — detailed boundaries for NTP, FNTP, and PHWC practitioners, including what each credential holder can and cannot do
-- **NTP Curriculum** — all 15 modules, the Five Foundations of Health, clinical tools (NAQ, NACA process, Nutri-Q, functional labs), and program structure
-- **PHWC Curriculum** — the five coaching foundations, month-by-month curriculum breakdown, motivational interviewing, behavior change psychology, and the Health and Wellness Wheel
-- **Programs & Credentials** — all NTA programs compared side-by-side (NTP, PHWC, FCA, Foundations of Healing, Career Compass, NTA Health), including costs, duration, prerequisites, and the Graham Grant
-- **NTA Philosophy & Terminology** — bio-individuality, innate intelligence, food-first approach, root-cause thinking, NTA history, accreditation, leadership, and a complete terminology glossary
+### Podcast Library — 990 entries from 86 episodes
 
-### Podcast Content — 990 entries from 86 episodes
+Every episode of the **Nutritional Therapy and Wellness Podcast**, transcribed and processed to extract factual, educational content organized by topic — digestion, blood sugar, hormones, fertility, mental health, food quality, supplements, practitioner development, and more. Each citation links directly to the episode on Apple Podcasts.
 
-All 86 episodes of the **Nutritional Therapy and Wellness Podcast** have been transcribed and processed to extract factual, educational content organized by topic:
+### Anatomy & Physiology Textbook — 643 entries from 28 chapters
 
-- Digestion & Gut Health
-- Blood Sugar & Metabolism
-- Sleep & Stress Management
-- Hormones & Endocrine Health
-- Mental Health & Brain Function
-- Fertility & Reproductive Health
-- Food Quality, Sourcing & Traditional Preparation
-- Supplements & Nutrients
-- Practitioner Development
-- NTA Philosophy & Mission
-- And more
-
-When the bot cites a podcast episode, it includes a **"Listen on Apple Podcasts"** link that takes you directly to that specific episode.
-
-### Textbook Content — 681 entries from 28 chapters
-
-Selected chapters from **OpenStax Anatomy & Physiology** (1st edition), a CC BY 4.0 licensed college A&P textbook covering the same foundational science as NTA's assigned Tortora/Derrickson text. Key systems covered in depth:
-
-- Digestive System, Metabolism & Nutrition
-- Endocrine System (hormones, pancreas, adrenals, thyroid)
-- Blood, Cardiovascular & Immune Systems
-- Autonomic Nervous System (sympathetic/parasympathetic)
-- Fluid, Electrolyte & Acid-Base Balance
-- Respiratory, Urinary & Reproductive Systems
-
-Every chapter has at least breadcrumb coverage so the bot can point you to the right resource. When the bot cites a textbook section, it includes a **"View on OpenStax"** link to the exact section on openstax.org.
+Selected chapters from **OpenStax Anatomy & Physiology** (1st edition, CC BY 4.0), covering the same foundational science as NTA's assigned A&P text. Key systems indexed in depth: digestive, endocrine, immune, cardiovascular, respiratory, urinary, reproductive, plus metabolism, blood, and electrolyte balance. Every chapter has at least breadcrumb coverage. Each citation links to the exact section on openstax.org.
 
 ## How It Works
 
-1. **You ask a question** — type it in, or tap the microphone icon to speak your question using voice-to-text.
+1. **You ask a question** — type or tap the microphone to use voice-to-text.
 
-2. **The bot searches its knowledge base** — it finds the most relevant content from NTA's curriculum materials and podcast episodes using AI-powered semantic search. This means it understands the *meaning* of your question, not just the keywords — so asking "how does sugar affect the brain" will find content about dopamine reward pathways even if those exact words weren't used.
+2. **The bot searches its knowledge base** — it uses AI-powered semantic search to find the most relevant content across all three source categories. It understands the *meaning* of your question, not just keywords — so "how does sugar affect the brain" finds content about dopamine pathways even if those exact words weren't used. A reranking step then scores results for relevance and ensures source diversity.
 
-3. **AI writes the answer** — using only the retrieved NTA content, the bot synthesizes a clear, comprehensive answer. It never makes things up. Every answer includes source citations you can click to verify or read more.
-
-The bot uses the same AI technology behind ChatGPT (OpenAI's GPT-4o), but it's constrained to answer only from NTA's own materials.
+3. **AI writes the answer** — OpenAI's GPT-5.4 synthesizes a clear, well-formatted answer using only the retrieved content. Answers include bold terms, bulleted lists, and short paragraphs for easy scanning. Every answer includes collapsible source cards you can expand to view the original text and click through to the source.
 
 ## Features
 
 | Feature | Description |
 |---------|-------------|
-| **Cited Sources** | Every answer shows which documents, episodes, or textbook sections it drew from. Web sources link to nutritionaltherapy.com, podcast sources link to Apple Podcasts, and textbook sources link to OpenStax. |
-| **Voice Input** | Tap the microphone icon to speak your question instead of typing. |
+| **Cited Sources** | Every answer includes collapsible source cards grouped by document. Expand to see individual sections, view source text, or click through to NTA's website, Apple Podcasts, or OpenStax. |
+| **Rich Formatting** | Answers use bold, italics, and lists for easy scanning — not walls of text. |
+| **Voice Input** | Tap the microphone to speak your question instead of typing. |
 | **Read Aloud** | Tap the speaker icon on any answer to hear it read back to you. |
-| **New Conversation** | Tap the pencil icon in the input bar to start a fresh conversation. |
+| **Confidence Indicators** | Each answer shows High, Medium, or Low confidence so you know how well the knowledge base covered your question. |
 | **Mobile Friendly** | Works on phone, tablet, and desktop — no app install needed. |
-| **Confidence Indicators** | Each answer shows a confidence level (High, Medium, or Low) so you know how well the knowledge base covered your question. |
 
 ## Analytics Dashboard
 
-NTA Bot includes an analytics dashboard designed to help the content team — especially Jamie and the podcast team — spot opportunities for new episodes and curriculum development.
+NTA Bot includes an analytics dashboard for the content team to spot opportunities for new episodes and curriculum development.
 
-**Access it** by tapping the small bar chart icon in the top-right corner of the main page, or go directly to the dashboard URL.
+**Access it** via the bar chart icon in the top-right corner, or go directly to the [dashboard URL](https://grysngrhm-tech.github.io/nta-bot/dashboard.html).
 
 The dashboard shows:
 
-- **Topic Demand vs Coverage** — which topics are people asking about, and how well does our content cover them?
-- **Trending Topics** — what's being asked about this week that wasn't asked about last week?
-- **Source Usage** — which documents and podcast episodes are cited most? Which are never cited?
-- **Session Replay** — see multi-question research journeys, including user device info and topic progression
+- **Topic Demand vs Coverage** — what are people asking about, and how well is it covered?
+- **Trending Topics** — what's new this week?
+- **Source Usage** — which documents, episodes, and textbook chapters are cited most?
+- **Session Replay** — multi-question research journeys with device info and topic progression
 - **Searchable Question Table** — every question asked, sortable by time, topic, confidence, and location
 
-The dashboard doesn't require a password — it only displays question analytics, not curriculum content.
+The dashboard doesn't require a password — it only shows question analytics, not curriculum content.
 
 ## How to Access
 
@@ -147,12 +104,12 @@ The dashboard doesn't require a password — it only displays question analytics
 
 ## Feedback & Contact
 
-NTA Bot is actively maintained and the knowledge base can be expanded at any time with additional curriculum materials, new podcast episodes, textbook chapters, or other content.
+NTA Bot is actively maintained. The knowledge base can be expanded with new curriculum materials, podcast episodes, or textbook chapters at any time.
 
-For feedback, feature requests, bug reports, or content suggestions, contact **Grayson Graham**.
+For feedback, feature requests, or bug reports, contact **Grayson Graham**.
 
 ## How It's Built
 
-NTA Bot is a Retrieval-Augmented Generation (RAG) application. It stores NTA content and A&P textbook material as searchable AI embeddings, retrieves the most relevant pieces for each question, and uses OpenAI's GPT-4o to synthesize answers from those specific sources — ensuring every response is grounded in actual source materials rather than general internet knowledge. Textbook content is from OpenStax Anatomy & Physiology, used under a CC BY 4.0 license.
+NTA Bot is a Retrieval-Augmented Generation (RAG) application. Content from NTA's curriculum, podcast, and OpenStax A&P textbook (CC BY 4.0) is stored as 3072-dimensional AI embeddings with contextual retrieval prefixes. Each question triggers a hybrid vector + full-text search, followed by GPT-5.4 Mini relevance reranking and source diversity enforcement. The top results are passed to GPT-5.4 Standard, which synthesizes a formatted, source-grounded answer.
 
 Designed and built by **Grayson Graham**.
