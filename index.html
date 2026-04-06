@@ -1249,22 +1249,30 @@
       border: 1px solid var(--border);
       border-radius: var(--radius-lg);
       border-bottom-left-radius: var(--radius-sm);
-      min-width: 240px;
-      max-width: 360px;
+      width: 320px;
       overflow: hidden;
     }
 
+    .typing-indicator::before,
     .typing-indicator::after {
       content: '';
       position: absolute;
-      bottom: 0;
       left: 0;
       height: 2px;
       background: var(--accent);
-      border-radius: 0 2px 0 0;
       width: var(--progress, 0%);
-      transition: width 1.5s ease-out;
+      transition: width 0.5s linear;
       opacity: 0.7;
+    }
+
+    .typing-indicator::before {
+      top: 0;
+      border-radius: 0 0 2px 0;
+    }
+
+    .typing-indicator::after {
+      bottom: 0;
+      border-radius: 0 2px 0 0;
     }
 
     .typing-content {
@@ -2686,9 +2694,17 @@
         if (retryInfo) return;
         const stage = getStageForElapsed(elapsed);
         const stageIndex = TYPING_STAGES.indexOf(stage);
-        // Update glow progress
+        // Interpolate progress smoothly between stages
+        const nextStage = TYPING_STAGES[stageIndex + 1];
+        let progress = stage.glow;
+        if (nextStage) {
+          const stageElapsed = elapsed - stage.at;
+          const stageDuration = nextStage.at - stage.at;
+          const t = Math.min(stageElapsed / stageDuration, 1);
+          progress = stage.glow + (nextStage.glow - stage.glow) * t;
+        }
         const indicator = document.querySelector('#typingIndicator .typing-indicator');
-        if (indicator) indicator.style.setProperty('--progress', stage.glow + '%');
+        if (indicator) indicator.style.setProperty('--progress', progress + '%');
         // Update message when stage changes
         if (stageIndex !== _typingCurrentStage) {
           _typingCurrentStage = stageIndex;
