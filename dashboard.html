@@ -389,7 +389,8 @@
 
     .source-pill .sp-dot.web { background: #2563eb; }
     .source-pill .sp-dot.podcast { background: #d97706; }
-    .source-pill .sp-dot.both { background: #7c3aed; }
+    .source-pill .sp-dot.textbook { background: #059669; }
+    .source-pill .sp-dot.mixed { background: #7c3aed; }
 
     /* ===== TOPIC GAP TABLE ===== */
     .gap-table {
@@ -600,6 +601,7 @@
 
     .source-type-badge.web { background: #dbeafe; color: #1d4ed8; }
     .source-type-badge.podcast { background: #fef3c7; color: #92400e; }
+    .source-type-badge.textbook { background: #d1fae5; color: #065f46; }
 
     .never-cited-note {
       font-size: 0.8125rem;
@@ -1009,6 +1011,7 @@
 
     .dt-exp-pill.web { background: #dbeafe; color: #1d4ed8; }
     .dt-exp-pill.podcast { background: #fef3c7; color: #92400e; }
+    .dt-exp-pill.textbook { background: #d1fae5; color: #065f46; }
 
     .dt-exp-meta {
       display: flex;
@@ -1340,9 +1343,14 @@
             case 'source_document': return (r.source_documents || []).includes(filterState.value);
             case 'source_type': {
               const types = r.source_types || [];
-              if (filterState.value === 'both') return types.includes('Web') && types.includes('Podcast');
-              if (filterState.value === 'Web') return types.includes('Web') && !types.includes('Podcast');
-              if (filterState.value === 'Podcast') return types.includes('Podcast') && !types.includes('Web');
+              const hasWeb = types.includes('Web');
+              const hasPod = types.includes('Podcast');
+              const hasText = types.includes('Textbook');
+              const typeCount = (hasWeb ? 1 : 0) + (hasPod ? 1 : 0) + (hasText ? 1 : 0);
+              if (filterState.value === 'mixed') return typeCount > 1;
+              if (filterState.value === 'Web') return hasWeb && typeCount === 1;
+              if (filterState.value === 'Podcast') return hasPod && typeCount === 1;
+              if (filterState.value === 'Textbook') return hasText && typeCount === 1;
               return true;
             }
             case 'session_id': return r.session_id === filterState.value;
@@ -1609,14 +1617,17 @@
       const avgLatency = latencies.length > 0 ? (latencies.reduce((a, b) => a + b, 0) / latencies.length / 1000).toFixed(1) : '--';
 
       // Source type counts
-      let webOnly = 0, podcastOnly = 0, bothCount = 0;
+      let webOnly = 0, podcastOnly = 0, textbookOnly = 0, mixedCount = 0;
       for (const r of filtered) {
         const types = r.source_types || [];
         const hasWeb = types.includes('Web');
         const hasPod = types.includes('Podcast');
-        if (hasWeb && hasPod) bothCount++;
+        const hasText = types.includes('Textbook');
+        const typeCount = (hasWeb ? 1 : 0) + (hasPod ? 1 : 0) + (hasText ? 1 : 0);
+        if (typeCount > 1) mixedCount++;
         else if (hasWeb) webOnly++;
         else if (hasPod) podcastOnly++;
+        else if (hasText) textbookOnly++;
       }
 
       const isConfFilter = filterState.type === 'confidence';
@@ -1663,9 +1674,13 @@
             <span class="sp-dot podcast"></span>
             Podcast: ${podcastOnly}
           </div>
-          <div class="source-pill${filterState.type === 'source_type' && filterState.value === 'both' ? ' active' : ''}" onclick="applyFilter('source_type','both','Web + Podcast Sources')">
-            <span class="sp-dot both"></span>
-            Both: ${bothCount}
+          <div class="source-pill${filterState.type === 'source_type' && filterState.value === 'Textbook' ? ' active' : ''}" onclick="applyFilter('source_type','Textbook','Textbook Sources')">
+            <span class="sp-dot textbook"></span>
+            Textbook: ${textbookOnly}
+          </div>
+          <div class="source-pill${filterState.type === 'source_type' && filterState.value === 'mixed' ? ' active' : ''}" onclick="applyFilter('source_type','mixed','Mixed Sources')">
+            <span class="sp-dot mixed"></span>
+            Mixed: ${mixedCount}
           </div>
         </div>`;
       container.appendChild(section);
@@ -1847,9 +1862,10 @@
         inner += '<div class="source-list">';
         for (const [docName, count] of ranked) {
           const barPct = Math.round((count / maxCount) * 100);
+          const isTextbook = /^OpenStax/.test(docName);
           const isPodcast = /^Ep\b|^EP\b/.test(docName);
-          const typeClass = isPodcast ? 'podcast' : 'web';
-          const typeLabel = isPodcast ? 'Podcast' : 'Web';
+          const typeClass = isTextbook ? 'textbook' : isPodcast ? 'podcast' : 'web';
+          const typeLabel = isTextbook ? 'Textbook' : isPodcast ? 'Podcast' : 'Web';
           const escapedName = escapeHtml(docName);
           const truncName = escapeHtml(truncate(docName, 40));
 
@@ -2183,7 +2199,7 @@
       expHtml += '<div class="dt-exp-meta">';
       if (sourceTypes.length > 0) {
         for (const t of sourceTypes) {
-          const cls = t === 'Podcast' ? 'podcast' : 'web';
+          const cls = t === 'Textbook' ? 'textbook' : t === 'Podcast' ? 'podcast' : 'web';
           expHtml += `<span class="dt-exp-pill ${cls}">${escapeHtml(t)}</span>`;
         }
       }

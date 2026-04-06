@@ -6,6 +6,7 @@ scripts/
 
 # Working files
 .podcast-work/
+.openstax-work/
 .claude/
 .tmp*
 downloads/

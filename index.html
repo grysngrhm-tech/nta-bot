@@ -641,6 +641,11 @@
       color: #ca8a04;
     }
 
+    .authority-textbook {
+      background: rgba(16, 185, 129, 0.1);
+      color: #059669;
+    }
+
     /* ===== SOURCE REQUIREMENTS ===== */
     .source-requirements {
       padding: 0.5rem 0.75rem 0.75rem 1rem;
@@ -1018,6 +1023,11 @@
     .coverage-badge.podcast {
       background: rgba(234, 179, 8, 0.1);
       color: #ca8a04;
+    }
+
+    .coverage-badge.textbook {
+      background: rgba(16, 185, 129, 0.1);
+      color: #059669;
     }
 
     /* ===== WELCOME DISCLAIMER ===== */
@@ -1737,6 +1747,7 @@
       const types = new Set();
       for (const t of sourceTopics) {
         if (t && t.startsWith('Podcast > ')) types.add('Podcast');
+        else if (t && t.startsWith('Textbook > ')) types.add('Textbook');
         else types.add('Web');
       }
       return [...types];
@@ -1985,7 +1996,7 @@
           <div class="welcome-hero">
             <img class="welcome-logo" src="assets/icons/nta-logo.svg" alt="Nutritional Therapy Association" onclick="startNewChat()">
             <h2>What can I help you find?</h2>
-            <p class="welcome-tagline">I'm trained on NTA's official curriculum — the NTP and PHWC programs, scope of practice documents, and clinical tools. Ask me anything and I'll answer with citations from the source material.</p>
+            <p class="welcome-tagline">I search NTA's curriculum, 86 podcast episodes, and a college A&P textbook to answer your questions with citations and links back to the source material.</p>
             <p class="welcome-doc-link"><a href="https://github.com/grysngrhm-tech/nta-bot" target="_blank" rel="noopener">Learn how NTA Bot works</a></p>
           </div>
 
@@ -2009,16 +2020,16 @@
               <div class="coverage-card">
                 <div class="coverage-card-header">
                   <span class="coverage-badge ref">REF</span>
-                  <span class="coverage-card-title">Scope &amp; Credentials</span>
+                  <span class="coverage-card-title">Scope, Philosophy &amp; Reference</span>
                 </div>
-                <p class="coverage-card-desc">NTP, FNTP, and PHWC scope of practice boundaries, the FCA course and Lingual-Neural Testing, NANP and NBHWC board eligibility, and Career Compass.</p>
+                <p class="coverage-card-desc">NTP/FNTP/PHWC scope of practice, bio-individuality, food-first approach, root-cause thinking, board eligibility, FCA, terminology glossary, and all programs compared.</p>
               </div>
               <div class="coverage-card">
                 <div class="coverage-card-header">
-                  <span class="coverage-badge ref">REF</span>
-                  <span class="coverage-card-title">NTA Philosophy &amp; Reference</span>
+                  <span class="coverage-badge textbook">Textbook</span>
+                  <span class="coverage-card-title">Anatomy &amp; Physiology</span>
                 </div>
-                <p class="coverage-card-desc">Bio-individuality, innate intelligence, food-first approach, root-cause thinking, the complete terminology glossary, NTA history, accreditation, and all programs compared.</p>
+                <p class="coverage-card-desc">OpenStax A&amp;P covering digestive, endocrine, immune, cardiovascular, respiratory, urinary, and reproductive systems plus metabolism, blood, and electrolyte balance.</p>
               </div>
             </div>
           </div>
@@ -2216,23 +2227,28 @@
 
       const pageHtml = pageNumber ? `<span class="page-badge">Page ${pageNumber}</span>` : '';
 
-      // Dynamic badge: detect podcast vs web sources
+      // Dynamic badge: detect textbook vs podcast vs web sources
+      const isTextbookSource = hierarchy[0] === 'Textbook';
       const isPodcastSource = hierarchy[0] === 'Podcast';
-      const badgeClass = isPodcastSource ? 'authority-podcast' : 'authority-web';
-      const badgeLabel = isPodcastSource ? 'Podcast' : 'Web';
+      const badgeClass = isTextbookSource ? 'authority-textbook' : isPodcastSource ? 'authority-podcast' : 'authority-web';
+      const badgeLabel = isTextbookSource ? 'Textbook' : isPodcastSource ? 'Podcast' : 'Web';
 
+      const isTextbook = sourceUrl && sourceUrl.includes('openstax.org');
       const isPodcast = sourceUrl && sourceUrl.includes('podcasts.apple.com');
-      const sourceLinkLabel = isPodcast ? 'Listen on Apple Podcasts' : 'View on NTA website';
-      const sourceLinkIcon = isPodcast
+      const sourceLinkLabel = isTextbook ? 'View on OpenStax' : isPodcast ? 'Listen on Apple Podcasts' : 'View on NTA website';
+      const sourceLinkIcon = isTextbook
+        ? '<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>'
+        : isPodcast
         ? '<path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle>'
         : '<path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line>';
+      const ccBadge = isTextbook ? '<span style="font-size:0.6rem;color:#6b7280;margin-left:0.25rem;">CC BY 4.0</span>' : '';
       const sourceLink = sourceUrl ? `
             <a class="view-source-link source-url-link" href="${escapeHtml(sourceUrl)}" target="_blank" rel="noopener">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 ${sourceLinkIcon}
               </svg>
               ${sourceLinkLabel}
-            </a>` : '';
+            </a>${ccBadge}` : '';
 
       return `
         <div class="source-item" id="${sourceId}">

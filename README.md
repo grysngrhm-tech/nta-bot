@@ -13,9 +13,9 @@
 
 ## What is NTA Bot?
 
-NTA Bot is an AI assistant built exclusively for NTA employees. It answers questions about NTA curriculum, programs, scope of practice, clinical tools, and more — drawing only from NTA's own published content.
+NTA Bot is an AI assistant built exclusively for NTA employees. It answers questions about NTA curriculum, programs, scope of practice, clinical tools, health topics, and anatomy & physiology — drawing from NTA's own published content and a college A&P textbook.
 
-Unlike general AI tools like ChatGPT, NTA Bot doesn't use the open internet or make things up. Every answer is grounded in NTA's actual materials, and every response includes clickable source citations so you can verify where the information came from.
+Unlike general AI tools like ChatGPT, NTA Bot doesn't use the open internet or make things up. Every answer is grounded in actual source materials, and every response includes clickable citations so you can verify where the information came from.
 
 The bot is password-protected and intended for internal use by NTA staff.
 
@@ -48,9 +48,14 @@ NTA Bot handles a wide range of questions about NTA's curriculum and programs. H
 - "What is SIBO and what are its root causes?"
 - "How do seed oils contribute to sunburn susceptibility?"
 
+**Anatomy & Physiology (from the textbook)**
+- "How does the liver produce bile?"
+- "What hormones does the adrenal gland release?"
+- "How does the immune system distinguish self from non-self?"
+
 ## Knowledge Base
 
-NTA Bot's answers come from two categories of NTA-owned content:
+NTA Bot's answers come from three categories of content:
 
 ### Website Reference Content — 187 entries
 
@@ -80,6 +85,19 @@ All 86 episodes of the **Nutritional Therapy and Wellness Podcast** have been tr
 
 When the bot cites a podcast episode, it includes a **"Listen on Apple Podcasts"** link that takes you directly to that specific episode.
 
+### Textbook Content — 681 entries from 28 chapters
+
+Selected chapters from **OpenStax Anatomy & Physiology** (1st edition), a CC BY 4.0 licensed college A&P textbook covering the same foundational science as NTA's assigned Tortora/Derrickson text. Key systems covered in depth:
+
+- Digestive System, Metabolism & Nutrition
+- Endocrine System (hormones, pancreas, adrenals, thyroid)
+- Blood, Cardiovascular & Immune Systems
+- Autonomic Nervous System (sympathetic/parasympathetic)
+- Fluid, Electrolyte & Acid-Base Balance
+- Respiratory, Urinary & Reproductive Systems
+
+Every chapter has at least breadcrumb coverage so the bot can point you to the right resource. When the bot cites a textbook section, it includes a **"View on OpenStax"** link to the exact section on openstax.org.
+
 ## How It Works
 
 1. **You ask a question** — type it in, or tap the microphone icon to speak your question using voice-to-text.
@@ -94,7 +112,7 @@ The bot uses the same AI technology behind ChatGPT (OpenAI's GPT-4o), but it's c
 
 | Feature | Description |
 |---------|-------------|
-| **Cited Sources** | Every answer shows which documents or episodes it drew from. Web sources link to nutritionaltherapy.com. Podcast sources link to Apple Podcasts. |
+| **Cited Sources** | Every answer shows which documents, episodes, or textbook sections it drew from. Web sources link to nutritionaltherapy.com, podcast sources link to Apple Podcasts, and textbook sources link to OpenStax. |
 | **Voice Input** | Tap the microphone icon to speak your question instead of typing. |
 | **Read Aloud** | Tap the speaker icon on any answer to hear it read back to you. |
 | **New Conversation** | Tap the pencil icon in the input bar to start a fresh conversation. |
@@ -129,12 +147,12 @@ The dashboard doesn't require a password — it only displays question analytics
 
 ## Feedback & Contact
 
-NTA Bot is actively maintained and the knowledge base can be expanded at any time with additional curriculum materials, new podcast episodes, or other NTA content.
+NTA Bot is actively maintained and the knowledge base can be expanded at any time with additional curriculum materials, new podcast episodes, textbook chapters, or other content.
 
 For feedback, feature requests, bug reports, or content suggestions, contact **Grayson Graham**.
 
 ## How It's Built
 
-NTA Bot is a Retrieval-Augmented Generation (RAG) application. It stores NTA content as searchable AI embeddings, retrieves the most relevant pieces for each question, and uses OpenAI's GPT-4o to synthesize answers from those specific sources — ensuring every response is grounded in NTA's own materials rather than general internet knowledge.
+NTA Bot is a Retrieval-Augmented Generation (RAG) application. It stores NTA content and A&P textbook material as searchable AI embeddings, retrieves the most relevant pieces for each question, and uses OpenAI's GPT-4o to synthesize answers from those specific sources — ensuring every response is grounded in actual source materials rather than general internet knowledge. Textbook content is from OpenStax Anatomy & Physiology, used under a CC BY 4.0 license.
 
 Designed and built by **Grayson Graham**.
