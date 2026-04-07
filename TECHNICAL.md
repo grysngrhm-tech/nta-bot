@@ -26,7 +26,7 @@ NTA Bot is a single-page PWA that communicates with two cloud services:
 │       │              │                    │
 │       │         1. Embed query            │
 │       │         2. Hybrid search          │
-│       │         3. Rerank (GPT-5.4 Mini)  │
+│       │         3. Rerank (GPT-4o-mini)  │
 │       │         4. Diversity enforcement  │
 │       │              │                    │
 │       ◄──────────────┘                    │
@@ -70,7 +70,7 @@ This returns 30 candidate chunks. We tested 30 vs 50 candidates — the top 10 r
 
 ### 3. LLM Reranking
 
-A second AI model (GPT-5.4 Mini) reads each of the 30 candidates and scores them 0.0–1.0 for relevance to the original question. This is more accurate than vector similarity alone because it can understand nuance, negation, and context that embedding distance misses.
+A second AI model (GPT-4o-mini) reads each of the 30 candidates and scores them 0.0–1.0 for relevance to the original question. This is more accurate than vector similarity alone because it can understand nuance, negation, and context that embedding distance misses.
 
 **Curriculum boost:** When a curriculum chunk and a non-curriculum chunk are equally relevant, the reranker gives the curriculum chunk a +0.05 scoring edge. Without this boost, a GHC textbook chapter about digestion and an NTP lecture about digestion would score identically — but for NTA employees, the curriculum version is the authoritative source. The boost acts as a tiebreaker, not an override: a genuinely better textbook match will still rank higher.
 
@@ -126,13 +126,18 @@ The extraction method varies by source — curriculum transcripts use GPT-4o-min
 
 ## Performance
 
-A typical query completes in **3-5 seconds** end-to-end:
+A typical query completes in **30-45 seconds** end-to-end (median: 35s, p90: 58s). The breakdown from actual n8n execution logs:
 
-- Query embedding: ~200ms
-- Hybrid search (PostgreSQL): ~300ms
-- LLM reranking (30 chunks): ~1-2s
-- Answer synthesis (GPT-5.4): ~2-3s
-- Topic labeling runs asynchronously and doesn't block the response
+| Step | Time | Notes |
+|------|------|-------|
+| Query embedding | ~400ms | OpenAI text-embedding-3-large |
+| Hybrid search | ~400ms | PostgreSQL vector + FTS on 6,387 chunks |
+| LLM reranking | ~9s | GPT-4o-mini scores 30 candidates (1,200 chars each) |
+| AI Agent loop | ~25-40s | GPT-5.4 Standard: tool call decision + answer synthesis |
+| Memory, formatting, response | <100ms | Negligible |
+| Topic labeling | ~2s | Async, non-blocking — runs after response is sent |
+
+**The bottleneck is GPT-5.4 Standard.** The AI Agent node makes multiple sequential LLM calls — first to decide to use the search tool, then to synthesize the answer from 10 retrieved chunks. Faster models or streaming would be the primary optimization path.
 
 ## Analytics
 
@@ -186,7 +191,7 @@ The service worker (`sw.js`) caches static assets for offline access and provide
 | **n8n** | Visual workflow builder for the RAG pipeline. Easy to modify prompts, add nodes, debug. Self-hosted on Hostinger. |
 | **Supabase** | PostgreSQL with pgvector extension. Hybrid search function combines vector + FTS in one query. Free tier sufficient for current scale. |
 | **GPT-5.4 Standard** | Best available model for answer synthesis quality. |
-| **GPT-5.4 Mini** | Cost-effective for reranking (reads 30 chunks per query) and topic labeling. |
+| **GPT-4o-mini** | Cost-effective for reranking (reads 30 chunks per query) and topic labeling. |
 | **text-embedding-3-large** | 3,072 dimensions provides high-fidelity semantic search. Native output, no truncation. |
 | **GitHub Pages** | Free hosting, automatic deploys on push. Public repo required on free plan. |
 
