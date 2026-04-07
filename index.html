@@ -74,6 +74,7 @@
       --radius-xl: 1rem;
       --radius-pill: 25px;
       --transition: 200ms ease;
+      --keyboard-height: 0px;
     }
 
     /* ===== SCREEN READER ONLY ===== */
@@ -96,7 +97,8 @@
       line-height: 1.6;
       color: var(--text-primary);
       background: var(--bg-primary);
-      min-height: 100vh;
+      min-height: -webkit-fill-available;
+      min-height: 100svh;
       display: flex;
       flex-direction: column;
     }
@@ -108,7 +110,8 @@
       margin: 0 auto;
       display: flex;
       flex-direction: column;
-      height: 100vh;
+      height: -webkit-fill-available;
+      height: 100svh;
       background: var(--bg-secondary);
       box-shadow: var(--shadow-lg);
       position: relative;
@@ -117,7 +120,7 @@
     @media (min-width: 768px) {
       .app-container {
         margin: 1rem auto;
-        height: calc(100vh - 2rem);
+        height: calc(100svh - 2rem);
         border-radius: var(--radius-xl);
         overflow: hidden;
       }
@@ -259,6 +262,8 @@
     .message {
       max-width: 85%;
       animation: fadeIn 0.3s ease;
+      content-visibility: auto;
+      contain-intrinsic-size: 0 120px;
     }
 
     @keyframes fadeIn {
@@ -1750,8 +1755,12 @@
         padding-bottom: calc(0.875rem + env(safe-area-inset-bottom));
       }
       .app-container {
+        padding-top: env(safe-area-inset-top);
         padding-left: env(safe-area-inset-left);
         padding-right: env(safe-area-inset-right);
+      }
+      .source-modal {
+        padding-top: env(safe-area-inset-top);
       }
     }
 
@@ -1811,6 +1820,13 @@
 
     .chat-area {
       overscroll-behavior: contain;
+      touch-action: pan-y;
+    }
+
+    @media all and (display-mode: standalone) {
+      html, body {
+        overflow: hidden;
+      }
     }
 
     /* ===== MOBILE: LANDSCAPE ORIENTATION ===== */
@@ -1821,6 +1837,104 @@
       .welcome-logo {
         width: 160px;
         margin-bottom: 0.75rem;
+      }
+    }
+
+    /* ===== SCROLL-TO-BOTTOM BUTTON ===== */
+    .scroll-to-bottom {
+      position: absolute;
+      bottom: 80px;
+      right: 1.25rem;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-md);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+      z-index: 10;
+    }
+    .scroll-to-bottom.visible {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .scroll-to-bottom:hover {
+      background: var(--accent-subtle);
+      border-color: var(--accent);
+    }
+    .scroll-to-bottom svg {
+      width: 20px;
+      height: 20px;
+      stroke: var(--text-secondary);
+    }
+    @supports (padding: env(safe-area-inset-bottom)) {
+      .scroll-to-bottom {
+        bottom: calc(80px + env(safe-area-inset-bottom));
+      }
+    }
+
+    /* ===== INSTALL BANNER ===== */
+    .install-banner {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem 1rem;
+      background: var(--accent-subtle);
+      border-bottom: 1px solid var(--border);
+      font-size: 0.8125rem;
+      color: var(--text-secondary);
+      flex-shrink: 0;
+    }
+    .install-banner-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius-sm);
+      flex-shrink: 0;
+    }
+    .install-banner-text {
+      flex: 1;
+      line-height: 1.4;
+    }
+    .install-banner-text strong {
+      color: var(--text-primary);
+    }
+    .install-banner-action {
+      padding: 0.375rem 0.75rem;
+      background: var(--accent);
+      color: var(--text-on-accent);
+      border: none;
+      border-radius: var(--radius-pill);
+      font-size: 0.75rem;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .install-banner-action:hover {
+      background: var(--accent-hover);
+    }
+    .install-banner-dismiss {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: 0.25rem;
+      font-size: 1.25rem;
+      line-height: 1;
+    }
+
+    /* ===== ACCESSIBILITY: REDUCED MOTION ===== */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
       }
     }
 
@@ -1847,6 +1961,17 @@
 
   <div class="app-container">
     <h1 class="sr-only">NTA Bot</h1>
+
+    <!-- Install Banner -->
+    <div class="install-banner" id="installBanner" style="display:none;">
+      <img src="assets/icons/icon-72.png" alt="" class="install-banner-icon">
+      <div class="install-banner-text" id="installBannerText">
+        <strong>Install NTA Bot</strong> for quick access from your home screen.
+      </div>
+      <button class="install-banner-action" id="installBannerAction">Install</button>
+      <button class="install-banner-dismiss" id="installBannerDismiss" aria-label="Dismiss install banner">&times;</button>
+    </div>
+
     <a href="dashboard.html" class="dashboard-icon" title="Analytics Dashboard">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <line x1="18" y1="20" x2="18" y2="10"></line>
@@ -1856,9 +1981,19 @@
     </a>
 
     <!-- Chat Area -->
-    <main class="chat-area" id="chatArea">
+    <main class="chat-area" id="chatArea" role="log" aria-label="Chat messages" aria-live="polite">
       <!-- Welcome panel is generated dynamically by JavaScript -->
     </main>
+
+    <!-- Scroll-to-bottom button -->
+    <button class="scroll-to-bottom" id="scrollToBottom" aria-label="Scroll to latest message" onclick="scrollToBottom()">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="6 9 12 15 18 9"></polyline>
+      </svg>
+    </button>
+
+    <!-- Screen reader status announcements -->
+    <div id="a11yStatus" role="status" class="sr-only" aria-live="polite"></div>
 
     <!-- Input Area -->
     <footer class="input-area">
@@ -1894,7 +2029,7 @@
             oninput="autoResize(this)"
           ></textarea>
         </div>
-        <button class="send-btn" id="sendBtn" onclick="sendMessage()" title="Send message">
+        <button class="send-btn" id="sendBtn" onclick="sendMessage()" title="Send message" aria-label="Send message">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <line x1="22" y1="2" x2="11" y2="13"></line>
             <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
@@ -2383,6 +2518,7 @@
       const grid = document.getElementById('coverageGrid');
       grid.classList.add('has-expanded');
       card.classList.add('expanded');
+      card.setAttribute('aria-expanded', 'true');
       const container = document.getElementById('expand-' + type);
       if (container.children.length > 0) return; // already populated
 
@@ -2449,6 +2585,7 @@
 
     function collapseTile(card) {
       card.classList.remove('expanded');
+      card.setAttribute('aria-expanded', 'false');
       const grid = document.getElementById('coverageGrid');
       grid.classList.remove('has-expanded');
     }
@@ -2681,7 +2818,7 @@
           <div class="welcome-section">
             <h3>Knowledge Base</h3>
             <div class="coverage-grid" id="coverageGrid">
-              <div class="coverage-card" onclick="expandTile(this, 'web')">
+              <div class="coverage-card" role="button" tabindex="0" aria-expanded="false" onclick="expandTile(this, 'web')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click()}">
                 <div class="coverage-card-header">
                   <span class="coverage-badge" style="background:rgba(59,130,246,0.1);color:#3b82f6;">Web</span>
                   <span class="coverage-card-title">Web Resources</span>
@@ -2690,7 +2827,7 @@
                 <p class="coverage-card-desc">NTA website content covering programs, scope of practice, and philosophy. Plus NIH Office of Dietary Supplements fact sheets on vitamins, minerals, and nutrient biochemistry.</p>
                 <div class="coverage-card-expand" id="expand-web"></div>
               </div>
-              <div class="coverage-card" onclick="expandTile(this, 'podcast')">
+              <div class="coverage-card" role="button" tabindex="0" aria-expanded="false" onclick="expandTile(this, 'podcast')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click()}">
                 <div class="coverage-card-header">
                   <span class="coverage-badge podcast">Podcast</span>
                   <span class="coverage-card-title">Podcast Library &mdash; 86 Episodes</span>
@@ -2699,7 +2836,7 @@
                 <p class="coverage-card-desc">The Nutritional Therapy and Wellness Podcast covering digestion, blood sugar, hormones, fertility, mental health, food quality, supplements, and practitioner development.</p>
                 <div class="coverage-card-expand" id="expand-podcast"></div>
               </div>
-              <div class="coverage-card" onclick="expandTile(this, 'textbook')">
+              <div class="coverage-card" role="button" tabindex="0" aria-expanded="false" onclick="expandTile(this, 'textbook')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click()}">
                 <div class="coverage-card-header">
                   <span class="coverage-badge textbook">Textbook</span>
                   <span class="coverage-card-title">Textbooks</span>
@@ -2708,7 +2845,7 @@
                 <p class="coverage-card-desc">OpenStax Anatomy &amp; Physiology, Principles of Nutrition (macronutrient biochemistry, metabolism, micronutrient functions), and Nutrition for Nurses (clinical nutrition by body system).</p>
                 <div class="coverage-card-expand" id="expand-textbook"></div>
               </div>
-              <div class="coverage-card" onclick="expandTile(this, 'curriculum')">
+              <div class="coverage-card" role="button" tabindex="0" aria-expanded="false" onclick="expandTile(this, 'curriculum')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click()}">
                 <div class="coverage-card-header">
                   <span class="coverage-badge curriculum">Curriculum</span>
                   <span class="coverage-card-title">NTP, PHWC &amp; FOH Curriculum</span>
@@ -3012,7 +3149,7 @@
           }
 
           return `<div class="source-category ${cat.cssClass}" id="${catId}">
-            <div class="source-category-header" onclick="this.parentElement.classList.toggle('expanded')">
+            <div class="source-category-header" role="button" tabindex="0" aria-expanded="false" onclick="this.parentElement.classList.toggle('expanded'); this.setAttribute('aria-expanded', this.parentElement.classList.contains('expanded'))" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click()}">
               <div class="source-category-info">
                 <span class="authority-badge authority-${cat.cssClass}">${cat.label}</span>
                 <span class="source-category-counts">${countsText}</span>
@@ -3267,6 +3404,9 @@
       if (existing) existing.remove();
       _typingCurrentStage = -1;
       chatArea.insertAdjacentHTML('beforeend', renderTypingIndicator(message, retryInfo));
+      chatArea.setAttribute('aria-busy', 'true');
+      const a11y = document.getElementById('a11yStatus');
+      if (a11y) a11y.textContent = 'Searching the knowledge base...';
       scrollToBottom();
       typingStartTime = Date.now();
       if (typingIntervalId) clearInterval(typingIntervalId);
@@ -3324,6 +3464,10 @@
         if (glow) glow.style.setProperty('--progress', '100%');
         setTimeout(() => indicator.remove(), 400);
       }
+      const chatArea = document.getElementById('chatArea');
+      if (chatArea) chatArea.setAttribute('aria-busy', 'false');
+      const a11y = document.getElementById('a11yStatus');
+      if (a11y) a11y.textContent = 'Response received.';
     }
 
     // ===== ERROR CLASSIFICATION =====
@@ -3497,6 +3641,7 @@
       const message = input.value.trim();
       if (!message || isLoading) return;
 
+      try { navigator.vibrate(10); } catch(e) {}
       lastMessageForRetry = message;
       wasCancelled = false;
       input.value = '';
@@ -3687,6 +3832,87 @@
     }
 
     // ===== INITIALIZATION =====
+    // ===== SCROLL-TO-BOTTOM BUTTON =====
+    function initScrollToBottom() {
+      const chatArea = document.getElementById('chatArea');
+      const btn = document.getElementById('scrollToBottom');
+      if (!chatArea || !btn) return;
+
+      chatArea.addEventListener('scroll', () => {
+        const distFromBottom = chatArea.scrollHeight - chatArea.scrollTop - chatArea.clientHeight;
+        btn.classList.toggle('visible', distFromBottom > 200);
+      }, { passive: true });
+    }
+
+    // ===== INSTALL BANNER =====
+    let deferredInstallPrompt = null;
+
+    function initInstallBanner() {
+      // Don't show if already installed or previously dismissed
+      if (window.matchMedia('(display-mode: standalone)').matches) return;
+      if (navigator.standalone === true) return;
+      if (localStorage.getItem('nta_install_dismissed')) return;
+
+      const banner = document.getElementById('installBanner');
+      const actionBtn = document.getElementById('installBannerAction');
+      const dismissBtn = document.getElementById('installBannerDismiss');
+      const textEl = document.getElementById('installBannerText');
+
+      // Android/Chrome: intercept native install prompt
+      window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredInstallPrompt = e;
+        banner.style.display = 'flex';
+      });
+
+      // iOS Safari: detect and show manual instructions
+      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+      const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+      if (isIOS && isSafari) {
+        textEl.innerHTML = '<strong>Install NTA Bot</strong> — tap <svg style="display:inline;width:16px;height:16px;vertical-align:text-bottom;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg> then "Add to Home Screen"';
+        actionBtn.style.display = 'none';
+        banner.style.display = 'flex';
+      }
+
+      // Install action (Android/Chrome)
+      actionBtn.addEventListener('click', async () => {
+        if (!deferredInstallPrompt) return;
+        deferredInstallPrompt.prompt();
+        const { outcome } = await deferredInstallPrompt.userChoice;
+        if (outcome === 'accepted') {
+          banner.style.display = 'none';
+        }
+        deferredInstallPrompt = null;
+      });
+
+      // Dismiss
+      dismissBtn.addEventListener('click', () => {
+        banner.style.display = 'none';
+        localStorage.setItem('nta_install_dismissed', '1');
+      });
+
+      // Hide after successful install
+      window.addEventListener('appinstalled', () => {
+        banner.style.display = 'none';
+        deferredInstallPrompt = null;
+      });
+    }
+
+    // ===== KEYBOARD HANDLING (VisualViewport) =====
+    function initKeyboardHandling() {
+      if (!window.visualViewport) return;
+
+      window.visualViewport.addEventListener('resize', () => {
+        const heightDiff = window.innerHeight - window.visualViewport.height;
+        if (heightDiff > 100) {
+          document.documentElement.style.setProperty('--keyboard-height', heightDiff + 'px');
+          requestAnimationFrame(() => scrollToBottom());
+        } else {
+          document.documentElement.style.setProperty('--keyboard-height', '0px');
+        }
+      }, { passive: true });
+    }
+
     document.addEventListener('DOMContentLoaded', () => {
       checkAccessGate();
       getSessionId();
@@ -3695,9 +3921,20 @@
       const chatArea = document.getElementById('chatArea');
       if (chatArea) chatArea.innerHTML = generateWelcomePanel();
 
+      // Handle ?new=1 shortcut (from PWA app shortcut)
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('new') === '1') {
+        startNewChat();
+        // Clean URL without reloading
+        window.history.replaceState({}, '', window.location.pathname);
+      }
+
       const messageInput = document.getElementById('messageInput');
       if (messageInput) messageInput.focus();
 
+      initScrollToBottom();
+      initInstallBanner();
+      initKeyboardHandling();
       registerServiceWorker();
     });
   </script>
@@ -3707,7 +3944,7 @@
     <div class="source-modal">
       <div class="source-modal-header">
         <div class="source-modal-title" id="sourceModalTitle"></div>
-        <button class="source-modal-close" onclick="closeSourceModal()">
+        <button class="source-modal-close" onclick="closeSourceModal()" aria-label="Close source viewer">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <line x1="18" y1="6" x2="6" y2="18"></line>
             <line x1="6" y1="6" x2="18" y2="18"></line>

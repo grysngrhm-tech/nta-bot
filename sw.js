@@ -3,8 +3,8 @@
  * Provides offline support and caching for the PWA
  */
 
-const STATIC_CACHE = 'nta-bot-static-v5.0';
-const DYNAMIC_CACHE = 'nta-bot-dynamic-v5.0';
+const STATIC_CACHE = 'nta-bot-static-v6.0';
+const DYNAMIC_CACHE = 'nta-bot-dynamic-v6.0';
 
 // Assets to cache immediately on install
 const PRECACHE_ASSETS = [
@@ -13,11 +13,22 @@ const PRECACHE_ASSETS = [
   './dashboard.html',
   './manifest.json',
   './assets/icons/nta-logo.svg',
-  './assets/icons/icon-192.png',
-  './assets/icons/icon-512.png',
-  './assets/icons/apple-touch-icon.png',
+  './assets/icons/favicon-16.png',
   './assets/icons/favicon-32.png',
-  './assets/icons/favicon-16.png'
+  './assets/icons/icon-72.png',
+  './assets/icons/icon-96.png',
+  './assets/icons/icon-120.png',
+  './assets/icons/icon-128.png',
+  './assets/icons/icon-144.png',
+  './assets/icons/icon-152.png',
+  './assets/icons/icon-167.png',
+  './assets/icons/icon-180.png',
+  './assets/icons/icon-192.png',
+  './assets/icons/icon-384.png',
+  './assets/icons/icon-512.png',
+  './assets/icons/icon-maskable-192.png',
+  './assets/icons/icon-maskable-512.png',
+  './assets/icons/apple-touch-icon.png'
 ];
 
 // External resources to cache when fetched
@@ -203,7 +214,32 @@ async function staleWhileRevalidate(request) {
 // Offline fallback response
 function offlineFallback(request) {
   if (request.mode === 'navigate') {
-    return caches.match('./index.html');
+    // Try cached index first, then show offline page
+    return caches.match('./index.html').then(cached => {
+      if (cached) return cached;
+      return new Response(`<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>NTA Bot — Offline</title>
+<style>
+  body{font-family:'Montserrat',system-ui,sans-serif;display:flex;align-items:center;justify-content:center;min-height:100svh;margin:0;background:#f5f5f0;color:#1a1a1a;text-align:center;padding:2rem;}
+  .offline{max-width:360px;}
+  .offline-icon{font-size:3rem;margin-bottom:1rem;}
+  h1{font-size:1.5rem;margin-bottom:0.5rem;color:#1a1a1a;}
+  p{color:#4a4a4a;margin-bottom:1.5rem;line-height:1.6;}
+  button{padding:0.75rem 1.5rem;background:#4a7c59;color:#fff;border:none;border-radius:25px;font-size:1rem;font-family:inherit;cursor:pointer;transition:background 0.2s;}
+  button:hover{background:#3d6b4a;}
+</style></head><body>
+<div class="offline">
+  <div class="offline-icon">&#x1F4F6;</div>
+  <h1>You're Offline</h1>
+  <p>NTA Bot requires an internet connection to search the knowledge base. Please check your connection and try again.</p>
+  <button onclick="location.reload()">Retry</button>
+</div></body></html>`, {
+        status: 200,
+        headers: { 'Content-Type': 'text/html' }
+      });
+    });
   }
 
   return new Response('Offline', {

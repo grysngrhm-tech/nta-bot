@@ -1,16 +1,20 @@
 {
+  "id": "/nta-bot/",
   "name": "NTA Bot",
   "short_name": "NTA Bot",
-  "description": "NTA employee curriculum lookup with citations.",
+  "description": "Internal knowledge bot for NTA employees — search curriculum content, health topics, and anatomy & physiology with cited sources.",
   "start_url": "/nta-bot/",
   "scope": "/nta-bot/",
   "display": "standalone",
-  "background_color": "#1a1a1a",
+  "background_color": "#f5f5f0",
   "theme_color": "#4a7c59",
   "orientation": "portrait-primary",
   "categories": ["utilities", "productivity", "education"],
   "lang": "en-US",
   "dir": "ltr",
+  "launch_handler": {
+    "client_mode": "navigate-existing"
+  },
   "icons": [
     {
       "src": "assets/icons/icon-72.png",
@@ -89,6 +93,14 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "New Chat",
+      "short_name": "New Chat",
+      "url": "/nta-bot/?new=1",
+      "icons": [{ "src": "assets/icons/icon-96.png", "sizes": "96x96" }]
     }
   ],
   "related_applications": [],
