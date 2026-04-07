@@ -13,100 +13,82 @@
 
 ## What is NTA Bot?
 
-NTA Bot is an AI assistant built for NTA employees. Ask it anything about NTA curriculum, programs, scope of practice, health topics, or anatomy & physiology — it searches across 1,820 pieces of curated content and gives you a clear answer with clickable source citations.
+NTA Bot is an internal AI assistant that helps NTA employees find answers across the full breadth of NTA's curriculum, reference textbooks, and supplementary content. Ask it about the Five Foundations, coaching methodology, nutrient biochemistry, scope of practice, or any health topic NTA teaches — it searches a curated knowledge base of over 6,400 entries and returns a clear answer with clickable source citations.
 
-Unlike general AI tools, NTA Bot doesn't use the open internet or make things up. Every answer is grounded in NTA's own materials and a licensed college A&P textbook, and every claim is traceable to a specific source you can click to verify.
-
-The bot is password-protected and intended for internal use by NTA staff.
+Every answer is grounded in NTA's own materials. The bot doesn't use the open internet or generate from its training data. Every claim is traceable to a specific curriculum lecture, textbook section, NIH fact sheet, or podcast episode.
 
 ## What Can You Ask?
 
-**Curriculum & Programs**
-- "What are the Five Foundations of Health?"
-- "What does the PHWC curriculum cover in Month 4?"
-- "What's the difference between an NTP and an FNTP?"
+- "Explain the north-to-south digestive process as taught in the NTP curriculum"
+- "What's the difference in scope between an NTP and a PHWC?"
+- "What are the signs and symptoms of magnesium deficiency?"
+- "How does nutrition affect thyroid function?"
+- "What coaching techniques does the PHWC program teach for building client trust?"
+- "What does Dr. Gaby's Nutritional Medicine say about nutritional treatments for migraines?"
 
-**Scope of Practice**
-- "Can an NTP diagnose or treat disease?"
-- "Why can a PHWC not make food recommendations?"
-- "What can an FNTP do that an NTP cannot?"
-
-**Health & Wellness Topics**
-- "Why do people feel shaky when they skip meals?"
-- "How does chronic inflammation start, and can diet reduce it?"
-- "What nutrients does your body need to make healthy red blood cells?"
-
-**Anatomy & Physiology**
-- "How does the liver produce bile?"
-- "How do the kidneys filter blood and reabsorb nutrients?"
-- "What happens to blood sugar at a cellular level when someone skips meals?"
+The bot handles curriculum deep-dives, quick scope-of-practice lookups, nutrient biochemistry questions, and clinical nutrition topics across body systems.
 
 ## Knowledge Base
 
-NTA Bot searches across **1,820 curated entries** from three source categories. None of this content is scraped or dumped in raw — each source goes through a processing pipeline that breaks it into focused, searchable chunks and tags it with metadata so the bot knows where every piece of information came from.
+NTA Bot searches across **6,402 curated entries** spanning NTA's own curriculum, four reference textbooks, government health references, and 86 podcast episodes. Every source goes through a processing pipeline that extracts educational content, removes filler, embeds it for semantic search, and tags it with metadata so the bot knows exactly where every piece of information came from.
 
-### NTA Curriculum & Reference — 187 entries
+### NTA Curriculum — 1,743 entries
 
-Content from NTA's website — scope of practice, the NTP and PHWC programs, credentials, philosophy, and terminology — manually structured into reference documents, then split at section boundaries so each chunk covers one focused topic. Each entry links back to nutritionaltherapy.com.
+The core of the knowledge base. Complete lecture transcripts from all three NTA programs, processed through GPT to extract educational content while preserving NTA's teaching voice and terminology.
+
+**NTP Program** (1,005 entries from 16 modules) — Digestion (245), Blood Sugar Regulation (136), Bioindividual Nutrition (92), Supplements (92), Nutrient-Dense Diet (80), Stress Management (60), Case Study Intensive (55), NACA Clinical Application (82), Foundations Review (46), Anatomy & Physiology (44), Sleep (37), Lab Interpretation (31).
+
+**PHWC Program** (531 entries from 81 video transcripts) — Client-centered relationships, trust and rapport, motivational interviewing, coaching skills, behavior change frameworks, scope of practice, ethics, powerful questions, goal setting, wellness wheel, and practicum across Weeks 1-29.
+
+**Foundations of Healing** (207 entries from 31 transcripts) — The Five Foundations taught at a consumer-accessible level: Nutrient-Dense Diet, Digestion, Blood Sugar Regulation, Sleep, Stress Management, and Connecting the Foundations.
+
+### Textbooks — 2,847 entries across 4 books
+
+NTA's curriculum references two core textbooks that are commercially copyrighted and can't be used directly: *Advanced Human Nutrition* (Medeiros & Wildman) for nutritional biochemistry, and the assigned A&P text. The knowledge base assembles equivalent coverage from multiple free and licensed sources that together map to the same scope.
+
+**OpenStax Anatomy & Physiology** (643 entries, 28 chapters) — Maps to NTA's assigned A&P textbook. All body systems covered with tiered depth: full indexing for digestive, endocrine, immune, cardiovascular, and metabolic systems; selective coverage for others. Sourced from the philschatz/anatomy-book GitHub markdown port. CC BY 4.0.
+
+**Principles of Nutrition — Georgia Highlands College** (379 entries, 20 chapters) — Maps to the macronutrient biochemistry and metabolism content in Medeiros & Wildman. Covers carbohydrate/lipid/protein structure and chemistry, macronutrient digestion and absorption, glycolysis, beta-oxidation, TCA cycle, gluconeogenesis, ketogenesis, metabolic integration, micronutrients organized by metabolic function, lifespan nutrition (pregnancy through aging), and nutrition and fitness. Extracted from chapter PDFs. CC BY-SA 4.0.
+
+**OpenStax Nutrition for Nurses** (405 entries, 20 chapters) — Fills a gap neither NTA textbook covers deeply: clinical nutrition organized by body system. Covers how nutrition impacts neurological, endocrine, hematologic, cardiovascular, pulmonary, renal, gastrointestinal, and musculoskeletal systems across the lifespan. Nursing-specific content (care plans, compliance evaluation, clinical judgment frameworks) was filtered out — only nutritional science retained. CC BY 4.0.
+
+**Nutritional Medicine — Dr. Alan R. Gaby** (1,420 entries, 28 parts) — A comprehensive clinical reference covering evidence-based nutritional treatments for 300+ conditions organized by body system. Covers vitamins, minerals, amino acids, therapeutic agents, and condition-specific protocols from cardiovascular disease to psychiatry. Commercially published — source material is proprietary and never included in this public repo.
+
+### NIH Office of Dietary Supplements — 672 entries from 28 fact sheets
+
+Peer-reviewed Health Professional fact sheets covering all 13 vitamins, 13 minerals, choline, and omega-3 fatty acids. Each nutrient includes: biochemical function, recommended intakes, food sources, supplement forms, deficiency signs, groups at risk, health condition connections, toxicity/upper limits, and drug interactions. U.S. federal government publication (public domain).
 
 ### Podcast Library — 990 entries from 86 episodes
 
-Every episode of the **Nutritional Therapy and Wellness Podcast** was transcribed using OpenAI's Whisper speech-to-text model, then processed through GPT-4o to extract factual, educational content — not raw transcripts with filler and chitchat, but distilled reference entries organized by topic (digestion, blood sugar, hormones, fertility, mental health, supplements, and more). Each citation links directly to the episode on Apple Podcasts.
+Every episode of the NTA *Nutritional Therapy and Wellness Podcast* was transcribed via OpenAI Whisper, then processed through GPT-4o to extract factual, educational content — not raw transcripts, but distilled reference entries organized by topic. Each citation links directly to the episode on Apple Podcasts.
 
-### Anatomy & Physiology Textbook — 643 entries from 28 chapters
+### NTA Reference — 116 entries
 
-Selected chapters from **OpenStax Anatomy & Physiology** (1st edition, CC BY 4.0), the same foundational science as NTA's assigned A&P text. The textbook content was sourced from an open-source markdown port, programmatically cleaned to remove review questions and pedagogical filler, then chunked at section boundaries. Key systems are indexed in depth: digestive, endocrine, immune, cardiovascular, respiratory, urinary, reproductive, plus metabolism, blood, and electrolyte balance. Every chapter has at least breadcrumb coverage so the bot can point you in the right direction. Each citation links to the exact section on openstax.org.
+Scope of practice documents (NTP, FNTP, PHWC boundaries and distinctions), program guides, credentials comparisons, NTA philosophy and terminology, and free consumer guides (Healthy Fats, Digestion, Herbal Recipes).
 
 ## How It Works
 
-NTA Bot uses a technique called **Retrieval-Augmented Generation (RAG)** — instead of relying on what an AI model memorized during training, it *searches* a curated knowledge base for every question and builds the answer from what it finds. This means the bot only says things it can trace back to a specific source, and it can be updated with new content at any time without retraining anything.
+NTA Bot uses **Retrieval-Augmented Generation (RAG)** — instead of relying on what an AI memorized during training, it searches a curated knowledge base for every question and builds the answer from what it finds.
 
-Here's what happens when you ask a question:
+**1. Your question is embedded.** An AI model converts your question into a 3,072-dimensional vector that represents its meaning — so "how does sugar affect the brain" matches content about dopamine reward pathways even without those exact words.
 
-### 1. You ask a question
+**2. Hybrid search finds candidates.** The bot runs vector similarity search combined with keyword matching, pulling 30 candidate chunks from across all source categories.
 
-Type it in, or tap the microphone to use voice-to-text.
+**3. Candidates are reranked.** A second AI model reads each candidate and scores how well it actually answers your question. Curriculum content gets a slight scoring boost since it represents NTA's own teaching voice. A diversity step ensures the final results draw from different source types — curriculum, textbooks, external references, and podcast.
 
-### 2. Your question is converted into a vector
-
-Before the bot can search, it needs to translate your question into something a computer can compare against its knowledge base. It does this using an **embedding model** — an AI that reads your question and converts it into a list of 3,072 numbers (called a *vector*) that represent the meaning of what you asked. Think of it like coordinates on a map: questions that mean similar things end up near each other in this mathematical space.
-
-Every chunk in the knowledge base has already been converted into the same kind of vector when it was first loaded. So searching becomes a matter of finding which chunks are "closest" to your question in meaning-space — not just matching keywords, but understanding that "how does sugar affect the brain" is conceptually close to content about dopamine reward pathways even if those exact words never appear.
-
-### 3. The bot searches and ranks results
-
-The bot runs a **hybrid search** that combines vector similarity (meaning-based) with traditional keyword matching, pulling 30 candidate chunks from across all three source categories. Then a second AI model (GPT-5.4 Mini) **reranks** those 30 candidates by reading each one and scoring how well it actually answers your specific question. A diversity step ensures the final results include content from different source types (curriculum, podcast, textbook) when relevant — so you're not just getting 8 podcast results when a textbook chapter has the definitive answer.
-
-### 4. AI writes the answer
-
-The top 8 ranked chunks are passed to **GPT-5.4**, which reads them all and synthesizes a clear, well-formatted answer. The model is instructed to answer only from the retrieved content — never from its own training knowledge — and to write in a direct, scannable style with bold terms, lists, and short paragraphs. Every answer includes collapsible source cards you can expand to view the original text or click through to the source.
+**4. AI writes the answer.** The top 10 ranked chunks are passed to GPT-5.4, which synthesizes a clear answer using only the retrieved content. Every answer includes collapsible source cards you can expand to view the original text or click through to the source.
 
 ## Features
 
 | Feature | Description |
 |---------|-------------|
-| **Cited Sources** | Every answer includes collapsible source cards grouped by document. Expand to see individual sections, view source text, or click through to NTA's website, Apple Podcasts, or OpenStax. |
-| **Rich Formatting** | Answers use bold, italics, and lists for easy scanning — not walls of text. |
-| **Voice Input** | Tap the microphone to speak your question instead of typing. |
-| **Read Aloud** | Tap the speaker icon on any answer to hear it read back to you. |
-| **Confidence Indicators** | Each answer shows High, Medium, or Low confidence so you know how well the knowledge base covered your question. |
-| **Mobile Friendly** | Works on phone, tablet, and desktop — no app install needed. |
-
-## Analytics Dashboard
-
-NTA Bot includes an analytics dashboard for the content team to spot opportunities for new episodes and curriculum development.
-
-**Access it** via the bar chart icon in the top-right corner, or go directly to the [dashboard URL](https://grysngrhm-tech.github.io/nta-bot/dashboard.html).
-
-The dashboard shows:
-
-- **Topic Demand vs Coverage** — what are people asking about, and how well is it covered?
-- **Trending Topics** — what's new this week?
-- **Source Usage** — which documents, episodes, and textbook chapters are cited most?
-- **Session Replay** — multi-question research journeys with device info and topic progression
-- **Searchable Question Table** — every question asked, sortable by time, topic, confidence, and location
-
-The dashboard doesn't require a password — it only shows question analytics, not curriculum content.
+| **Cited Sources** | Every answer includes collapsible source cards with authority badges (Curriculum, Textbook, NIH, Podcast, Web). Expand to view source text, or click through to the original. |
+| **Rich Formatting** | Answers use bold, italics, and lists for easy scanning. |
+| **Voice Input** | Tap the microphone to speak your question. |
+| **Read Aloud** | Tap the speaker icon to hear any answer read back. |
+| **Confidence Indicators** | High, Medium, or Low confidence so you know how well the knowledge base covered your question. |
+| **Analytics Dashboard** | Topic demand vs coverage, trending topics, source usage, and a searchable question feed. |
+| **Mobile Friendly** | Works on phone, tablet, and desktop — no install needed. |
 
 ## How to Access
 
@@ -116,23 +98,20 @@ The dashboard doesn't require a password — it only shows question analytics, n
 | **Password** | Provided by your NTA administrator |
 | **Dashboard** | [grysngrhm-tech.github.io/nta-bot/dashboard.html](https://grysngrhm-tech.github.io/nta-bot/dashboard.html) |
 | **Browsers** | Chrome, Safari, Edge, Firefox |
-| **Devices** | Phone, tablet, desktop — no app install required |
 
 ## Feedback & Contact
 
-NTA Bot is actively maintained. The knowledge base can be expanded with new curriculum materials, podcast episodes, or textbook chapters at any time.
+NTA Bot is actively maintained. The knowledge base can be expanded with new curriculum materials, podcast episodes, or reference content at any time.
 
 For feedback, feature requests, or bug reports, contact **Grayson Graham**.
 
 ## Technical Architecture
 
-NTA Bot is a single-page web app hosted on GitHub Pages. There's no backend server — just static HTML/CSS/JS that talks to two cloud services:
+Single-page PWA (vanilla HTML/CSS/JS) hosted on GitHub Pages. No backend server — static files talk to two cloud services:
 
-- **n8n** (workflow automation) — handles the RAG pipeline: receives questions, orchestrates the search and AI calls, returns structured JSON responses
-- **Supabase** (PostgreSQL database) — stores all 1,820 knowledge chunks with their vector embeddings, runs the hybrid search, and logs analytics
+- **n8n** (workflow automation) — RAG pipeline: receives questions, orchestrates search + AI calls, returns structured JSON
+- **Supabase** (PostgreSQL + pgvector) — stores 6,402 knowledge chunks with 3,072-dim vector embeddings, runs hybrid search, logs analytics
 
-The AI models are accessed via OpenAI's API: **GPT-5.4 Standard** for writing answers, **GPT-5.4 Mini** for reranking search results, and **text-embedding-3-large** for converting text into searchable vectors. The textbook content is from OpenStax Anatomy & Physiology, used under a CC BY 4.0 license.
-
-Every chunk in the knowledge base has a **contextual retrieval prefix** — a short AI-generated sentence that describes what the chunk covers and where it fits in its parent document. This helps the search engine understand chunks that would be ambiguous in isolation.
+AI models via OpenAI: **GPT-5.4 Standard** for answer synthesis, **GPT-5.4 Mini** for reranking, **text-embedding-3-large** for embeddings. Every chunk has a **contextual retrieval prefix** — an AI-generated sentence that bridges the chunk's structural position with its specific topic to improve search accuracy.
 
 Designed and built by **Grayson Graham**.
