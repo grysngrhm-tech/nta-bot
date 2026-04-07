@@ -28,7 +28,7 @@ NTA Ref     ██░░░░░░░░░░░░░░░░░░░░�
 ### Quality Metrics
 
 - **100%** of chunks have contextual retrieval prefixes (AI-generated structural context)
-- **Average chunk size:** ~150-250 words (optimized for embedding quality and retrieval specificity)
+- **Chunk size:** Median **267 tokens**, mean **659 tokens**. The gap reflects intentional design — curriculum and podcast entries are GPT-extracted into focused ~200-token reference entries, while textbook chunks retain longer ~1,200-token sections for biochemical depth.
 - **Embedding model:** text-embedding-3-large at native 3,072 dimensions (no truncation)
 - **Source URL coverage:** All textbook, NIH, and podcast chunks link to their original source. Curriculum chunks have no external URL (proprietary content).
 
