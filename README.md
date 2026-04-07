@@ -32,9 +32,9 @@ The bot is password-protected and intended for internal use by NTA staff.
 
 ## Under the Hood
 
-NTA Bot uses **Retrieval-Augmented Generation (RAG)** — instead of relying on what an AI memorized during training, it searches a curated knowledge base for every question, reranks results with a curriculum-priority boost, enforces source diversity across content types, and synthesizes the top 10 matches into a clear answer. Every answer includes collapsible source cards grouped by category (Curriculum, Textbook, NIH, Podcast) so you can verify where the information came from.
+NTA Bot uses **Retrieval-Augmented Generation (RAG)** — instead of relying on what an AI memorized during training, it searches a curated knowledge base for every question, reranks results with a curriculum-priority boost, enforces source diversity across content types, and synthesizes the top 10 matches into a clear answer. The full [technical architecture](TECHNICAL.md) covers the RAG pipeline, embedding strategy, reranking, diversity enforcement, and the reasoning behind each design decision.
 
-The knowledge base contains **6,387 curated entries** from 5 source categories:
+The [knowledge base](KNOWLEDGE-BASE.md) contains **6,387 curated entries** from 5 source categories:
 
 ```
 Curriculum  ████████████████████████████░░░░░░░░░░░░░░  1,777  (28%)
@@ -45,29 +45,33 @@ NTA Ref     ██░░░░░░░░░░░░░░░░░░░░�
 ```
 
 - **Curriculum** — Complete NTP, PHWC, and FOH lecture transcripts, GPT-extracted to preserve NTA's teaching voice
-- **Textbooks** — Four books assembled to cover the scope of NTA's assigned textbooks, including a 1,420-entry clinical reference (Dr. Gaby)
+- **Textbooks** — Four books [assembled from free sources](KNOWLEDGE-BASE.md#the-mapping-strategy) to cover the scope of NTA's assigned textbooks, plus Dr. Gaby's Nutritional Medicine (1,420 entries)
 - **Podcast** — 86 episodes distilled into educational reference entries
 - **NIH ODS** — 28 peer-reviewed fact sheets on every vitamin and mineral
 - **NTA Reference** — Scope of practice, programs, philosophy, and terminology
 
-For deeper technical and content documentation:
-
-| Document | What it covers |
-|----------|----------------|
-| **[TECHNICAL.md](TECHNICAL.md)** | System architecture, RAG pipeline, embedding strategy, reranking, diversity enforcement, and the reasoning behind each design decision |
-| **[KNOWLEDGE-BASE.md](KNOWLEDGE-BASE.md)** | Complete content inventory — what's included, what's excluded, how free sources were mapped to NTA's copyrighted textbooks, and licensing |
-
 ## Features
 
-| Feature | Description |
-|---------|-------------|
-| **Cited Sources** | Category-grouped source cards with authority badges. Expand to view source text or click through to the original. |
-| **Rich Formatting** | Answers use bold, italics, and lists for easy scanning. |
-| **Voice Input** | Tap the microphone to speak your question. |
-| **Read Aloud** | Tap the speaker icon to hear any answer read back. |
-| **Confidence Indicators** | High, Medium, or Low confidence so you know how well the knowledge base covered your question. |
-| **Analytics Dashboard** | Topic demand vs coverage, trending topics, source usage, and a searchable question feed. |
-| **Mobile Friendly** | Works on phone, tablet, and desktop — no install needed. |
+**Answers**
+- **Cited sources** — Every answer includes collapsible source cards grouped by category (Curriculum, Textbook, NIH, Podcast, Web) with authority badges. Expand to view the original chunk text or click through to the source.
+- **Rich formatting** — Bold key terms, italics for emphasis, bullet lists for scannability. No walls of text.
+- **Confidence indicators** — High, Medium, or Low confidence on each answer so you know how well the knowledge base covered your question.
+- **Curriculum priority** — When NTA's own curriculum and an external source both cover a topic, the curriculum is silently preferred. The answer reads as one coherent piece, not broken up by source.
+
+**Interaction**
+- **Voice input** — Tap the microphone to speak your question instead of typing.
+- **Read aloud** — Tap the speaker icon on any answer to hear it read back via text-to-speech.
+- **Conversation memory** — Follow-up questions within a session are context-aware.
+- **Sample questions** — 160 curated questions across 4 categories refresh on each visit to help new users explore.
+
+**Analytics & Monitoring**
+- **[Analytics dashboard](https://grysngrhm-tech.github.io/nta-bot/dashboard.html)** — Topic demand vs knowledge base coverage, trending topics, source usage rankings, session replay, and a searchable question feed.
+- **Content gap detection** — Identifies high-demand topics with low knowledge base coverage, signaling opportunities for new curriculum content or podcast episodes.
+
+**Platform**
+- **Mobile friendly** — Works on phone, tablet, and desktop. No app install needed.
+- **Offline capable** — Service worker caches the app for offline access.
+- **No build step** — Single HTML file, deploys instantly on push to GitHub Pages.
 
 ## How to Access
 
