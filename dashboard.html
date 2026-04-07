@@ -1243,27 +1243,22 @@
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indkb3VpZm9tbGlwbWxza3NjenN2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcyMDQ3NTEsImV4cCI6MjA4Mjc4MDc1MX0.lVu6OnArZ_MFXFrx0ljn2GXfFtAM_Ru8xcTUXZbwqn8';
 
     const CATEGORY_KEYWORDS = {
-      'Digestion & Gut Health': ['digestion', 'gut', 'microbiome', 'digestive', 'stomach', 'intestine', 'mouth', 'pharynx', 'esophagus', 'liver', 'pancreas', 'gallbladder', 'absorption', 'bile', 'hcl', 'north-to-south', 'sibo', 'ibs', 'leaky gut', 'permeability'],
+      'Digestion & Gut Health': ['digestion', 'gut', 'microbiome', 'digestive', 'stomach', 'intestine', 'esophagus', 'liver', 'pancreas', 'gallbladder', 'absorption', 'bile', 'hcl', 'north-to-south', 'sibo', 'ibs', 'leaky gut', 'permeability', 'gastro'],
       'Blood Sugar & Metabolism': ['blood sugar', 'metabolism', 'insulin', 'glucose', 'glucagon', 'metabolic', 'carbohydrate', 'lipid metabolism', 'protein metabolism', 'glycolysis', 'gluconeogenesis', 'ketogenesis', 'beta-oxidation', 'tca cycle', 'atp', 'diabetes', 'hypoglycemia'],
-      'Immune System & Inflammation': ['immune', 'inflammation', 'lymphatic', 'innate immune', 'adaptive immune', 'antibod', 'pathogen', 'autoimmune', 'cytokine'],
-      'Cardiovascular & Blood Health': ['cardiovascular', 'blood', 'erythrocyte', 'hemoglobin', 'heart', 'blood vessel', 'blood pressure', 'hemostasis', 'iron', 'anemia', 'cholesterol'],
-      'Hydration & Electrolytes': ['hydration', 'electrolyte', 'fluid', 'water balance', 'acid-base', 'sodium', 'potassium', 'dehydration', 'magnesium'],
       'Sleep & Recovery': ['sleep', 'recovery', 'circadian', 'pineal', 'melatonin', 'insomnia'],
       'Stress & Nervous System': ['stress', 'adrenal', 'cortisol', 'hpa', 'autonomic', 'sympathetic', 'parasympathetic', 'nervous system', 'fight or flight', 'burnout'],
       'Nutrient-Dense Diet & Food Quality': ['nutrient-dense', 'diet', 'food quality', 'sourcing', 'traditional', 'food preparation', 'organic', 'soaking', 'sprouting', 'ferment', 'weston price', 'ancestral'],
-      'Supplements & Nutrients': ['supplement', 'vitamin', 'mineral', 'fatty acid', 'omega', 'dosage', 'bioavailability', 'cofactor', 'coenzyme', 'antioxidant'],
-      'Hormones & Endocrine': ['hormone', 'endocrine', 'thyroid', 'estrogen', 'pituitary', 'parathyroid', 'gonadal', 'testosterone', 'progesterone', 'hashimoto', 'adrenal fatigue'],
-      'Mental Health & Brain': ['mental', 'brain', 'depression', 'anxiety', 'cognitive', 'neurotransmitter', 'nervous tissue', 'serotonin', 'dopamine', 'adhd', 'mood'],
-      'Fertility & Reproductive Health': ['fertility', 'reproductive', 'pregnancy', 'pcos', 'lactation', 'maternal', 'menstrual', 'postpartum', 'prenatal', 'breastfeeding', 'menopause'],
-      'Respiratory & Urinary Systems': ['respiratory', 'urinary', 'kidney', 'urine', 'lung', 'gas exchange', 'breathing', 'reabsorption', 'detox', 'nephron'],
-      'Musculoskeletal & Skin': ['muscle', 'skeletal', 'joint', 'tissue', 'integumentary', 'skin', 'bone', 'osteoporosis', 'collagen', 'eczema', 'acne'],
-      'NTP Program & Clinical Tools': ['ntp', 'naca', 'naq', 'nutri-q', 'clinical', 'practitioner', 'digestion module', 'blood sugar module', 'sleep module', 'stress module', 'supplement module', 'lab interpretation', 'case study', 'foundations review', 'symptom burden', 'food and mood'],
+      'Supplements & Nutrients': ['supplement', 'vitamin', 'mineral', 'fatty acid', 'omega', 'dosage', 'bioavailability', 'cofactor', 'coenzyme', 'antioxidant', 'electrolyte', 'hydration', 'sodium', 'potassium', 'magnesium', 'zinc', 'iron', 'selenium', 'iodine', 'calcium'],
+      'Hormones & Endocrine': ['hormone', 'endocrine', 'thyroid', 'estrogen', 'pituitary', 'parathyroid', 'testosterone', 'progesterone', 'hashimoto', 'adrenal fatigue', 'pcos'],
+      'Mental Health & Brain': ['mental', 'brain', 'depression', 'anxiety', 'cognitive', 'neurotransmitter', 'serotonin', 'dopamine', 'adhd', 'mood', 'psychiatric'],
+      'Fertility & Reproductive Health': ['fertility', 'reproductive', 'pregnancy', 'lactation', 'maternal', 'menstrual', 'postpartum', 'prenatal', 'breastfeeding', 'menopause'],
+      'Immune System & Inflammation': ['immune', 'inflammation', 'lymphatic', 'antibod', 'pathogen', 'autoimmune', 'cytokine', 'allergy', 'food sensitivity'],
+      'Body Systems & Clinical Nutrition': ['cardiovascular', 'heart', 'blood vessel', 'blood pressure', 'cholesterol', 'respiratory', 'lung', 'kidney', 'renal', 'urinary', 'muscle', 'skeletal', 'bone', 'osteoporosis', 'skin', 'eczema', 'acne', 'dermatolog', 'hemoglobin', 'anemia', 'erythrocyte'],
+      'NTP Program & Clinical Tools': ['ntp', 'naca', 'naq', 'nutri-q', 'clinical', 'practitioner', 'lab interpretation', 'functional lab', 'blood work', 'metabolomix', 'case study', 'foundations review', 'symptom burden', 'food and mood', 'biomarker'],
       'PHWC Program & Coaching': ['phwc', 'coaching', 'behavior change', 'wellness coach', 'motivational interviewing', 'client-centered', 'trust', 'rapport', 'powerful questions', 'goal setting', 'wellness wheel', 'stages of change', 'empowerment'],
       'Scope of Practice & Credentials': ['scope', 'credential', 'fntp', 'fca', 'board exam', 'recommend', 'empower', 'diagnose', 'treat', 'lingual-neural', 'career compass', 'nbhwc'],
-      'Bioindividual Nutrition': ['bioindividual', 'bio-individuality', 'weston price', 'traditional diet', 'ancestral', 'omnivore', 'food sensitivity', 'elimination diet'],
-      'Lab Interpretation': ['lab', 'functional lab', 'blood work', 'metabolomix', 'adrenal profile', 'biomarker', 'reference range', 'optimal range'],
-      'NTA Philosophy & Mission': ['philosophy', 'mission', 'bio-individuality', 'innate intelligence', 'root cause', 'food-first', 'five foundations', 'innate'],
-      'General Wellness': ['wellness', 'lifestyle', 'movement', 'exercise', 'fitness', 'aging', 'longevity']
+      'NTA Philosophy & Bio-individuality': ['philosophy', 'mission', 'bio-individuality', 'bioindividual', 'innate intelligence', 'root cause', 'food-first', 'five foundations', 'innate', 'elimination diet'],
+      'General Wellness': ['wellness', 'lifestyle', 'movement', 'exercise', 'fitness', 'aging', 'longevity', 'detox', 'weight']
     };
 
     // ===== STATE =====
