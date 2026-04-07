@@ -2453,30 +2453,30 @@
     // ===== QUESTION LIBRARY =====
     // 4 categories, 20 questions each. One random question from each category is shown per page load.
     const questionLibrary = {
-      // About NTA: philosophy, history, programs, credentials, pricing, course comparisons
+      // About NTA: philosophy, history, programs, credentials, what makes NTA different
       aboutNTA: [
         "What are the Five Foundations of Health and why does the NTA teach them as a system?",
         "What's the difference between the NTP and PHWC programs?",
-        "What does the NTA mean by bio-individuality?",
         "Who founded the NTA and what is the Graham Grant?",
         "What is the Foundations of Healing program and who is it designed for?",
         "What would I learn about digestion in the NTP program?",
         "How does the NTA's food-first philosophy differ from conventional nutrition advice?",
         "What credentials can I earn through the NTA and how do they compare?",
         "What is the FCA course and what additional skills does it teach beyond the NTP?",
-        "What board exam can PHWC graduates sit for?",
-        "Can an NTP diagnose or treat disease?",
         "What is Lingual-Neural Testing and who can perform it?",
         "How does the NTA define the difference between making recommendations and empowering clients?",
-        "What does the NTA mean by the body's innate intelligence?",
         "What is the NACA process and how does an NTP use it with clients?",
         "A prospective student loves nutrition science but also wants to coach. What path would you recommend?",
-        "What accreditation does the PHWC program have for board certification?",
         "How does the NTA's root-cause approach differ from symptom management?",
-        "What tools does Nutri-Q provide for NTPs versus PHWCs?",
-        "What is Career Compass and who is it for?"
+        "Why does the NTA organize its entire curriculum around five foundations instead of teaching by nutrient or body system?",
+        "What does a typical week look like for an NTP student during the program?",
+        "How does the PHWC program prepare graduates to sit for the national board certification exam?",
+        "What makes the NTA's approach to anatomy and physiology different from a conventional college A&P course?",
+        "How did Weston A. Price's research influence the NTA's founding philosophy?",
+        "What happens after graduation? How does the NTA support alumni building their practices?",
+        "Why does the NTA require both an NTP and PHWC to understand the other's scope of practice?"
       ],
-      // Clinical: common client scenarios, symptoms, diet/exercise, scope of practice in action
+      // Clinical: real client scenarios, practical practitioner questions
       clinical: [
         "A client reports feeling shaky and irritable between meals. What foundations should I explore?",
         "How should a PHWC respond when a client asks for specific supplement recommendations?",
@@ -2487,42 +2487,42 @@
         "What role does bile play in fat digestion, and what happens when it's insufficient?",
         "A client wants to try a keto diet. How should an NTP frame their response within scope?",
         "What are the key differences in how an NTP versus a PHWC would handle a client struggling with motivation?",
-        "How does the NAQ help identify which foundations need the most attention?",
-        "What should an NTP consider before suggesting a client get functional lab work done?",
-        "How does stress affect digestion according to the NTA curriculum?",
         "What nutritional support matters most during pregnancy and breastfeeding?",
         "A client reports poor sleep and high stress. How do these foundations cascade into other issues?",
         "What is Total Load Theory and how does it help explain where symptoms begin?",
         "How does the Symptom Burden Graph help prioritize which foundations to address first?",
         "What are common signs of blood sugar dysregulation beyond diabetes?",
-        "How does dehydration mimic symptoms commonly attributed to other health conditions?",
         "What dietary changes support healthy gallbladder function?",
-        "How would an NTP use a Food and Mood Journal to identify patterns in a client's symptoms?"
+        "A client's labs show low ferritin but normal hemoglobin. What should an NTP consider?",
+        "My client is a vegetarian experiencing brain fog and fatigue. Where do I start?",
+        "A client with eczema asks if diet could be a factor. How would you explore this?",
+        "What's the connection between a client's chronic heartburn and their high-stress job?",
+        "A new mom is struggling with postpartum anxiety. What foundations should her NTP prioritize?"
       ],
-      // Technical: complex questions showcasing knowledge base depth and AI synthesis capability
+      // Technical: deep questions that showcase knowledge base depth and AI synthesis
       technical: [
         "Walk me through the full biochemical pathway of carbohydrate metabolism from ingestion to ATP production.",
-        "How do fat-soluble vitamins A, D, E, and K interact with each other in absorption and function?",
-        "What is the relationship between gut permeability, the microbiome, and systemic inflammation?",
         "Explain how insulin resistance develops at the cellular level and its downstream metabolic effects.",
         "What role does magnesium play across multiple body systems, and what are the signs of deficiency?",
-        "How does the hypothalamic-pituitary-adrenal axis respond to chronic stress and what nutrients support recovery?",
-        "Compare the mechanisms of action between omega-3 and omega-6 fatty acids in inflammatory pathways.",
-        "What happens to thyroid function when iodine, selenium, and zinc are simultaneously deficient?",
+        "How does the HPA axis respond to chronic stress, and what nutrients support adrenal recovery?",
         "How does the autonomic nervous system influence digestive secretions from the brain through the intestines?",
         "What is the biochemical basis for the connection between folate, B12, and neural tube defects?",
         "Explain the enterohepatic circulation of bile acids and its role in cholesterol metabolism.",
         "How do ketone bodies form during fasting, and what tissues can and cannot use them for fuel?",
-        "What are the nutritional implications of proton pump inhibitor use on mineral absorption?",
-        "How does iron metabolism differ between heme and non-heme sources, and what factors enhance or inhibit absorption?",
+        "What are the nutritional implications of long-term proton pump inhibitor use?",
+        "How does iron absorption differ between heme and non-heme sources?",
         "What is the role of the microbiome in synthesizing B vitamins and short-chain fatty acids?",
         "How do gluconeogenesis and glycogenolysis work together to maintain blood glucose during fasting?",
-        "What nutritional factors influence neurotransmitter production and how does this connect to mental health?",
         "Explain how calcium, vitamin D, and vitamin K work together in bone metabolism.",
-        "What happens to protein metabolism when someone is in a chronically stressed, catabolic state?",
-        "How does alcohol metabolism in the liver compete with other metabolic pathways and deplete specific nutrients?"
+        "What happens to protein metabolism during a prolonged cortisol-driven catabolic state?",
+        "How does a compromised intestinal lining lead to systemic inflammation?",
+        "Why does selenium deficiency make Hashimoto's thyroiditis worse?",
+        "What happens to B vitamin status in someone with MTHFR polymorphisms?",
+        "How does the body prioritize which organs get glucose during a 24-hour fast?",
+        "Why do omega-6 fatty acids promote inflammation while omega-3s resolve it?",
+        "What is the metabolic cost of chronic alcohol consumption on liver detoxification?"
       ],
-      // Random: wide variety of interesting, unexpected, or creative questions
+      // Random: surprising, fun, thought-provoking — widest variety possible
       random: [
         "What did Dr. Weston A. Price discover about traditional diets and dental health?",
         "How do seed oils contribute to increased sunburn susceptibility?",
@@ -2530,20 +2530,20 @@
         "Is bone broth actually beneficial for gut health, or is it just a trend?",
         "Why does the NTA teach about soaking and sprouting grains?",
         "What is the 'sober curious' movement and how does alcohol affect foundational health?",
-        "How does childhood obesity create a cycle that affects the next generation?",
-        "What are the key mineral deficiencies behind graying hair, cramps, and cognitive decline?",
         "Why do some people get sick constantly while others rarely do?",
         "How does chronic distraction and screen time physically affect brain health?",
         "What is the connection between menopause symptoms and the Five Foundations?",
-        "How does the quality of fish oil supplements affect whether you actually get omega-3 benefits?",
-        "What role does hydration play across multiple foundations?",
-        "Can nutrition actually influence how well you recover from surgery?",
-        "How does the lymphatic system support immunity, and can you influence it with lifestyle?",
         "What makes fermented foods more than just a health fad?",
-        "How do reproductive hormones fluctuate across a menstrual cycle, and what nutritional support helps?",
         "Why does the NTA consider sleep a physiological foundation rather than a lifestyle preference?",
         "What is iridology and how has it been used as an assessment tool?",
-        "How does the NTA's approach to fertility combine foundational health with bio-individuality?"
+        "How does the NTA's approach to fertility combine foundational health with bio-individuality?",
+        "Why do wounds heal slower in people with poor nutrition?",
+        "What's the actual science behind the claim that sugar feeds cancer?",
+        "Why do so many people feel better when they cut out gluten, even without celiac disease?",
+        "How does your gut bacteria influence your mood and cravings?",
+        "What happens to your body's nutrient needs as you age past 60?",
+        "Why did traditional cultures prize organ meats, and should we still eat them?",
+        "What's the nutritional argument against the standard American breakfast?"
       ]
     };
 
