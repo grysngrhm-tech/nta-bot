@@ -1067,6 +1067,13 @@
       opacity: 1;
     }
 
+    .welcome-stat {
+      font-size: 0.6875rem;
+      color: var(--text-muted);
+      margin-top: 0.75rem;
+      opacity: 0.7;
+    }
+
     /* Stacked Sections */
     .welcome-section {
       background: var(--bg-card);
@@ -1679,6 +1686,20 @@
 
       .input-area {
         padding: 0.375rem 0.5rem;
+      }
+
+      /* Source cards: wrap buttons below titles on narrow screens */
+      .source-section-row {
+        flex-wrap: wrap;
+      }
+      .source-section-title {
+        flex-basis: 100%;
+      }
+      .source-doc-header {
+        flex-wrap: wrap;
+      }
+      .source-doc-name {
+        flex-basis: 100%;
       }
     }
 
@@ -2731,6 +2752,7 @@
             <h2>What can I help you find?</h2>
             <p class="welcome-tagline">NTA Bot is your AI-powered knowledge assistant. Ask any question about NTA programs, scope of practice, health topics, or anatomy &amp; physiology. Every answer is grounded in NTA's own materials with clickable citations so you can always verify where the information came from.</p>
             <p class="welcome-doc-link"><a href="https://github.com/grysngrhm-tech/nta-bot" target="_blank" rel="noopener">Learn how NTA Bot works</a></p>
+            <p class="welcome-stat">Powered by 6,300+ searchable knowledge entries across curriculum, textbooks, NIH research, and podcasts.</p>
           </div>
 
           <div class="welcome-section">
@@ -2742,7 +2764,7 @@
                   <span class="coverage-card-title">Web Resources</span>
                   <span class="coverage-card-toggle"></span>
                 </div>
-                <p class="coverage-card-desc">NTA website content covering programs, scope of practice, and philosophy. Plus NIH Office of Dietary Supplements fact sheets on vitamins, minerals, and nutrient biochemistry.</p>
+                <p class="coverage-card-desc">NTA website content on programs, scope of practice, and philosophy. Plus 28 peer-reviewed NIH fact sheets covering vitamins, minerals, and essential nutrients.</p>
                 <div class="coverage-card-expand" id="expand-web"></div>
               </div>
               <div class="coverage-card" role="button" tabindex="0" aria-expanded="false" onclick="expandTile(this, 'podcast')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click()}">
@@ -2760,7 +2782,7 @@
                   <span class="coverage-card-title">Textbooks</span>
                   <span class="coverage-card-toggle"></span>
                 </div>
-                <p class="coverage-card-desc">OpenStax Anatomy &amp; Physiology, Principles of Nutrition (macronutrient biochemistry, metabolism, micronutrient functions), and Nutrition for Nurses (clinical nutrition by body system).</p>
+                <p class="coverage-card-desc">OpenStax Anatomy &amp; Physiology, Principles of Nutrition, Dr. Gaby's Nutritional Medicine (clinical reference for 300+ conditions), and Nutrition for Nurses.</p>
                 <div class="coverage-card-expand" id="expand-textbook"></div>
               </div>
               <div class="coverage-card" role="button" tabindex="0" aria-expanded="false" onclick="expandTile(this, 'curriculum')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click()}">
@@ -2909,7 +2931,7 @@
                 <span class="message-sender">NTA Bot</span>
               </div>
               <div class="message-header-right">
-                <span class="confidence-badge confidence-${confidenceClass}" onclick="toggleConfidenceTooltip(this, event)" data-explanation="${escapeHtml(confidence.explanation || 'No additional details available.')}">
+                <span class="confidence-badge confidence-${confidenceClass}" onclick="toggleConfidenceTooltip(this, event)" data-explanation="${escapeHtml(confidence.explanation || 'No additional details available.')}" aria-label="Confidence: ${escapeHtml(confidence.level || 'Medium')}. ${escapeHtml(confidence.explanation || 'No additional details available.')}">
                   <span class="confidence-dot"></span>
                   ${escapeHtml(confidence.level || 'Medium')}
                   <div class="confidence-tooltip">${escapeHtml(confidence.explanation || 'No additional details available.')}</div>
@@ -2945,13 +2967,13 @@
     }
 
     function getSourceCategory(hierarchy) {
-      if (!hierarchy || !hierarchy[0]) return { label: 'Web', cssClass: 'web' };
+      if (!hierarchy || !hierarchy[0]) return { label: 'Web', cssClass: 'web', title: 'NTA website and reference materials' };
       const h0 = hierarchy[0];
-      if (h0.endsWith('Curriculum')) return { label: 'Curriculum', cssClass: 'curriculum' };
-      if (h0 === 'NIH') return { label: 'NIH', cssClass: 'nih' };
-      if (h0 === 'Textbook') return { label: 'Textbook', cssClass: 'textbook' };
-      if (h0 === 'Podcast') return { label: 'Podcast', cssClass: 'podcast' };
-      return { label: 'Web', cssClass: 'web' };
+      if (h0.endsWith('Curriculum')) return { label: 'Curriculum', cssClass: 'curriculum', title: "NTA's own curriculum materials" };
+      if (h0 === 'NIH') return { label: 'NIH', cssClass: 'nih', title: 'NIH Office of Dietary Supplements' };
+      if (h0 === 'Textbook') return { label: 'Textbook', cssClass: 'textbook', title: 'Published textbook content' };
+      if (h0 === 'Podcast') return { label: 'Podcast', cssClass: 'podcast', title: 'NTA Wellness Podcast' };
+      return { label: 'Web', cssClass: 'web', title: 'NTA website and reference materials' };
     }
 
     function getExternalLink(url) {
@@ -3069,7 +3091,7 @@
           return `<div class="source-category ${cat.cssClass}" id="${catId}">
             <div class="source-category-header" role="button" tabindex="0" aria-expanded="false" onclick="this.parentElement.classList.toggle('expanded'); this.setAttribute('aria-expanded', this.parentElement.classList.contains('expanded'))" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click()}">
               <div class="source-category-info">
-                <span class="authority-badge authority-${cat.cssClass}">${cat.label}</span>
+                <span class="authority-badge authority-${cat.cssClass}" title="${cat.title}">${cat.label}</span>
                 <span class="source-category-counts">${countsText}</span>
               </div>
               <svg class="source-category-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -3243,7 +3265,7 @@
     const TYPING_STAGES = [
       { at: 0, glow: 3, messages: [
         'Searching the knowledge base...',
-        'Scanning 1,820 entries...',
+        'Scanning 6,300+ entries...',
         'Flipping through the archives...',
         'Rummaging through the curriculum...',
         'Consulting the sources...'
