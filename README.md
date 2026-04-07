@@ -13,10 +13,13 @@
 
 ## What is NTA Bot?
 
-NTA Bot is an internal AI assistant that helps NTA employees find answers across the full breadth of NTA's curriculum, reference textbooks, and supplementary content. Ask it about the Five Foundations, coaching methodology, nutrient biochemistry, scope of practice, or any health topic NTA teaches — it searches over 6,300 curated entries and returns a clear answer with clickable source citations.
+NTA Bot is an AI knowledge assistant built for NTA employees. It gives staff instant access to the full depth of NTA's curriculum, reference textbooks, and supplementary content — without needing to search through lecture recordings, PDF transcripts, or scattered reference materials.
 
-Every answer is grounded in NTA's own materials. The bot doesn't use the open internet or generate from its training data. Every claim is traceable to a specific curriculum lecture, textbook section, NIH fact sheet, or podcast episode.
+The problem it solves: NTA's teaching materials span thousands of pages across multiple programs (NTP, PHWC, FOH), five assigned textbooks, 86 podcast episodes, and dozens of reference documents. Finding a specific piece of information — how the curriculum explains blood sugar regulation, what an NTP can and can't do with lab results, what Dr. Gaby recommends for a specific condition — means knowing which source to look in and where. NTA Bot makes all of that searchable from one place.
 
+Every answer is grounded exclusively in NTA's own materials. The bot doesn't use the open internet or generate from its training data. It searches a curated knowledge base of over 6,300 entries, synthesizes what it finds into a clear response, and cites every source so the user can verify exactly where the information came from. If the knowledge base doesn't have an answer, the bot says so rather than guessing.
+
+The bot is password-protected and intended for internal use by NTA staff.
 
 ## What Can You Ask?
 
@@ -27,16 +30,11 @@ Every answer is grounded in NTA's own materials. The bot doesn't use the open in
 - "What coaching techniques does the PHWC program teach for building client trust?"
 - "What does Dr. Gaby's Nutritional Medicine say about nutritional treatments for migraines?"
 
-## Documentation
+## Under the Hood
 
-| Document | Description |
-|----------|-------------|
-| **[TECHNICAL.md](TECHNICAL.md)** | System architecture, RAG pipeline, embedding strategy, reranking, and design decisions explained |
-| **[KNOWLEDGE-BASE.md](KNOWLEDGE-BASE.md)** | Complete content inventory — what's included, what's excluded, the textbook mapping strategy, and licensing |
+NTA Bot uses **Retrieval-Augmented Generation (RAG)** — instead of relying on what an AI memorized during training, it searches a curated knowledge base for every question, reranks results with a curriculum-priority boost, enforces source diversity across content types, and synthesizes the top 10 matches into a clear answer. Every answer includes collapsible source cards grouped by category (Curriculum, Textbook, NIH, Podcast) so you can verify where the information came from.
 
-## Knowledge Base
-
-NTA Bot searches across **6,387 curated entries** from 5 source categories:
+The knowledge base contains **6,387 curated entries** from 5 source categories:
 
 ```
 Curriculum  ████████████████████████████░░░░░░░░░░░░░░  1,777  (28%)
@@ -52,13 +50,12 @@ NTA Ref     ██░░░░░░░░░░░░░░░░░░░░�
 - **NIH ODS** — 28 peer-reviewed fact sheets on every vitamin and mineral
 - **NTA Reference** — Scope of practice, programs, philosophy, and terminology
 
-For the complete inventory including the textbook mapping strategy and licensing details, see **[KNOWLEDGE-BASE.md](KNOWLEDGE-BASE.md)**.
+For deeper technical and content documentation:
 
-## How It Works
-
-NTA Bot uses **Retrieval-Augmented Generation (RAG)** — it searches a curated knowledge base for every question, reranks results with a curriculum-priority boost, enforces source diversity across content types, and synthesizes the top 10 matches into a clear answer. Every answer includes collapsible source cards grouped by category (Curriculum, Textbook, NIH, Podcast) so you can verify where the information came from.
-
-For the full architecture deep dive, see **[TECHNICAL.md](TECHNICAL.md)**.
+| Document | What it covers |
+|----------|----------------|
+| **[TECHNICAL.md](TECHNICAL.md)** | System architecture, RAG pipeline, embedding strategy, reranking, diversity enforcement, and the reasoning behind each design decision |
+| **[KNOWLEDGE-BASE.md](KNOWLEDGE-BASE.md)** | Complete content inventory — what's included, what's excluded, how free sources were mapped to NTA's copyrighted textbooks, and licensing |
 
 ## Features
 
