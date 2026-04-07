@@ -30,7 +30,7 @@ The bot handles curriculum deep-dives, quick scope-of-practice lookups, nutrient
 
 ## Knowledge Base
 
-NTA Bot searches across **6,402 curated entries** spanning NTA's own curriculum, four reference textbooks, government health references, and 86 podcast episodes. Every source goes through a processing pipeline that extracts educational content, removes filler, embeds it for semantic search, and tags it with metadata so the bot knows exactly where every piece of information came from.
+NTA Bot searches across **6,387 curated entries** spanning NTA's own curriculum, four reference textbooks, government health references, and 86 podcast episodes. Every source goes through a processing pipeline that extracts educational content, removes filler, embeds it for semantic search, and tags it with metadata so the bot knows exactly where every piece of information came from.
 
 ### NTA Curriculum — 1,743 entries
 
@@ -109,13 +109,22 @@ NTA Bot is actively maintained. The knowledge base can be expanded with new curr
 
 For feedback, feature requests, or bug reports, contact **Grayson Graham**.
 
+## Documentation
+
+| Document | Description |
+|----------|-------------|
+| **[TECHNICAL.md](TECHNICAL.md)** | Deep dive into the RAG pipeline, system architecture, embedding strategy, reranking, diversity enforcement, and technology decisions |
+| **[KNOWLEDGE-BASE.md](KNOWLEDGE-BASE.md)** | Complete inventory of all content sources — what was included, what was excluded, the textbook mapping strategy, and licensing |
+
 ## Technical Architecture
 
 Single-page PWA (vanilla HTML/CSS/JS) hosted on GitHub Pages. No backend server — static files talk to two cloud services:
 
 - **n8n** (workflow automation) — RAG pipeline: receives questions, orchestrates search + AI calls, returns structured JSON
-- **Supabase** (PostgreSQL + pgvector) — stores 6,402 knowledge chunks with 3,072-dim vector embeddings, runs hybrid search, logs analytics
+- **Supabase** (PostgreSQL + pgvector) — stores 6,387 knowledge chunks with 3,072-dim vector embeddings, runs hybrid search, logs analytics
 
 AI models via OpenAI: **GPT-5.4 Standard** for answer synthesis, **GPT-5.4 Mini** for reranking, **text-embedding-3-large** for embeddings. Every chunk has a **contextual retrieval prefix** — an AI-generated sentence that bridges the chunk's structural position with its specific topic to improve search accuracy.
+
+For the full technical deep dive, see **[TECHNICAL.md](TECHNICAL.md)**.
 
 Designed and built by **Grayson Graham**.
