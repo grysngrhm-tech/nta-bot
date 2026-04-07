@@ -1306,7 +1306,7 @@
     /* ===== DASHBOARD ICON ===== */
     .dashboard-icon {
       position: absolute;
-      top: 0.75rem;
+      top: calc(0.75rem + env(safe-area-inset-top, 0px));
       right: 0.75rem;
       z-index: 10;
       display: flex;
