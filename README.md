@@ -18,7 +18,7 @@ NTA Bot is an internal AI assistant that helps NTA employees find answers across
 Every answer is grounded in NTA's own materials. The bot doesn't use the open internet or generate from its training data. Every claim is traceable to a specific curriculum lecture, textbook section, NIH fact sheet, or podcast episode.
 
 <p align="center">
-  <img src="assets/screenshots/nta-bot-demo.png" alt="NTA Bot — welcome screen and sample answer with source citations" width="700">
+  <img src="assets/screenshots/nta-bot-demo.png" alt="NTA Bot — welcome screen and sample answer with source citations" width="350">
 </p>
 
 ## What Can You Ask?
