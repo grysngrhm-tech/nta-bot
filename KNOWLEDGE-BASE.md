@@ -15,6 +15,23 @@ NTA Bot's knowledge base contains **6,387 curated entries** across 5 content typ
 | [Podcast](#podcast-library--990-entries) | 990 | 86 episodes |
 | [NTA Reference](#nta-reference--116-entries) | 116 | Website content, scope docs, guides |
 
+### Content Distribution
+
+```
+Curriculum  ████████████████████████████░░░░░░░░░░░░░░  1,777  (28%)
+Textbooks   ████████████████████████████████████████████  2,832  (44%)
+Podcast     ███████████████░░░░░░░░░░░░░░░░░░░░░░░░░░░    990  (15%)
+NIH ODS     ██████████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░    672  (11%)
+NTA Ref     ██░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░    116   (2%)
+```
+
+### Quality Metrics
+
+- **100%** of chunks have contextual retrieval prefixes (AI-generated structural context)
+- **Average chunk size:** ~150-250 words (optimized for embedding quality and retrieval specificity)
+- **Embedding model:** text-embedding-3-large at native 3,072 dimensions (no truncation)
+- **Source URL coverage:** All textbook, NIH, and podcast chunks link to their original source. Curriculum chunks have no external URL (proprietary content).
+
 ---
 
 ## NTA Curriculum — 1,777 entries
@@ -163,7 +180,11 @@ NTA's curriculum assigns three additional textbooks that are NOT represented as 
 
 ## NIH Office of Dietary Supplements — 672 entries
 
-28 peer-reviewed Health Professional fact sheets from the NIH Office of Dietary Supplements. U.S. federal government publication — **public domain**, no license restrictions.
+Peer-reviewed Health Professional fact sheets from the NIH Office of Dietary Supplements — the U.S. government's authoritative source on dietary supplement science. These provide deeper coverage of individual nutrient biochemistry than any single textbook, with evidence-based data on functions, deficiency, toxicity, and drug interactions.
+
+In addition to standing on their own as a reference source, these fact sheets also serve as part of the [textbook replacement strategy](#replacing-medeiros--wildman--three-complementary-sources) for the vitamin and mineral chapters of NTA's assigned *Advanced Human Nutrition* textbook.
+
+**License:** Public domain (U.S. federal government publication — no restrictions).
 
 ### Nutrients Covered
 
