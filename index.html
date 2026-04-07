@@ -2019,13 +2019,16 @@
       return info;
     }
 
-    // Derive source types from source_topics array
-    function deriveSourceTypes(sourceTopics) {
-      if (!sourceTopics || sourceTopics.length === 0) return ['Web'];
+    // Derive source types from source objects using section_hierarchy[0]
+    function deriveSourceTypes(sources) {
+      if (!sources || sources.length === 0) return ['Web'];
       const types = new Set();
-      for (const t of sourceTopics) {
-        if (t && t.startsWith('Podcast > ')) types.add('Podcast');
-        else if (t && t.startsWith('Textbook > ')) types.add('Textbook');
+      for (const s of sources) {
+        const h = (s.section_hierarchy || [])[0] || '';
+        if (h.endsWith('Curriculum')) types.add('Curriculum');
+        else if (h === 'NIH') types.add('NIH');
+        else if (h === 'Textbook') types.add('Textbook');
+        else if (h === 'Podcast') types.add('Podcast');
         else types.add('Web');
       }
       return [...types];
@@ -2065,7 +2068,7 @@
       const confidence = responseData.confidence?.level || 'Medium';
       const answerSummary = (responseData.answer || '').substring(0, 300);
       const geo = getGeoData();
-      const sourceTypes = deriveSourceTypes(sourceTopics);
+      const sourceTypes = deriveSourceTypes(sources);
       const device = getDeviceInfo();
 
       // Fallback label from first source topic

@@ -388,8 +388,10 @@
     }
 
     .source-pill .sp-dot.web { background: #2563eb; }
-    .source-pill .sp-dot.podcast { background: #d97706; }
+    .source-pill .sp-dot.curriculum { background: #92600e; }
     .source-pill .sp-dot.textbook { background: #059669; }
+    .source-pill .sp-dot.nih { background: #0891b2; }
+    .source-pill .sp-dot.podcast { background: #d97706; }
     .source-pill .sp-dot.mixed { background: #7c3aed; }
 
     /* ===== TOPIC GAP TABLE ===== */
@@ -600,8 +602,10 @@
     }
 
     .source-type-badge.web { background: #dbeafe; color: #1d4ed8; }
-    .source-type-badge.podcast { background: #fef3c7; color: #92400e; }
+    .source-type-badge.curriculum { background: rgba(180,120,60,0.12); color: #92600e; }
     .source-type-badge.textbook { background: #d1fae5; color: #065f46; }
+    .source-type-badge.nih { background: #e0f7fa; color: #0891b2; }
+    .source-type-badge.podcast { background: #fef3c7; color: #92400e; }
 
     .never-cited-note {
       font-size: 0.8125rem;
@@ -1010,8 +1014,10 @@
     }
 
     .dt-exp-pill.web { background: #dbeafe; color: #1d4ed8; }
-    .dt-exp-pill.podcast { background: #fef3c7; color: #92400e; }
+    .dt-exp-pill.curriculum { background: rgba(180,120,60,0.12); color: #92600e; }
     .dt-exp-pill.textbook { background: #d1fae5; color: #065f46; }
+    .dt-exp-pill.nih { background: #e0f7fa; color: #0891b2; }
+    .dt-exp-pill.podcast { background: #fef3c7; color: #92400e; }
 
     .dt-exp-meta {
       display: flex;
@@ -1237,30 +1243,34 @@
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indkb3VpZm9tbGlwbWxza3NjenN2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcyMDQ3NTEsImV4cCI6MjA4Mjc4MDc1MX0.lVu6OnArZ_MFXFrx0ljn2GXfFtAM_Ru8xcTUXZbwqn8';
 
     const CATEGORY_KEYWORDS = {
-      'Digestion & Gut Health': ['digestion', 'gut', 'microbiome', 'digestive', 'stomach', 'intestine', 'mouth', 'pharynx', 'esophagus', 'liver', 'pancreas', 'gallbladder', 'absorption'],
-      'Blood Sugar & Metabolism': ['blood sugar', 'metabolism', 'insulin', 'glucose', 'glucagon', 'metabolic', 'carbohydrate', 'lipid metabolism', 'protein metabolism', 'nutrition and diet'],
-      'Immune System & Inflammation': ['immune', 'inflammation', 'lymphatic', 'innate immune', 'adaptive immune', 'antibod', 'pathogen', 'autoimmune'],
-      'Cardiovascular & Blood Health': ['cardiovascular', 'blood', 'erythrocyte', 'hemoglobin', 'heart', 'blood vessel', 'blood pressure', 'hemostasis', 'iron'],
-      'Hydration & Electrolytes': ['hydration', 'electrolyte', 'fluid', 'water balance', 'acid-base', 'sodium', 'potassium', 'dehydration'],
-      'Sleep & Recovery': ['sleep', 'recovery', 'circadian', 'pineal'],
-      'Stress & Nervous System': ['stress', 'adrenal', 'cortisol', 'hpa', 'autonomic', 'sympathetic', 'parasympathetic', 'nervous system'],
-      'Nutrient-Dense Diet & Food Quality': ['nutrient-dense', 'diet', 'food quality', 'sourcing', 'traditional', 'food preparation', 'organic'],
-      'Supplements & Nutrients': ['supplement', 'vitamin', 'mineral', 'fatty acid', 'omega'],
-      'Hormones & Endocrine': ['hormone', 'endocrine', 'thyroid', 'estrogen', 'pituitary', 'parathyroid', 'gonadal', 'placental'],
-      'Mental Health & Brain': ['mental', 'brain', 'depression', 'anxiety', 'cognitive', 'neurotransmitter', 'nervous tissue'],
-      'Fertility & Reproductive Health': ['fertility', 'reproductive', 'pregnancy', 'pcos', 'lactation', 'maternal', 'menstrual'],
-      'Respiratory & Urinary Systems': ['respiratory', 'urinary', 'kidney', 'urine', 'lung', 'gas exchange', 'breathing', 'reabsorption', 'detox'],
-      'NTP Program & Clinical Tools': ['ntp', 'naca', 'naq', 'nutri-q', 'clinical', 'practitioner'],
-      'PHWC Program & Coaching': ['phwc', 'coaching', 'behavior change', 'wellness coach'],
-      'Scope of Practice & Credentials': ['scope', 'credential', 'fntp', 'fca', 'board exam'],
-      'NTA Philosophy & Mission': ['philosophy', 'mission', 'bio-individuality', 'innate intelligence'],
-      'General Wellness': ['wellness', 'lifestyle', 'movement', 'exercise', 'muscle', 'skeletal', 'joint', 'tissue', 'integumentary', 'skin']
+      'Digestion & Gut Health': ['digestion', 'gut', 'microbiome', 'digestive', 'stomach', 'intestine', 'mouth', 'pharynx', 'esophagus', 'liver', 'pancreas', 'gallbladder', 'absorption', 'bile', 'hcl', 'north-to-south', 'sibo', 'ibs', 'leaky gut', 'permeability'],
+      'Blood Sugar & Metabolism': ['blood sugar', 'metabolism', 'insulin', 'glucose', 'glucagon', 'metabolic', 'carbohydrate', 'lipid metabolism', 'protein metabolism', 'glycolysis', 'gluconeogenesis', 'ketogenesis', 'beta-oxidation', 'tca cycle', 'atp', 'diabetes', 'hypoglycemia'],
+      'Immune System & Inflammation': ['immune', 'inflammation', 'lymphatic', 'innate immune', 'adaptive immune', 'antibod', 'pathogen', 'autoimmune', 'cytokine'],
+      'Cardiovascular & Blood Health': ['cardiovascular', 'blood', 'erythrocyte', 'hemoglobin', 'heart', 'blood vessel', 'blood pressure', 'hemostasis', 'iron', 'anemia', 'cholesterol'],
+      'Hydration & Electrolytes': ['hydration', 'electrolyte', 'fluid', 'water balance', 'acid-base', 'sodium', 'potassium', 'dehydration', 'magnesium'],
+      'Sleep & Recovery': ['sleep', 'recovery', 'circadian', 'pineal', 'melatonin', 'insomnia'],
+      'Stress & Nervous System': ['stress', 'adrenal', 'cortisol', 'hpa', 'autonomic', 'sympathetic', 'parasympathetic', 'nervous system', 'fight or flight', 'burnout'],
+      'Nutrient-Dense Diet & Food Quality': ['nutrient-dense', 'diet', 'food quality', 'sourcing', 'traditional', 'food preparation', 'organic', 'soaking', 'sprouting', 'ferment', 'weston price', 'ancestral'],
+      'Supplements & Nutrients': ['supplement', 'vitamin', 'mineral', 'fatty acid', 'omega', 'dosage', 'bioavailability', 'cofactor', 'coenzyme', 'antioxidant'],
+      'Hormones & Endocrine': ['hormone', 'endocrine', 'thyroid', 'estrogen', 'pituitary', 'parathyroid', 'gonadal', 'testosterone', 'progesterone', 'hashimoto', 'adrenal fatigue'],
+      'Mental Health & Brain': ['mental', 'brain', 'depression', 'anxiety', 'cognitive', 'neurotransmitter', 'nervous tissue', 'serotonin', 'dopamine', 'adhd', 'mood'],
+      'Fertility & Reproductive Health': ['fertility', 'reproductive', 'pregnancy', 'pcos', 'lactation', 'maternal', 'menstrual', 'postpartum', 'prenatal', 'breastfeeding', 'menopause'],
+      'Respiratory & Urinary Systems': ['respiratory', 'urinary', 'kidney', 'urine', 'lung', 'gas exchange', 'breathing', 'reabsorption', 'detox', 'nephron'],
+      'Musculoskeletal & Skin': ['muscle', 'skeletal', 'joint', 'tissue', 'integumentary', 'skin', 'bone', 'osteoporosis', 'collagen', 'eczema', 'acne'],
+      'NTP Program & Clinical Tools': ['ntp', 'naca', 'naq', 'nutri-q', 'clinical', 'practitioner', 'digestion module', 'blood sugar module', 'sleep module', 'stress module', 'supplement module', 'lab interpretation', 'case study', 'foundations review', 'symptom burden', 'food and mood'],
+      'PHWC Program & Coaching': ['phwc', 'coaching', 'behavior change', 'wellness coach', 'motivational interviewing', 'client-centered', 'trust', 'rapport', 'powerful questions', 'goal setting', 'wellness wheel', 'stages of change', 'empowerment'],
+      'Scope of Practice & Credentials': ['scope', 'credential', 'fntp', 'fca', 'board exam', 'recommend', 'empower', 'diagnose', 'treat', 'lingual-neural', 'career compass', 'nbhwc'],
+      'Bioindividual Nutrition': ['bioindividual', 'bio-individuality', 'weston price', 'traditional diet', 'ancestral', 'omnivore', 'food sensitivity', 'elimination diet'],
+      'Lab Interpretation': ['lab', 'functional lab', 'blood work', 'metabolomix', 'adrenal profile', 'biomarker', 'reference range', 'optimal range'],
+      'NTA Philosophy & Mission': ['philosophy', 'mission', 'bio-individuality', 'innate intelligence', 'root cause', 'food-first', 'five foundations', 'innate'],
+      'General Wellness': ['wellness', 'lifestyle', 'movement', 'exercise', 'fitness', 'aging', 'longevity']
     };
 
     // ===== STATE =====
     let allLogs = [];
     let knowledgeTopics = {};
     let knowledgeDocNames = new Set();
+    let docTypeMap = {};
     let filterState = { type: null, value: null, label: null };
     let searchQuery = '';
     let sortField = 'created_at';
@@ -1347,15 +1357,9 @@
             case 'source_document': return (r.source_documents || []).includes(filterState.value);
             case 'source_type': {
               const types = r.source_types || [];
-              const hasWeb = types.includes('Web');
-              const hasPod = types.includes('Podcast');
-              const hasText = types.includes('Textbook');
-              const typeCount = (hasWeb ? 1 : 0) + (hasPod ? 1 : 0) + (hasText ? 1 : 0);
-              if (filterState.value === 'mixed') return typeCount > 1;
-              if (filterState.value === 'Web') return hasWeb && typeCount === 1;
-              if (filterState.value === 'Podcast') return hasPod && typeCount === 1;
-              if (filterState.value === 'Textbook') return hasText && typeCount === 1;
-              return true;
+              const uniqueTypes = new Set(types);
+              if (filterState.value === 'mixed') return uniqueTypes.size > 1;
+              return uniqueTypes.size === 1 && uniqueTypes.has(filterState.value);
             }
             case 'session_id': return r.session_id === filterState.value;
             default: return true;
@@ -1454,13 +1458,14 @@
       try {
         const [logs, chunks] = await Promise.all([
           supaGet('nta_query_log?select=*&order=created_at.desc&limit=500'),
-          supaGet('nta_knowledge_chunks?select=section_hierarchy&limit=5000')
+          supaGet('nta_knowledge_chunks?select=section_hierarchy,document_type,document_name&limit=10000')
         ]);
 
         allLogs = logs || [];
         const chunkData = chunks || [];
         knowledgeTopics = buildKnowledgeIndex(chunkData);
         knowledgeDocNames = buildKnowledgeDocNames(chunkData);
+        docTypeMap = buildDocTypeMap(chunkData);
 
         document.getElementById('loading').remove();
 
@@ -1500,6 +1505,28 @@
         }
       }
       return names;
+    }
+
+    function buildDocTypeMap(chunks) {
+      const map = {};
+      for (const c of chunks) {
+        if (c.document_name && c.document_type) {
+          map[c.document_name] = c.document_type;
+        }
+      }
+      return map;
+    }
+
+    // Map document_type to display label and CSS class
+    function getDocTypeDisplay(docType) {
+      const map = {
+        curriculum: { label: 'Curriculum', cssClass: 'curriculum' },
+        textbook: { label: 'Textbook', cssClass: 'textbook' },
+        nih: { label: 'NIH', cssClass: 'nih' },
+        podcast: { label: 'Podcast', cssClass: 'podcast' },
+        nta_reference: { label: 'Web', cssClass: 'web' }
+      };
+      return map[docType] || { label: 'Web', cssClass: 'web' };
     }
 
     function fuzzySupplyForCategory(category) {
@@ -1620,18 +1647,17 @@
       const latencies = filtered.map(r => r.latency_ms).filter(v => v != null && v > 0);
       const avgLatency = latencies.length > 0 ? (latencies.reduce((a, b) => a + b, 0) / latencies.length / 1000).toFixed(1) : '--';
 
-      // Source type counts
-      let webOnly = 0, podcastOnly = 0, textbookOnly = 0, mixedCount = 0;
+      // Source type counts (5 types + mixed)
+      let currOnly = 0, textOnly = 0, nihOnly = 0, podOnly = 0, webOnly = 0, mixedCount = 0;
       for (const r of filtered) {
         const types = r.source_types || [];
-        const hasWeb = types.includes('Web');
-        const hasPod = types.includes('Podcast');
-        const hasText = types.includes('Textbook');
-        const typeCount = (hasWeb ? 1 : 0) + (hasPod ? 1 : 0) + (hasText ? 1 : 0);
-        if (typeCount > 1) mixedCount++;
-        else if (hasWeb) webOnly++;
-        else if (hasPod) podcastOnly++;
-        else if (hasText) textbookOnly++;
+        const uniqueTypes = new Set(types);
+        if (uniqueTypes.size > 1) mixedCount++;
+        else if (uniqueTypes.has('Curriculum')) currOnly++;
+        else if (uniqueTypes.has('Textbook')) textOnly++;
+        else if (uniqueTypes.has('NIH')) nihOnly++;
+        else if (uniqueTypes.has('Podcast')) podOnly++;
+        else webOnly++;
       }
 
       const isConfFilter = filterState.type === 'confidence';
@@ -1670,17 +1696,25 @@
           </div>
         </div>
         <div class="source-pills">
-          <div class="source-pill${filterState.type === 'source_type' && filterState.value === 'Web' ? ' active' : ''}" onclick="applyFilter('source_type','Web','Web Sources')">
-            <span class="sp-dot web"></span>
-            Web: ${webOnly}
-          </div>
-          <div class="source-pill${filterState.type === 'source_type' && filterState.value === 'Podcast' ? ' active' : ''}" onclick="applyFilter('source_type','Podcast','Podcast Sources')">
-            <span class="sp-dot podcast"></span>
-            Podcast: ${podcastOnly}
+          <div class="source-pill${filterState.type === 'source_type' && filterState.value === 'Curriculum' ? ' active' : ''}" onclick="applyFilter('source_type','Curriculum','Curriculum Sources')">
+            <span class="sp-dot curriculum"></span>
+            Curriculum: ${currOnly}
           </div>
           <div class="source-pill${filterState.type === 'source_type' && filterState.value === 'Textbook' ? ' active' : ''}" onclick="applyFilter('source_type','Textbook','Textbook Sources')">
             <span class="sp-dot textbook"></span>
-            Textbook: ${textbookOnly}
+            Textbook: ${textOnly}
+          </div>
+          <div class="source-pill${filterState.type === 'source_type' && filterState.value === 'NIH' ? ' active' : ''}" onclick="applyFilter('source_type','NIH','NIH Sources')">
+            <span class="sp-dot nih"></span>
+            NIH: ${nihOnly}
+          </div>
+          <div class="source-pill${filterState.type === 'source_type' && filterState.value === 'Podcast' ? ' active' : ''}" onclick="applyFilter('source_type','Podcast','Podcast Sources')">
+            <span class="sp-dot podcast"></span>
+            Podcast: ${podOnly}
+          </div>
+          <div class="source-pill${filterState.type === 'source_type' && filterState.value === 'Web' ? ' active' : ''}" onclick="applyFilter('source_type','Web','Web Sources')">
+            <span class="sp-dot web"></span>
+            Web: ${webOnly}
           </div>
           <div class="source-pill${filterState.type === 'source_type' && filterState.value === 'mixed' ? ' active' : ''}" onclick="applyFilter('source_type','mixed','Mixed Sources')">
             <span class="sp-dot mixed"></span>
@@ -1866,10 +1900,9 @@
         inner += '<div class="source-list">';
         for (const [docName, count] of ranked) {
           const barPct = Math.round((count / maxCount) * 100);
-          const isTextbook = /^OpenStax/.test(docName);
-          const isPodcast = /^Ep\b|^EP\b/.test(docName);
-          const typeClass = isTextbook ? 'textbook' : isPodcast ? 'podcast' : 'web';
-          const typeLabel = isTextbook ? 'Textbook' : isPodcast ? 'Podcast' : 'Web';
+          const dt = getDocTypeDisplay(docTypeMap[docName] || 'nta_reference');
+          const typeClass = dt.cssClass;
+          const typeLabel = dt.label;
           const escapedName = escapeHtml(docName);
           const truncName = escapeHtml(truncate(docName, 40));
 
@@ -2203,7 +2236,7 @@
       expHtml += '<div class="dt-exp-meta">';
       if (sourceTypes.length > 0) {
         for (const t of sourceTypes) {
-          const cls = t === 'Textbook' ? 'textbook' : t === 'Podcast' ? 'podcast' : 'web';
+          const cls = t === 'Curriculum' ? 'curriculum' : t === 'Textbook' ? 'textbook' : t === 'NIH' ? 'nih' : t === 'Podcast' ? 'podcast' : 'web';
           expHtml += `<span class="dt-exp-pill ${cls}">${escapeHtml(t)}</span>`;
         }
       }
