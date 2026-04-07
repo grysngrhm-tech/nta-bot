@@ -1453,12 +1453,36 @@
       return res.json();
     }
 
+    // Paginated fetch for large tables (Supabase caps at 1000 rows per request)
+    async function supaGetAll(path) {
+      const pageSize = 1000;
+      let all = [];
+      let offset = 0;
+      while (true) {
+        const sep = path.includes('?') ? '&' : '?';
+        const url = `${SUPABASE_URL}/rest/v1/${path}${sep}limit=${pageSize}&offset=${offset}`;
+        const res = await fetch(url, {
+          headers: {
+            'apikey': SUPABASE_KEY,
+            'Authorization': `Bearer ${SUPABASE_KEY}`,
+            'Content-Type': 'application/json'
+          }
+        });
+        if (!res.ok) throw new Error(`Supabase ${res.status}: ${await res.text()}`);
+        const rows = await res.json();
+        all = all.concat(rows);
+        if (rows.length < pageSize) break;
+        offset += pageSize;
+      }
+      return all;
+    }
+
     // ===== DATA LOADING =====
     async function loadData() {
       try {
         const [logs, chunks] = await Promise.all([
           supaGet('nta_query_log?select=*&order=created_at.desc&limit=500'),
-          supaGet('nta_knowledge_chunks?select=section_hierarchy,document_type,document_name&limit=10000')
+          supaGetAll('nta_knowledge_chunks?select=section_hierarchy,document_type,document_name')
         ]);
 
         allLogs = logs || [];
