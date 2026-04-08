@@ -1385,6 +1385,121 @@
       }
     }
 
+    /* ===== FOLLOW-UP CHIPS ===== */
+    .follow-up-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 0.75rem;
+      padding-top: 0.75rem;
+      border-top: 1px solid var(--border);
+      animation: welcomeFadeIn 0.3s ease both;
+    }
+
+    .follow-up-chips-label {
+      width: 100%;
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      margin-bottom: 0.125rem;
+    }
+
+    .follow-up-chip {
+      font-size: 0.75rem;
+      font-family: inherit;
+      padding: 0.5rem 0.875rem;
+      border: 1px solid var(--border);
+      border-radius: 1rem;
+      background: var(--bg-source);
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.15s ease;
+      text-align: left;
+    }
+
+    .follow-up-chip:hover {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: var(--text-on-accent);
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .follow-up-chip.selected {
+      background: var(--accent);
+      color: var(--text-on-accent);
+      border-color: var(--accent);
+      cursor: default;
+    }
+
+    .follow-up-chip.dimmed {
+      opacity: 0.45;
+      cursor: default;
+      pointer-events: none;
+    }
+
+    .follow-up-chip.dimmed:hover {
+      transform: none;
+      box-shadow: none;
+      background: var(--bg-source);
+      color: var(--text-secondary);
+      border-color: var(--border);
+    }
+
+    /* ===== ENRICHMENT MESSAGE ===== */
+    .enrichment-label {
+      display: inline-block;
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 0.25rem 0.625rem;
+      border-radius: 0.75rem;
+      background: var(--accent-subtle);
+      color: var(--accent);
+      margin-bottom: 0.5rem;
+    }
+
+    .enrichment-loading {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1rem;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      font-style: italic;
+    }
+
+    .enrichment-loading .dot-pulse {
+      display: inline-flex;
+      gap: 0.2rem;
+    }
+
+    .enrichment-loading .dot-pulse span {
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: var(--accent);
+      animation: dotPulse 1.2s infinite;
+    }
+
+    .enrichment-loading .dot-pulse span:nth-child(2) { animation-delay: 0.2s; }
+    .enrichment-loading .dot-pulse span:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes dotPulse {
+      0%, 80%, 100% { opacity: 0.3; transform: scale(0.8); }
+      40% { opacity: 1; transform: scale(1); }
+    }
+
+    @media (max-width: 560px) {
+      .follow-up-chip {
+        min-height: 44px;
+        padding: 0.625rem 1rem;
+      }
+    }
+
     /* ===== TYPING INDICATOR ===== */
     .typing-indicator {
       position: relative;
@@ -2020,6 +2135,8 @@
     const SUPABASE_URL = 'https://wdouifomlipmlsksczsv.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indkb3VpZm9tbGlwbWxza3NjenN2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcyMDQ3NTEsImV4cCI6MjA4Mjc4MDc1MX0.lVu6OnArZ_MFXFrx0ljn2GXfFtAM_Ru8xcTUXZbwqn8';
     const TOPIC_LABEL_URL = 'https://n8n.srv1208741.hstgr.cloud/webhook/nta-topic-label';
+    const FOLLOWUP_OPTIONS_URL = 'https://n8n.srv1208741.hstgr.cloud/webhook/nta-followup-options';
+    const ENRICHMENT_URL = 'https://n8n.srv1208741.hstgr.cloud/webhook/nta-enrichment';
 
     // Log to Supabase (fire-and-forget, never blocks UI)
     async function logToSupabase(data) {
@@ -2961,6 +3078,7 @@
               </div>
             </div>
             ${sourcesHtml}
+            <div class="follow-up-chips" id="chips-${messageId}" style="display:none;"></div>
           </div>
         </div>
       `;
@@ -3604,6 +3722,166 @@
       throw lastError;
     }
 
+    // ===== FOLLOW-UP CHIPS & ENRICHMENT =====
+    const ENRICHMENT_TYPE_LABELS = {
+      supplement_protocol: 'Supplement Protocol',
+      symptom_differential: 'Symptom Differential',
+      meal_plan: 'Food & Meal Recommendations',
+      follow_up_question: 'Follow-Up Question',
+      mechanism: 'Mechanism Deep Dive',
+      practitioner_workflow: 'Practitioner Workflow'
+    };
+
+    async function generateFollowUpOptions(question, responseData, messageId) {
+      try {
+        const answerSummary = (responseData.answer || '').substring(0, 500);
+        const resp = await fetch(FOLLOWUP_OPTIONS_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            question: question,
+            answer_summary: answerSummary,
+            session_id: getSessionId()
+          })
+        });
+        if (!resp.ok) return;
+        const data = await resp.json();
+        const options = data.options || [];
+        if (options.length === 0) return;
+        renderFollowUpChips(options, messageId, question, responseData);
+      } catch (e) {
+        console.warn('[Follow-up] Options generation failed:', e.message);
+      }
+    }
+
+    function renderFollowUpChips(options, messageId, question, responseData) {
+      const container = document.getElementById('chips-' + messageId);
+      if (!container) return;
+
+      let html = '<div class="follow-up-chips-label">Explore further</div>';
+      options.forEach((opt, i) => {
+        html += `<button class="follow-up-chip" data-type="${escapeHtml(opt.type)}" data-index="${i}" onclick="handleFollowUpClick(this, '${messageId}')">${escapeHtml(opt.label)}</button>`;
+      });
+      container.innerHTML = html;
+      container.style.display = 'flex';
+
+      // Store context for enrichment requests
+      container.dataset.question = question;
+      container.dataset.answerSummary = (responseData.answer || '').substring(0, 500);
+      scrollToBottom();
+    }
+
+    async function handleFollowUpClick(button, messageId) {
+      if (button.classList.contains('selected') || button.classList.contains('dimmed')) return;
+
+      const container = document.getElementById('chips-' + messageId);
+      if (!container) return;
+
+      const selectedType = button.dataset.type;
+      const label = button.textContent;
+      const question = container.dataset.question;
+      const answerSummary = container.dataset.answerSummary;
+
+      // Highlight selected, dim others (but don't disable — user can click more)
+      container.querySelectorAll('.follow-up-chip').forEach(chip => {
+        if (chip === button) {
+          chip.classList.add('selected');
+        } else if (!chip.classList.contains('selected')) {
+          chip.classList.add('dimmed');
+        }
+      });
+
+      // Show enrichment loading indicator
+      const chatArea = document.getElementById('chatArea');
+      const loadingId = 'enrichment-loading-' + Date.now();
+      chatArea.insertAdjacentHTML('beforeend', `
+        <div class="message message-bot" id="${loadingId}">
+          <div class="message-content">
+            <div class="enrichment-loading">
+              <span class="dot-pulse"><span></span><span></span><span></span></span>
+              Generating ${escapeHtml(ENRICHMENT_TYPE_LABELS[selectedType] || label)}...
+            </div>
+          </div>
+        </div>
+      `);
+      scrollToBottom();
+
+      try {
+        const resp = await fetch(ENRICHMENT_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            question: question,
+            answer_summary: answerSummary,
+            selected_option: { label: label, type: selectedType },
+            session_id: getSessionId()
+          })
+        });
+
+        // Remove loading indicator
+        const loadingEl = document.getElementById(loadingId);
+        if (loadingEl) loadingEl.remove();
+
+        if (!resp.ok) throw new Error('Enrichment request failed: ' + resp.status);
+        const data = await resp.json();
+        chatArea.insertAdjacentHTML('beforeend', renderEnrichmentMessage(data, selectedType));
+
+        // Re-enable other chips for additional selections
+        container.querySelectorAll('.follow-up-chip.dimmed').forEach(chip => {
+          chip.classList.remove('dimmed');
+        });
+      } catch (e) {
+        console.error('[Enrichment] Failed:', e.message);
+        const loadingEl = document.getElementById(loadingId);
+        if (loadingEl) loadingEl.remove();
+        // Re-enable chips on error
+        container.querySelectorAll('.follow-up-chip.dimmed').forEach(chip => {
+          chip.classList.remove('dimmed');
+        });
+      }
+      scrollToBottom();
+    }
+
+    function renderEnrichmentMessage(data, reportType) {
+      const report = data.report || data.answer || 'No report generated.';
+      const sources = data.sources || [];
+      const typeLabel = ENRICHMENT_TYPE_LABELS[reportType] || reportType;
+      const messageId = 'enrichment-' + Date.now() + '-' + Math.random().toString(36).substring(2, 7);
+
+      let sourcesHtml = '';
+      const validSources = sources.filter(s => s && (s.content || s.section_title || s.document_name));
+      if (validSources.length > 0) {
+        sourcesHtml = renderCategorizedSources(validSources, messageId);
+      }
+
+      return `
+        <div class="message message-bot" id="${messageId}">
+          <div class="message-content">
+            <div class="message-header">
+              <div class="message-header-left">
+                <span class="message-sender">NTA Bot</span>
+              </div>
+              <div class="message-header-right">
+                <button class="copy-btn" onclick="copyAnswer(this, '${messageId}')" title="Copy report">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                  </svg>
+                </button>
+              </div>
+            </div>
+            <div class="answer-section">
+              <span class="enrichment-label">${escapeHtml(typeLabel)}</span>
+              <div class="answer-text" data-raw-answer="${escapeHtml(report)}">
+                ${formatAnswerText(report)}
+              </div>
+            </div>
+            ${sourcesHtml}
+          </div>
+        </div>
+      `;
+    }
+
     // ===== API COMMUNICATION =====
     async function sendMessage() {
       const input = document.getElementById('messageInput');
@@ -3633,12 +3911,19 @@
         if (typingStartTime) elapsedTime = Math.floor((Date.now() - typingStartTime) / 1000);
         hideTypingIndicator();
         chatArea.insertAdjacentHTML('beforeend', renderBotMessage(data));
+        const lastBotMsg = chatArea.querySelector('.message-bot:last-of-type');
+        const botMessageId = lastBotMsg ? lastBotMsg.id : null;
         messages.push({ role: 'user', content: message });
         messages.push({ role: 'assistant', content: data });
         lastMessageForRetry = null;
 
         // Log query for analytics (async, non-blocking)
         logQuery(message, data, elapsedTime ? elapsedTime * 1000 : null);
+
+        // Generate follow-up options (async, non-blocking)
+        if (botMessageId) {
+          generateFollowUpOptions(message, data, botMessageId);
+        }
       } catch (error) {
         console.error('Error sending message:', error);
         if (typingStartTime) elapsedTime = Math.floor((Date.now() - typingStartTime) / 1000);
