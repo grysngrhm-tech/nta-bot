@@ -3897,7 +3897,7 @@
 
         if (!resp.ok) throw new Error('Enrichment request failed: ' + resp.status);
         const data = await resp.json();
-        chatArea.insertAdjacentHTML('beforeend', renderEnrichmentMessage(data, selectedType));
+        chatArea.insertAdjacentHTML('beforeend', renderEnrichmentMessage(data, category));
 
         // Re-enable other chips for additional selections
         container.querySelectorAll('.follow-up-chip.dimmed').forEach(chip => {
