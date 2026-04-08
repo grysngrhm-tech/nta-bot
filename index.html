@@ -3880,14 +3880,17 @@
       scrollToBottom();
 
       try {
-        const resp = await fetch(ENRICHMENT_URL, {
+        const resp = await fetch(API_URL, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            question: metaPrompt,
-            answer_summary: answerSummary,
-            selected_option: { label: chipDisplay, type: category, prompt: metaPrompt },
-            session_id: getSessionId()
+            message: chipDisplay,
+            session_id: getSessionId(),
+            access_code: getAccessCode(),
+            mode: 'enrichment',
+            enrichment_meta: metaPrompt,
+            enrichment_display: chipDisplay,
+            enrichment_category: category
           })
         });
 
@@ -3923,7 +3926,7 @@
     }
 
     function renderEnrichmentMessage(data, reportType) {
-      const report = data.report || data.answer || 'No report generated.';
+      const report = data.answer || data.report || 'No report generated.';
       const sources = data.sources || [];
       const typeLabel = FOLLOWUP_CATEGORY_LABELS[reportType] || reportType;
       const messageId = 'enrichment-' + Date.now() + '-' + Math.random().toString(36).substring(2, 7);
