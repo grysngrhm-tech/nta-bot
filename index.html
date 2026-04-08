@@ -2127,7 +2127,7 @@
     // ===== CONFIGURATION =====
     // Placeholder webhook URLs — wire up to n8n later
     const API_URL = 'https://n8n.srv1208741.hstgr.cloud/webhook/nta-chat';
-    const REQUEST_TIMEOUT_MS = 90000;
+    const REQUEST_TIMEOUT_MS = 120000;
     const MAX_RETRIES = 3;
     const RETRY_DELAY_BASE_MS = 1000;
 
@@ -3733,6 +3733,8 @@
     };
 
     async function generateFollowUpOptions(question, responseData, messageId) {
+      const abortCtrl = new AbortController();
+      const timeout = setTimeout(() => abortCtrl.abort(), 8000);
       try {
         const answerSummary = (responseData.answer || '').substring(0, 500);
         const resp = await fetch(FOLLOWUP_OPTIONS_URL, {
@@ -3742,15 +3744,18 @@
             question: question,
             answer_summary: answerSummary,
             session_id: getSessionId()
-          })
+          }),
+          signal: abortCtrl.signal
         });
+        clearTimeout(timeout);
         if (!resp.ok) return;
         const data = await resp.json();
         const options = data.options || [];
         if (options.length === 0) return;
         renderFollowUpChips(options, messageId, question, responseData);
       } catch (e) {
-        console.warn('[Follow-up] Options generation failed:', e.message);
+        clearTimeout(timeout);
+        if (e.name !== 'AbortError') console.warn('[Follow-up] Options generation failed:', e.message);
       }
     }
 
@@ -3833,8 +3838,15 @@
       } catch (e) {
         console.error('[Enrichment] Failed:', e.message);
         const loadingEl = document.getElementById(loadingId);
-        if (loadingEl) loadingEl.remove();
-        // Re-enable chips on error
+        if (loadingEl) {
+          loadingEl.querySelector('.message-content').innerHTML = `
+            <div style="padding: 0.75rem 1rem; font-size: 0.85rem; color: var(--text-muted);">
+              Unable to generate report. Please try again.
+            </div>`;
+          setTimeout(() => loadingEl.remove(), 4000);
+        }
+        // Un-select the chip and re-enable others
+        button.classList.remove('selected');
         container.querySelectorAll('.follow-up-chip.dimmed').forEach(chip => {
           chip.classList.remove('dimmed');
         });
