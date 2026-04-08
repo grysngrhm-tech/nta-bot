@@ -3777,18 +3777,14 @@
 
     // ===== FOLLOW-UP CHIPS & ENRICHMENT =====
     const FOLLOWUP_CATEGORY_LABELS = {
+      deep_dive: 'Deep Dive',
+      protocol: 'Protocol',
+      assessment_guide: 'Assessment Guide',
+      wildcard: 'Explore',
+      // Legacy compat
       go_deeper: 'Deep Dive',
-      make_practical: 'Practical Guide',
-      expand_scope: 'Related Topic',
-      wildcard: 'Explore'
-    };
-
-    // Map follow-up categories to enrichment intent for retrieval
-    const FOLLOWUP_INTENT_MAP = {
-      go_deeper: 'educational',
-      make_practical: 'supplement',
-      expand_scope: 'clinical',
-      wildcard: 'clinical'
+      make_practical: 'Protocol',
+      expand_scope: 'Deep Dive'
     };
 
     async function generateFollowUpOptions(question, responseData, messageId) {
