@@ -3324,26 +3324,79 @@
       html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
       html = html.replace(/(?<!\*)\*(?!\*)(.+?)(?<!\*)\*(?!\*)/g, '<em>$1</em>');
       html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
-      // Block-level: split into lines and detect lists
+      // Markdown headings (## and ###)
+      html = html.replace(/^### (.+)$/gm, '<h4>$1</h4>');
+      html = html.replace(/^## (.+)$/gm, '<h3>$1</h3>');
+
+      // Block-level: split into lines, detect lists with nesting support
       const lines = html.split('\n');
-      let listType = null; // 'ul' | 'ol' | null
       let result = [];
+      // Stack tracks open list types at each depth: [{type:'ol'|'ul', depth:number}]
+      let listStack = [];
+
       for (let i = 0; i < lines.length; i++) {
-        const line = lines[i].trim();
+        const raw = lines[i];
+        // Measure indent: count leading spaces (2 or 3 spaces = 1 level)
+        const indentMatch = raw.match(/^(\s*)/);
+        const spaces = indentMatch ? indentMatch[1].length : 0;
+        const depth = Math.floor(spaces / 2); // 0, 1, 2...
+        const line = raw.trim();
+
+        // Skip heading lines (already converted above)
+        if (line.startsWith('<h3>') || line.startsWith('<h4>')) {
+          // Close all open lists
+          while (listStack.length > 0) {
+            result.push('</li>');
+            result.push(`</${listStack.pop().type}>`);
+          }
+          result.push(line);
+          continue;
+        }
+
         const bulletMatch = line.match(/^[-\u2022]\s+(.+)/);
         const numberMatch = line.match(/^\d+[.)]\s+(.+)/);
-        if (bulletMatch) {
-          if (listType !== 'ul') { if (listType) result.push(`</${listType}>`); result.push('<ul>'); listType = 'ul'; }
-          result.push(`<li>${bulletMatch[1]}</li>`);
-        } else if (numberMatch) {
-          if (listType !== 'ol') { if (listType) result.push(`</${listType}>`); result.push('<ol>'); listType = 'ol'; }
-          result.push(`<li>${numberMatch[1]}</li>`);
+        const listType = bulletMatch ? 'ul' : numberMatch ? 'ol' : null;
+        const content = bulletMatch ? bulletMatch[1] : numberMatch ? numberMatch[1] : null;
+
+        if (listType && content) {
+          // Close deeper lists if we're coming back up
+          while (listStack.length > 0 && listStack[listStack.length - 1].depth > depth) {
+            result.push('</li>');
+            result.push(`</${listStack.pop().type}>`);
+          }
+
+          if (listStack.length > 0 && listStack[listStack.length - 1].depth === depth) {
+            // Same depth: close previous <li>, check if list type matches
+            if (listStack[listStack.length - 1].type === listType) {
+              result.push('</li>');
+            } else {
+              // Different list type at same depth: close old, open new
+              result.push('</li>');
+              result.push(`</${listStack.pop().type}>`);
+              result.push(`<${listType}>`);
+              listStack.push({ type: listType, depth });
+            }
+          } else {
+            // Deeper or first list: open new list (nested inside current <li>)
+            result.push(`<${listType}>`);
+            listStack.push({ type: listType, depth });
+          }
+          result.push(`<li>${content}`);
         } else {
-          if (listType) { result.push(`</${listType}>`); listType = null; }
+          // Non-list line: close all open lists
+          while (listStack.length > 0) {
+            result.push('</li>');
+            result.push(`</${listStack.pop().type}>`);
+          }
           if (line) result.push(`<p>${line}</p>`);
         }
       }
-      if (listType) result.push(`</${listType}>`);
+      // Close any remaining open lists
+      while (listStack.length > 0) {
+        result.push('</li>');
+        result.push(`</${listStack.pop().type}>`);
+      }
+
       html = result.join('');
       html = html.replace(/<p><\/p>/g, '');
       return html || '<p>No answer available.</p>';
@@ -3723,13 +3776,19 @@
     }
 
     // ===== FOLLOW-UP CHIPS & ENRICHMENT =====
-    const ENRICHMENT_TYPE_LABELS = {
-      supplement_protocol: 'Supplement Protocol',
-      symptom_differential: 'Symptom Differential',
-      meal_plan: 'Food & Meal Recommendations',
-      follow_up_question: 'Follow-Up Question',
-      mechanism: 'Mechanism Deep Dive',
-      practitioner_workflow: 'Practitioner Workflow'
+    const FOLLOWUP_CATEGORY_LABELS = {
+      go_deeper: 'Deep Dive',
+      make_practical: 'Practical Guide',
+      expand_scope: 'Related Topic',
+      wildcard: 'Explore'
+    };
+
+    // Map follow-up categories to enrichment intent for retrieval
+    const FOLLOWUP_INTENT_MAP = {
+      go_deeper: 'educational',
+      make_practical: 'supplement',
+      expand_scope: 'clinical',
+      wildcard: 'clinical'
     };
 
     async function generateFollowUpOptions(question, responseData, messageId) {
@@ -3765,7 +3824,9 @@
 
       let html = '<div class="follow-up-chips-label">Explore further</div>';
       options.forEach((opt, i) => {
-        html += `<button class="follow-up-chip" data-type="${escapeHtml(opt.type)}" data-index="${i}" onclick="handleFollowUpClick(this, '${messageId}')">${escapeHtml(opt.label)}</button>`;
+        const category = opt.category || opt.type || 'wildcard';
+        const chipText = opt.question || opt.label || 'Explore';
+        html += `<button class="follow-up-chip" data-category="${escapeHtml(category)}" data-index="${i}" onclick="handleFollowUpClick(this, '${messageId}')">${escapeHtml(chipText)}</button>`;
       });
       container.innerHTML = html;
       container.style.display = 'flex';
@@ -3782,10 +3843,11 @@
       const container = document.getElementById('chips-' + messageId);
       if (!container) return;
 
-      const selectedType = button.dataset.type;
-      const label = button.textContent;
-      const question = container.dataset.question;
+      const category = button.dataset.category;
+      const chipQuestion = button.textContent;
+      const originalQuestion = container.dataset.question;
       const answerSummary = container.dataset.answerSummary;
+      const categoryLabel = FOLLOWUP_CATEGORY_LABELS[category] || 'Explore';
 
       // Highlight selected, dim others (but don't disable — user can click more)
       container.querySelectorAll('.follow-up-chip').forEach(chip => {
@@ -3804,7 +3866,7 @@
           <div class="message-content">
             <div class="enrichment-loading">
               <span class="dot-pulse"><span></span><span></span><span></span></span>
-              Generating ${escapeHtml(ENRICHMENT_TYPE_LABELS[selectedType] || label)}...
+              Generating ${escapeHtml(categoryLabel)}...
             </div>
           </div>
         </div>
@@ -3816,9 +3878,9 @@
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            question: question,
+            question: chipQuestion,
             answer_summary: answerSummary,
-            selected_option: { label: label, type: selectedType },
+            selected_option: { label: chipQuestion, type: category },
             session_id: getSessionId()
           })
         });
@@ -3857,7 +3919,7 @@
     function renderEnrichmentMessage(data, reportType) {
       const report = data.report || data.answer || 'No report generated.';
       const sources = data.sources || [];
-      const typeLabel = ENRICHMENT_TYPE_LABELS[reportType] || reportType;
+      const typeLabel = FOLLOWUP_CATEGORY_LABELS[reportType] || reportType;
       const messageId = 'enrichment-' + Date.now() + '-' + Math.random().toString(36).substring(2, 7);
 
       let sourcesHtml = '';
