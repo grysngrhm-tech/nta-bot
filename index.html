@@ -1462,36 +1462,7 @@
       margin-bottom: 0.5rem;
     }
 
-    .enrichment-loading {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0.75rem 1rem;
-      font-size: 0.8rem;
-      color: var(--text-muted);
-      font-style: italic;
-    }
-
-    .enrichment-loading .dot-pulse {
-      display: inline-flex;
-      gap: 0.2rem;
-    }
-
-    .enrichment-loading .dot-pulse span {
-      width: 4px;
-      height: 4px;
-      border-radius: 50%;
-      background: var(--accent);
-      animation: dotPulse 1.2s infinite;
-    }
-
-    .enrichment-loading .dot-pulse span:nth-child(2) { animation-delay: 0.2s; }
-    .enrichment-loading .dot-pulse span:nth-child(3) { animation-delay: 0.4s; }
-
-    @keyframes dotPulse {
-      0%, 80%, 100% { opacity: 0.3; transform: scale(0.8); }
-      40% { opacity: 1; transform: scale(1); }
-    }
+    /* enrichment-loading dot-pulse removed — unified with typing-indicator */
 
     @media (max-width: 560px) {
       .follow-up-chip {
@@ -1503,65 +1474,54 @@
     /* ===== TYPING INDICATOR ===== */
     .typing-indicator {
       position: relative;
-      padding: 1rem;
+      padding: 1rem 1.125rem;
       background: var(--bg-bot-msg);
       border: 1px solid var(--border);
       border-radius: var(--radius-lg);
       border-bottom-left-radius: var(--radius-sm);
       width: 320px;
       overflow: hidden;
+      --pulse-speed: 3s;
+      --pulse-intensity: 0.08;
+      animation: pulseGlow var(--pulse-speed) ease-in-out infinite;
     }
 
-    .typing-indicator::before,
+    @keyframes pulseGlow {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(74, 124, 89, 0); }
+      50% { box-shadow: 0 0 12px 2px rgba(74, 124, 89, var(--pulse-intensity)); }
+    }
+
     .typing-indicator::after {
       content: '';
       position: absolute;
+      bottom: 0;
       left: 0;
       height: 2px;
-      background: var(--accent);
+      background: linear-gradient(90deg, var(--accent), rgba(74, 124, 89, 0.3));
       width: var(--progress, 0%);
-      transition: width 0.5s linear;
-      opacity: 0.7;
-    }
-
-    .typing-indicator::before {
-      top: 0;
-      border-radius: 0 0 2px 0;
-    }
-
-    .typing-indicator::after {
-      bottom: 0;
-      border-radius: 0 2px 0 0;
+      transition: width 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+      border-radius: 0 1px 0 0;
     }
 
     .typing-content {
       display: flex;
       align-items: center;
-      gap: 0.625rem;
+      gap: 0.75rem;
     }
 
-    .typing-dots {
-      display: flex;
-      align-items: center;
-      gap: 0.3rem;
-      flex-shrink: 0;
-    }
-
-    .typing-dot {
-      width: 6px;
-      height: 6px;
-      background: var(--accent);
+    .typing-orb {
+      width: 10px;
+      height: 10px;
       border-radius: 50%;
-      animation: typingBounce 1.4s infinite ease-in-out;
+      background: var(--accent);
+      flex-shrink: 0;
+      opacity: 0.6;
+      animation: orbPulse 2s ease-in-out infinite;
     }
 
-    .typing-dot:nth-child(1) { animation-delay: -0.32s; }
-    .typing-dot:nth-child(2) { animation-delay: -0.16s; }
-    .typing-dot:nth-child(3) { animation-delay: 0s; }
-
-    @keyframes typingBounce {
-      0%, 80%, 100% { transform: scale(0.8); opacity: 0.4; }
-      40% { transform: scale(1); opacity: 1; }
+    @keyframes orbPulse {
+      0%, 100% { transform: scale(0.85); opacity: 0.4; }
+      50% { transform: scale(1.1); opacity: 0.8; }
     }
 
     .typing-status {
@@ -1572,7 +1532,8 @@
       font-size: 0.8125rem;
       color: var(--text-secondary);
       font-weight: 500;
-      transition: opacity 0.3s ease;
+      letter-spacing: 0.01em;
+      transition: opacity 0.4s ease;
     }
 
     .typing-message.fade {
@@ -3433,73 +3394,37 @@
     }
 
     // ===== TYPING INDICATOR =====
-    const TYPING_STAGES = [
-      { at: 0, glow: 5, messages: [
-        'Searching the knowledge base...',
-        'Scanning 6,300+ entries...',
-        'Querying the curriculum...',
-        'Pulling from the archives...',
-        'Consulting the sources...'
-      ]},
-      { at: 2, glow: 25, messages: [
-        'Found matches, ranking by relevance...',
-        'Sifting through 30 candidates...',
-        'Sorting the best sources to the top...',
-        'Separating the wheat from the chaff...',
-        'Winnowing down the results...'
-      ]},
-      { at: 5, glow: 50, messages: [
-        'Reading the top sources...',
-        'Cross-referencing curriculum and textbook...',
-        'Connecting the dots...',
-        'Steeping in the research like a good herbal tea...',
-        'Slow and steady, like bone broth on a Sunday...'
-      ]},
-      { at: 8, glow: 75, messages: [
-        'Synthesizing your answer...',
-        'Putting it all together...',
-        'Fermenting the perfect response...',
-        'Crafting a clinical answer...',
-        'Building the response...'
-      ]},
-      { at: 12, glow: 90, messages: [
-        'Almost there...',
-        'Plating the final response...',
-        'Garnishing with citations...',
-        'Just about ready...',
-        'Finishing touches...'
-      ]},
-      { at: 18, glow: 96, messages: [
-        'This is a thorough one \u2014 hang tight...',
-        'Good things take time \u2014 like sourdough...',
-        'Detailed question deserves a detailed answer...',
-        'Still simmering \u2014 almost ready to serve...',
-        'Low and slow, just like we like it...'
-      ]}
+    // Loading messages — one random message per request
+    const LOADING_MESSAGES = [
+      'Searching 6,300+ knowledge entries...',
+      'Pulling from curriculum, textbooks, and research...',
+      'Consulting the clinical sources...',
+      'Sifting through the evidence...',
+      'Cross-referencing across the knowledge base...',
+      'Steeping in the research like a good herbal tea...',
+      'Slow-extracting the best answer, like bone broth...',
+      'Fermenting the perfect response...',
+      'Soaking the question for better absorption...',
+      'Culturing an answer from the raw data...',
+      'Distilling the clinical evidence...',
+      'Foraging through the curriculum...',
+      'Sprouting an answer from the source material...',
+      'Nourishing the response with the best sources...',
+      'Grinding through the research, mortar and pestle style...'
     ];
 
-    let _typingCurrentStage = -1;
-
-    function getStageForElapsed(elapsed) {
-      let stage = TYPING_STAGES[0];
-      for (const s of TYPING_STAGES) {
-        if (elapsed >= s.at) stage = s;
-      }
-      return stage;
-    }
+    function pickRandom(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
 
     function renderTypingIndicator(message, retryInfo) {
-      const stageMessage = message || 'Searching the knowledge base...';
+      const displayMessage = message || pickRandom(LOADING_MESSAGES);
       const retryHtml = retryInfo ? `<div class="typing-retry">${retryInfo}</div>` : '';
       return `
         <div class="message message-bot" id="typingIndicator">
-          <div class="typing-indicator" style="--progress: 0%">
+          <div class="typing-indicator" style="--progress: 0%; --pulse-speed: 3s; --pulse-intensity: 0.08">
             <div class="typing-content">
-              <div class="typing-dots">
-                <div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>
-              </div>
+              <div class="typing-orb"></div>
               <div class="typing-status">
-                <div class="typing-message">${escapeHtml(stageMessage)}</div>
+                <div class="typing-message">${escapeHtml(displayMessage)}</div>
                 ${retryHtml}
               </div>
             </div>
@@ -3512,7 +3437,6 @@
       const chatArea = document.getElementById('chatArea');
       const existing = document.getElementById('typingIndicator');
       if (existing) existing.remove();
-      _typingCurrentStage = -1;
       chatArea.insertAdjacentHTML('beforeend', renderTypingIndicator(message, retryInfo));
       chatArea.setAttribute('aria-busy', 'true');
       const a11y = document.getElementById('a11yStatus');
@@ -3520,35 +3444,21 @@
       scrollToBottom();
       typingStartTime = Date.now();
       if (typingIntervalId) clearInterval(typingIntervalId);
+      // Evolve the pulse over ~20 seconds: glow intensifies, speed quickens, progress bar fills
       typingIntervalId = setInterval(() => {
-        const elapsed = Math.floor((Date.now() - typingStartTime) / 1000);
-        if (retryInfo) return;
-        const stage = getStageForElapsed(elapsed);
-        const stageIndex = TYPING_STAGES.indexOf(stage);
-        // Interpolate progress smoothly between stages
-        const nextStage = TYPING_STAGES[stageIndex + 1];
-        let progress = stage.glow;
-        if (nextStage) {
-          const stageElapsed = elapsed - stage.at;
-          const stageDuration = nextStage.at - stage.at;
-          const t = Math.min(stageElapsed / stageDuration, 1);
-          progress = stage.glow + (nextStage.glow - stage.glow) * t;
-        }
+        const elapsed = (Date.now() - typingStartTime) / 1000;
         const indicator = document.querySelector('#typingIndicator .typing-indicator');
-        if (indicator) indicator.style.setProperty('--progress', progress + '%');
-        // Update message when stage changes
-        if (stageIndex !== _typingCurrentStage) {
-          _typingCurrentStage = stageIndex;
-          const messageEl = document.querySelector('#typingIndicator .typing-message');
-          if (messageEl) {
-            messageEl.classList.add('fade');
-            setTimeout(() => {
-              messageEl.textContent = stage.messages[Math.floor(Math.random() * stage.messages.length)];
-              messageEl.classList.remove('fade');
-            }, 300);
-          }
-        }
-      }, 1000);
+        if (!indicator) return;
+        // Progress bar: smooth ease to ~95% over 20 seconds
+        const progress = Math.min(95, (elapsed / 20) * 95);
+        indicator.style.setProperty('--progress', progress + '%');
+        // Pulse speed: 3s → 1.5s over 20 seconds (quickens as it gets closer)
+        const speed = 3 - (Math.min(elapsed, 20) / 20) * 1.5;
+        indicator.style.setProperty('--pulse-speed', speed + 's');
+        // Glow intensity: 0.08 → 0.25 over 20 seconds (brightens subtly)
+        const intensity = 0.08 + (Math.min(elapsed, 20) / 20) * 0.17;
+        indicator.style.setProperty('--pulse-intensity', intensity);
+      }, 500);
     }
 
     function updateTypingIndicator(message, retryInfo) {
@@ -3775,30 +3685,39 @@
     }
 
     // ===== FOLLOW-UP CHIPS & ENRICHMENT =====
-    const ENRICHMENT_TYPING_STAGES = {
+    // Category-specific loading messages — one random message per enrichment request
+    const ENRICHMENT_MESSAGES = {
       deep_dive: [
-        { at: 0, glow: 10, messages: ['Researching the mechanism...', 'Diving into the science...', 'Exploring pathways and cofactors...'] },
-        { at: 3, glow: 40, messages: ['Tracing the biochemistry...', 'Following the metabolic trail...', 'Connecting enzymes to outcomes...'] },
-        { at: 6, glow: 70, messages: ['Synthesizing the explanation...', 'Building the clinical picture...', 'Linking mechanism to symptoms...'] },
-        { at: 10, glow: 92, messages: ['Almost there...', 'Finishing the deep dive...', 'Polishing the details...'] }
+        'Tracing the biochemical pathways...',
+        'Diving into the mechanism...',
+        'Following the metabolic trail...',
+        'Exploring the clinical science...',
+        'Connecting enzymes to outcomes...',
+        'Unpacking the physiology...'
       ],
       protocol: [
-        { at: 0, glow: 10, messages: ['Pulling clinical evidence...', 'Searching for dosing data...', 'Gathering protocol sources...'] },
-        { at: 3, glow: 40, messages: ['Building the supplement plan...', 'Selecting optimal forms and doses...', 'Mapping out the phases...'] },
-        { at: 6, glow: 70, messages: ['Adding timing and cofactors...', 'Checking contraindications...', 'Structuring the protocol...'] },
-        { at: 10, glow: 92, messages: ['Finalizing the protocol...', 'Almost ready to serve...', 'Last details...'] }
+        'Building your clinical protocol...',
+        'Selecting optimal forms and doses...',
+        'Mapping the supplement phases...',
+        'Formulating the plan, like a custom tincture...',
+        'Measuring, timing, and balancing the protocol...',
+        'Preparing a practitioner-grade recommendation...'
       ],
       assessment_guide: [
-        { at: 0, glow: 10, messages: ['Pulling practitioner resources...', 'Searching intake frameworks...', 'Gathering assessment tools...'] },
-        { at: 3, glow: 40, messages: ['Building the session plan...', 'Mapping NAQ priorities...', 'Identifying key lab markers...'] },
-        { at: 6, glow: 70, messages: ['Structuring the workflow...', 'Adding referral criteria...', 'Phasing the support timeline...'] },
-        { at: 10, glow: 92, messages: ['Finalizing the guide...', 'Almost there...', 'Wrapping up...'] }
+        'Structuring the practitioner workflow...',
+        'Mapping intake questions and assessments...',
+        'Identifying key lab markers and NAQ priorities...',
+        'Building a session plan from the evidence...',
+        'Assembling the clinical roadmap...',
+        'Charting the assessment sequence...'
       ],
       wildcard: [
-        { at: 0, glow: 10, messages: ['Exploring a fresh angle...', 'Getting creative...', 'Searching for something useful...'] },
-        { at: 3, glow: 40, messages: ['Found some interesting sources...', 'Building something practical...', 'Connecting the dots...'] },
-        { at: 6, glow: 70, messages: ['Putting it together...', 'Almost there...', 'Crafting the response...'] },
-        { at: 10, glow: 92, messages: ['Finishing up...', 'Final touches...', 'Nearly ready...'] }
+        'Exploring a fresh angle...',
+        'Getting creative with the evidence...',
+        'Cooking up something useful...',
+        'Foraging for a practical approach...',
+        'Finding the unexpected connection...',
+        'Brewing something different...'
       ]
     };
 
@@ -3886,20 +3805,18 @@
         }
       });
 
-      // Show enrichment typing indicator (same component as main chat)
+      // Show enrichment loading indicator (same pulse component as main chat)
       const chatArea = document.getElementById('chatArea');
       const loadingId = 'enrichment-loading-' + Date.now();
-      const enrichStages = ENRICHMENT_TYPING_STAGES[category] || ENRICHMENT_TYPING_STAGES.wildcard;
-      const firstMsg = enrichStages[0].messages[Math.floor(Math.random() * enrichStages[0].messages.length)];
+      const enrichMsgPool = ENRICHMENT_MESSAGES[category] || ENRICHMENT_MESSAGES.wildcard;
+      const enrichMsg = pickRandom(enrichMsgPool);
       chatArea.insertAdjacentHTML('beforeend', `
         <div class="message message-bot" id="${loadingId}">
-          <div class="typing-indicator" style="--progress: 0%">
+          <div class="typing-indicator" style="--progress: 0%; --pulse-speed: 3s; --pulse-intensity: 0.08">
             <div class="typing-content">
-              <div class="typing-dots">
-                <div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>
-              </div>
+              <div class="typing-orb"></div>
               <div class="typing-status">
-                <div class="typing-message">${escapeHtml(firstMsg)}</div>
+                <div class="typing-message">${escapeHtml(enrichMsg)}</div>
               </div>
             </div>
           </div>
@@ -3907,36 +3824,19 @@
       `);
       scrollToBottom();
 
-      // Animate enrichment typing stages
+      // Evolve the pulse (same system as main chat)
       const enrichStartTime = Date.now();
-      let enrichCurrentStage = -1;
       const enrichInterval = setInterval(() => {
-        const elapsed = Math.floor((Date.now() - enrichStartTime) / 1000);
-        let stage = enrichStages[0];
-        let stageIdx = 0;
-        for (let i = 0; i < enrichStages.length; i++) {
-          if (elapsed >= enrichStages[i].at) { stage = enrichStages[i]; stageIdx = i; }
-        }
-        const nextStage = enrichStages[stageIdx + 1];
-        let progress = stage.glow;
-        if (nextStage) {
-          const t = Math.min((elapsed - stage.at) / (nextStage.at - stage.at), 1);
-          progress = stage.glow + (nextStage.glow - stage.glow) * t;
-        }
+        const elapsed = (Date.now() - enrichStartTime) / 1000;
         const indicator = document.querySelector(`#${loadingId} .typing-indicator`);
-        if (indicator) indicator.style.setProperty('--progress', progress + '%');
-        if (stageIdx !== enrichCurrentStage) {
-          enrichCurrentStage = stageIdx;
-          const msgEl = document.querySelector(`#${loadingId} .typing-message`);
-          if (msgEl) {
-            msgEl.classList.add('fade');
-            setTimeout(() => {
-              msgEl.textContent = stage.messages[Math.floor(Math.random() * stage.messages.length)];
-              msgEl.classList.remove('fade');
-            }, 300);
-          }
-        }
-      }, 1000);
+        if (!indicator) return;
+        const progress = Math.min(95, (elapsed / 20) * 95);
+        indicator.style.setProperty('--progress', progress + '%');
+        const speed = 3 - (Math.min(elapsed, 20) / 20) * 1.5;
+        indicator.style.setProperty('--pulse-speed', speed + 's');
+        const intensity = 0.08 + (Math.min(elapsed, 20) / 20) * 0.17;
+        indicator.style.setProperty('--pulse-intensity', intensity);
+      }, 500);
 
       try {
         const resp = await fetch(API_URL, {
