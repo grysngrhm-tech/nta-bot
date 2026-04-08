@@ -3793,15 +3793,15 @@
 
     async function generateFollowUpOptions(question, responseData, messageId) {
       const abortCtrl = new AbortController();
-      const timeout = setTimeout(() => abortCtrl.abort(), 8000);
+      const timeout = setTimeout(() => abortCtrl.abort(), 10000);
       try {
-        const answerSummary = (responseData.answer || '').substring(0, 500);
+        const fullAnswer = responseData.answer || '';
         const resp = await fetch(FOLLOWUP_OPTIONS_URL, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             question: question,
-            answer_summary: answerSummary,
+            answer_summary: fullAnswer,
             session_id: getSessionId()
           }),
           signal: abortCtrl.signal
@@ -3809,7 +3809,7 @@
         clearTimeout(timeout);
         if (!resp.ok) return;
         const data = await resp.json();
-        const options = data.options || [];
+        const options = (data.options || []).filter(opt => (opt.display || opt.question || '').trim());
         if (options.length === 0) return;
         renderFollowUpChips(options, messageId, question, responseData);
       } catch (e) {
@@ -3822,18 +3822,19 @@
       const container = document.getElementById('chips-' + messageId);
       if (!container) return;
 
+      // Store options data for enrichment requests
+      container._followUpOptions = options;
+      container.dataset.question = question;
+      container.dataset.answerSummary = (responseData.answer || '').substring(0, 800);
+
       let html = '<div class="follow-up-chips-label">Explore further</div>';
       options.forEach((opt, i) => {
         const category = opt.category || opt.type || 'wildcard';
-        const chipText = opt.question || opt.label || 'Explore';
-        html += `<button class="follow-up-chip" data-category="${escapeHtml(category)}" data-index="${i}" onclick="handleFollowUpClick(this, '${messageId}')">${escapeHtml(chipText)}</button>`;
+        const displayText = opt.display || opt.question || opt.label || 'Explore';
+        html += `<button class="follow-up-chip" data-category="${escapeHtml(category)}" data-index="${i}" onclick="handleFollowUpClick(this, '${messageId}')">${escapeHtml(displayText)}</button>`;
       });
       container.innerHTML = html;
       container.style.display = 'flex';
-
-      // Store context for enrichment requests
-      container.dataset.question = question;
-      container.dataset.answerSummary = (responseData.answer || '').substring(0, 500);
       scrollToBottom();
     }
 
@@ -3844,10 +3845,15 @@
       if (!container) return;
 
       const category = button.dataset.category;
-      const chipQuestion = button.textContent;
+      const chipIndex = parseInt(button.dataset.index, 10);
+      const chipDisplay = button.textContent;
       const originalQuestion = container.dataset.question;
       const answerSummary = container.dataset.answerSummary;
       const categoryLabel = FOLLOWUP_CATEGORY_LABELS[category] || 'Explore';
+
+      // Get the meta prompt from stored options data
+      const optionData = (container._followUpOptions || [])[chipIndex] || {};
+      const metaPrompt = optionData.prompt || chipDisplay;
 
       // Highlight selected, dim others (but don't disable — user can click more)
       container.querySelectorAll('.follow-up-chip').forEach(chip => {
@@ -3878,9 +3884,9 @@
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            question: chipQuestion,
+            question: metaPrompt,
             answer_summary: answerSummary,
-            selected_option: { label: chipQuestion, type: category },
+            selected_option: { label: chipDisplay, type: category, prompt: metaPrompt },
             session_id: getSessionId()
           })
         });
