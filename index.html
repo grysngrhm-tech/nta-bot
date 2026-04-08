@@ -3434,43 +3434,42 @@
 
     // ===== TYPING INDICATOR =====
     const TYPING_STAGES = [
-      { at: 0, glow: 3, messages: [
+      { at: 0, glow: 5, messages: [
         'Searching the knowledge base...',
         'Scanning 6,300+ entries...',
-        'Flipping through the archives...',
-        'Rummaging through the curriculum...',
+        'Querying the curriculum...',
+        'Pulling from the archives...',
         'Consulting the sources...'
       ]},
-      { at: 5, glow: 15, messages: [
-        'Found some matches, ranking by relevance...',
-        'Sorting the best results to the top...',
+      { at: 2, glow: 25, messages: [
+        'Found matches, ranking by relevance...',
         'Sifting through 30 candidates...',
+        'Sorting the best sources to the top...',
         'Separating the wheat from the chaff...',
         'Winnowing down the results...'
       ]},
-      { at: 12, glow: 35, messages: [
-        'Reading through the top sources...',
+      { at: 5, glow: 50, messages: [
+        'Reading the top sources...',
         'Cross-referencing curriculum and textbook...',
-        'Connecting the dots across sources...',
+        'Connecting the dots...',
         'Steeping in the research like a good herbal tea...',
         'Slow and steady, like bone broth on a Sunday...'
       ]},
-      { at: 20, glow: 60, messages: [
-        'Writing your answer...',
-        'Crafting a response...',
+      { at: 8, glow: 75, messages: [
+        'Synthesizing your answer...',
         'Putting it all together...',
         'Fermenting the perfect response...',
-        'Letting the answer culture like a fine kraut...',
-        'Soaking this one overnight for better nutrient absorption...'
+        'Crafting a clinical answer...',
+        'Building the response...'
       ]},
-      { at: 32, glow: 82, messages: [
-        'Almost there, adding citations...',
-        'Linking back to the source material...',
-        'Finishing up with references...',
-        'Garnishing with source links...',
-        'Plating the final response...'
+      { at: 12, glow: 90, messages: [
+        'Almost there...',
+        'Plating the final response...',
+        'Garnishing with citations...',
+        'Just about ready...',
+        'Finishing touches...'
       ]},
-      { at: 45, glow: 92, messages: [
+      { at: 18, glow: 96, messages: [
         'This is a thorough one \u2014 hang tight...',
         'Good things take time \u2014 like sourdough...',
         'Detailed question deserves a detailed answer...',
@@ -3776,6 +3775,33 @@
     }
 
     // ===== FOLLOW-UP CHIPS & ENRICHMENT =====
+    const ENRICHMENT_TYPING_STAGES = {
+      deep_dive: [
+        { at: 0, glow: 10, messages: ['Researching the mechanism...', 'Diving into the science...', 'Exploring pathways and cofactors...'] },
+        { at: 3, glow: 40, messages: ['Tracing the biochemistry...', 'Following the metabolic trail...', 'Connecting enzymes to outcomes...'] },
+        { at: 6, glow: 70, messages: ['Synthesizing the explanation...', 'Building the clinical picture...', 'Linking mechanism to symptoms...'] },
+        { at: 10, glow: 92, messages: ['Almost there...', 'Finishing the deep dive...', 'Polishing the details...'] }
+      ],
+      protocol: [
+        { at: 0, glow: 10, messages: ['Pulling clinical evidence...', 'Searching for dosing data...', 'Gathering protocol sources...'] },
+        { at: 3, glow: 40, messages: ['Building the supplement plan...', 'Selecting optimal forms and doses...', 'Mapping out the phases...'] },
+        { at: 6, glow: 70, messages: ['Adding timing and cofactors...', 'Checking contraindications...', 'Structuring the protocol...'] },
+        { at: 10, glow: 92, messages: ['Finalizing the protocol...', 'Almost ready to serve...', 'Last details...'] }
+      ],
+      assessment_guide: [
+        { at: 0, glow: 10, messages: ['Pulling practitioner resources...', 'Searching intake frameworks...', 'Gathering assessment tools...'] },
+        { at: 3, glow: 40, messages: ['Building the session plan...', 'Mapping NAQ priorities...', 'Identifying key lab markers...'] },
+        { at: 6, glow: 70, messages: ['Structuring the workflow...', 'Adding referral criteria...', 'Phasing the support timeline...'] },
+        { at: 10, glow: 92, messages: ['Finalizing the guide...', 'Almost there...', 'Wrapping up...'] }
+      ],
+      wildcard: [
+        { at: 0, glow: 10, messages: ['Exploring a fresh angle...', 'Getting creative...', 'Searching for something useful...'] },
+        { at: 3, glow: 40, messages: ['Found some interesting sources...', 'Building something practical...', 'Connecting the dots...'] },
+        { at: 6, glow: 70, messages: ['Putting it together...', 'Almost there...', 'Crafting the response...'] },
+        { at: 10, glow: 92, messages: ['Finishing up...', 'Final touches...', 'Nearly ready...'] }
+      ]
+    };
+
     const FOLLOWUP_CATEGORY_LABELS = {
       deep_dive: 'Deep Dive',
       protocol: 'Protocol',
@@ -3860,20 +3886,57 @@
         }
       });
 
-      // Show enrichment loading indicator
+      // Show enrichment typing indicator (same component as main chat)
       const chatArea = document.getElementById('chatArea');
       const loadingId = 'enrichment-loading-' + Date.now();
+      const enrichStages = ENRICHMENT_TYPING_STAGES[category] || ENRICHMENT_TYPING_STAGES.wildcard;
+      const firstMsg = enrichStages[0].messages[Math.floor(Math.random() * enrichStages[0].messages.length)];
       chatArea.insertAdjacentHTML('beforeend', `
         <div class="message message-bot" id="${loadingId}">
-          <div class="message-content">
-            <div class="enrichment-loading">
-              <span class="dot-pulse"><span></span><span></span><span></span></span>
-              Generating ${escapeHtml(categoryLabel)}...
+          <div class="typing-indicator" style="--progress: 0%">
+            <div class="typing-content">
+              <div class="typing-dots">
+                <div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>
+              </div>
+              <div class="typing-status">
+                <div class="typing-message">${escapeHtml(firstMsg)}</div>
+              </div>
             </div>
           </div>
         </div>
       `);
       scrollToBottom();
+
+      // Animate enrichment typing stages
+      const enrichStartTime = Date.now();
+      let enrichCurrentStage = -1;
+      const enrichInterval = setInterval(() => {
+        const elapsed = Math.floor((Date.now() - enrichStartTime) / 1000);
+        let stage = enrichStages[0];
+        let stageIdx = 0;
+        for (let i = 0; i < enrichStages.length; i++) {
+          if (elapsed >= enrichStages[i].at) { stage = enrichStages[i]; stageIdx = i; }
+        }
+        const nextStage = enrichStages[stageIdx + 1];
+        let progress = stage.glow;
+        if (nextStage) {
+          const t = Math.min((elapsed - stage.at) / (nextStage.at - stage.at), 1);
+          progress = stage.glow + (nextStage.glow - stage.glow) * t;
+        }
+        const indicator = document.querySelector(`#${loadingId} .typing-indicator`);
+        if (indicator) indicator.style.setProperty('--progress', progress + '%');
+        if (stageIdx !== enrichCurrentStage) {
+          enrichCurrentStage = stageIdx;
+          const msgEl = document.querySelector(`#${loadingId} .typing-message`);
+          if (msgEl) {
+            msgEl.classList.add('fade');
+            setTimeout(() => {
+              msgEl.textContent = stage.messages[Math.floor(Math.random() * stage.messages.length)];
+              msgEl.classList.remove('fade');
+            }, 300);
+          }
+        }
+      }, 1000);
 
       try {
         const resp = await fetch(API_URL, {
@@ -3891,6 +3954,7 @@
         });
 
         // Remove loading indicator
+        clearInterval(enrichInterval);
         const loadingEl = document.getElementById(loadingId);
         if (loadingEl) loadingEl.remove();
 
@@ -3898,15 +3962,20 @@
         const data = await resp.json();
         chatArea.insertAdjacentHTML('beforeend', renderEnrichmentMessage(data, category));
 
+        // Log enrichment to analytics
+        const enrichLatency = Date.now() - enrichStartTime;
+        logQuery(chipDisplay, data, enrichLatency);
+
         // Re-enable other chips for additional selections
         container.querySelectorAll('.follow-up-chip.dimmed').forEach(chip => {
           chip.classList.remove('dimmed');
         });
       } catch (e) {
         console.error('[Enrichment] Failed:', e.message);
+        clearInterval(enrichInterval);
         const loadingEl = document.getElementById(loadingId);
         if (loadingEl) {
-          loadingEl.querySelector('.message-content').innerHTML = `
+          loadingEl.querySelector('.typing-indicator').innerHTML = `
             <div style="padding: 0.75rem 1rem; font-size: 0.85rem; color: var(--text-muted);">
               Unable to generate report. Please try again.
             </div>`;
