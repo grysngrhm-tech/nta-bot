@@ -3396,21 +3396,20 @@
     // ===== TYPING INDICATOR =====
     // Loading messages — one random message per request
     const LOADING_MESSAGES = [
+      // What the bot is actually doing
       'Searching 6,300+ knowledge entries...',
-      'Pulling from curriculum, textbooks, and research...',
-      'Consulting the clinical sources...',
-      'Sifting through the evidence...',
-      'Cross-referencing across the knowledge base...',
-      'Steeping in the research like a good herbal tea...',
-      'Slow-extracting the best answer, like bone broth...',
+      'Cross-referencing curriculum and textbooks...',
+      'Pulling from NTA lectures and research...',
+      'Ranking the most relevant sources...',
+      'Checking Dr. Gaby, NIH, and the podcast library...',
+      'Matching your question to the best evidence...',
+      // NTA-flavored metaphors
+      'Slow-extracting, like good bone broth...',
+      'Steeping in the research like herbal tea...',
       'Fermenting the perfect response...',
-      'Soaking the question for better absorption...',
-      'Culturing an answer from the raw data...',
       'Distilling the clinical evidence...',
-      'Foraging through the curriculum...',
-      'Sprouting an answer from the source material...',
-      'Nourishing the response with the best sources...',
-      'Grinding through the research, mortar and pestle style...'
+      'Foraging through the source material...',
+      'Preparing a nutrient-dense answer...'
     ];
 
     function pickRandom(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
@@ -3688,36 +3687,36 @@
     // Category-specific loading messages — one random message per enrichment request
     const ENRICHMENT_MESSAGES = {
       deep_dive: [
-        'Tracing the biochemical pathways...',
-        'Diving into the mechanism...',
+        'Tracing the biochemical pathway...',
         'Following the metabolic trail...',
-        'Exploring the clinical science...',
-        'Connecting enzymes to outcomes...',
-        'Unpacking the physiology...'
+        'Going upstream to the root mechanism...',
+        'Unpacking the physiology...',
+        'Connecting the dots across body systems...',
+        'Peeling back the layers of the science...'
       ],
       protocol: [
-        'Building your clinical protocol...',
         'Selecting optimal forms and doses...',
-        'Mapping the supplement phases...',
-        'Formulating the plan, like a custom tincture...',
-        'Measuring, timing, and balancing the protocol...',
-        'Preparing a practitioner-grade recommendation...'
+        'Phasing the supplement timeline...',
+        'Formulating like a custom tincture...',
+        'Balancing cofactors and timing...',
+        'Preparing a practitioner-grade plan...',
+        'Compounding the protocol...'
       ],
       assessment_guide: [
-        'Structuring the practitioner workflow...',
-        'Mapping intake questions and assessments...',
-        'Identifying key lab markers and NAQ priorities...',
-        'Building a session plan from the evidence...',
-        'Assembling the clinical roadmap...',
-        'Charting the assessment sequence...'
+        'Mapping the clinical decision tree...',
+        'Prioritizing NAQ sections and lab markers...',
+        'Drafting the practitioner session plan...',
+        'Sequencing intake, assess, support, refer...',
+        'Building the case from the evidence...',
+        'Charting the path from intake to outcome...'
       ],
       wildcard: [
-        'Exploring a fresh angle...',
-        'Getting creative with the evidence...',
-        'Cooking up something useful...',
-        'Foraging for a practical approach...',
-        'Finding the unexpected connection...',
-        'Brewing something different...'
+        'Cooking up something unexpected...',
+        'Taking a different path through the evidence...',
+        'Foraging for a fresh angle...',
+        'Blending sources into something new...',
+        'Going off the beaten trail...',
+        'Brewing a creative approach...'
       ]
     };
 
