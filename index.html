@@ -3733,7 +3733,7 @@
 
     async function generateFollowUpOptions(question, responseData, messageId) {
       const abortCtrl = new AbortController();
-      const timeout = setTimeout(() => abortCtrl.abort(), 10000);
+      const timeout = setTimeout(() => abortCtrl.abort(), 30000);
       try {
         const fullAnswer = responseData.answer || '';
         const resp = await fetch(FOLLOWUP_OPTIONS_URL, {
