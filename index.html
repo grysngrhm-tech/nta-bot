@@ -1080,6 +1080,12 @@
       opacity: 0.7;
     }
 
+    .welcome-section .section-tagline {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin: -0.375rem 0 0.75rem 0;
+    }
+
     /* Stacked Sections */
     .welcome-section {
       background: var(--bg-card);
@@ -1099,7 +1105,7 @@
       color: var(--text-muted);
       text-transform: uppercase;
       letter-spacing: 0.05em;
-      margin-bottom: 0.75rem;
+      margin-bottom: 0.5rem;
     }
 
     /* ===== COVERAGE CARDS ===== */
@@ -2839,7 +2845,7 @@
 
           <div class="welcome-section">
             <h3>Knowledge Base</h3>
-            <p class="welcome-stat">6,300+ curated entries from NTA curriculum, clinical textbooks, NIH research, and 86 podcast episodes.</p>
+            <p class="section-tagline">6,300+ curated entries from NTA curriculum, clinical textbooks, NIH research, and 86 podcast episodes.</p>
             <div class="coverage-grid" id="coverageGrid">
               <div class="coverage-card" role="button" tabindex="0" aria-expanded="false" onclick="expandTile(this, 'web')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click()}">
                 <div class="coverage-card-header">
@@ -2882,6 +2888,7 @@
 
           <div class="welcome-section">
             <h3>Try a Question</h3>
+            <p class="section-tagline">Pick one to see NTA Bot in action, or type your own below.</p>
             <div class="question-chips" id="questionChips">
               ${questionChipsHTML}
             </div>
