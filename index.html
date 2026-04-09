@@ -333,6 +333,12 @@
       opacity: 0.8;
     }
 
+    .confidence-inline-note {
+      font-weight: 400;
+      color: var(--text-muted);
+      font-size: 0.6875rem;
+    }
+
     .confidence-dot {
       width: 8px;
       height: 8px;
@@ -2022,8 +2028,8 @@
           <textarea
             class="message-input"
             id="messageInput"
-            placeholder="Ask me anything..."
-            aria-label="Ask me anything"
+            placeholder="Ask a clinical, curriculum, or scope question..."
+            aria-label="Ask a question"
             rows="1"
             inputmode="text"
             enterkeyhint="send"
@@ -2827,10 +2833,10 @@
         <div class="welcome-panel" id="welcomePanel">
           <div class="welcome-hero">
             <img class="welcome-logo" src="assets/icons/nta-logo.svg" alt="Nutritional Therapy Association" onclick="startNewChat()">
-            <h2>What can I help you find?</h2>
-            <p class="welcome-tagline">NTA Bot is your AI-powered knowledge assistant. Ask any question about NTA programs, scope of practice, health topics, or anatomy &amp; physiology. Every answer is grounded in NTA's own materials with clickable citations so you can always verify where the information came from.</p>
+            <h2>What can I help you with?</h2>
+            <p class="welcome-tagline">Ask any clinical, curriculum, or scope question. Every answer comes with cited sources and interactive follow-ups to explore deeper.</p>
             <p class="welcome-doc-link"><a href="https://github.com/grysngrhm-tech/nta-bot" target="_blank" rel="noopener">Learn how NTA Bot works</a></p>
-            <p class="welcome-stat">Powered by 6,300+ searchable knowledge entries across curriculum, textbooks, NIH research, and podcasts.</p>
+            <p class="welcome-stat">Grounded in 6,300+ curated entries from NTA curriculum, clinical textbooks, NIH research, and 86 podcast episodes.</p>
           </div>
 
           <div class="welcome-section">
@@ -2882,7 +2888,6 @@
             </div>
           </div>
 
-          <p class="welcome-disclaimer">Curriculum reference only — does not replace instructor guidance.</p>
         </div>
       `;
     }
@@ -3009,10 +3014,10 @@
                 <span class="message-sender">NTA Bot</span>
               </div>
               <div class="message-header-right">
-                <span class="confidence-badge confidence-${confidenceClass}" onclick="toggleConfidenceTooltip(this, event)" data-explanation="${escapeHtml(confidence.explanation || 'No additional details available.')}" aria-label="Confidence: ${escapeHtml(confidence.level || 'Medium')}. ${escapeHtml(confidence.explanation || 'No additional details available.')}">
+                <span class="confidence-badge confidence-${confidenceClass}" ${confidenceClass === 'high' ? `onclick="toggleConfidenceTooltip(this, event)"` : ''} data-explanation="${escapeHtml(confidence.explanation || '')}" aria-label="Confidence: ${escapeHtml(confidence.level || 'Medium')}. ${escapeHtml(confidence.explanation || '')}">
                   <span class="confidence-dot"></span>
-                  ${escapeHtml(confidence.level || 'Medium')}
-                  <div class="confidence-tooltip">${escapeHtml(confidence.explanation || 'No additional details available.')}</div>
+                  ${escapeHtml(confidence.level || 'Medium')}${confidenceClass !== 'high' && confidence.explanation ? ` <span class="confidence-inline-note">\u2014 ${escapeHtml(confidence.explanation)}</span>` : ''}
+                  ${confidenceClass === 'high' ? `<div class="confidence-tooltip">${escapeHtml(confidence.explanation || '')}</div>` : ''}
                 </span>
                 <button class="speak-btn" onclick="speakMessage(this)" title="Read aloud">
                   <svg class="speaker-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -3033,7 +3038,6 @@
               </div>
             </div>
             <div class="answer-section">
-              <div class="answer-label">Answer</div>
               <div class="answer-text" data-raw-answer="${escapeHtml(cleanAnswer)}">
                 ${formatAnswerText(cleanAnswer)}
               </div>
@@ -3411,7 +3415,10 @@
       'Fermenting the perfect response...',
       'Distilling the clinical evidence...',
       'Foraging through the source material...',
-      'Preparing a nutrient-dense answer...'
+      'Preparing a nutrient-dense answer...',
+      // Follow-up awareness
+      'Building your answer with follow-ups to explore further...',
+      'Preparing your answer and follow-up options...'
     ];
 
     function pickRandom(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
@@ -3512,7 +3519,7 @@
     function getErrorDetails(errorType, elapsedTime) {
       const details = {
         [ErrorTypes.NETWORK]: { title: 'Connection failed', message: 'Unable to reach the server. Please check your internet connection.', icon: 'wifi-off', canRetry: true },
-        [ErrorTypes.TIMEOUT]: { title: 'Request timed out', message: `The server took too long to respond${elapsedTime ? ` (${elapsedTime}s)` : ''}. It may be busy.`, icon: 'clock', canRetry: true },
+        [ErrorTypes.TIMEOUT]: { title: 'Took longer than expected', message: `This question took longer than usual${elapsedTime ? ` (${elapsedTime}s)` : ''}. Please try again \u2014 most answers arrive in under 20 seconds.`, icon: 'clock', canRetry: true },
         [ErrorTypes.CANCELLED]: { title: 'Request cancelled', message: 'You cancelled the request.', icon: 'x-circle', canRetry: false },
         [ErrorTypes.SERVER]: { title: 'Server error', message: 'The server encountered an error. Please try again in a moment.', icon: 'server', canRetry: true },
         [ErrorTypes.RATE_LIMITED]: { title: 'Too many requests', message: 'Please wait a moment before sending another message.', icon: 'alert-triangle', canRetry: false },
@@ -3726,7 +3733,7 @@
       deep_dive: 'Deep Dive',
       protocol: 'Protocol',
       assessment_guide: 'Assessment Guide',
-      wildcard: 'Explore',
+      wildcard: 'Creative Take',
       // Legacy compat
       go_deeper: 'Deep Dive',
       make_practical: 'Protocol',
@@ -3769,7 +3776,7 @@
       container.dataset.question = question;
       container.dataset.answerSummary = (responseData.answer || '').substring(0, 800);
 
-      let html = '<div class="follow-up-chips-label">Explore further</div>';
+      let html = '<div class="follow-up-chips-label">Go further</div>';
       options.forEach((opt, i) => {
         const category = opt.category || opt.type || 'wildcard';
         const displayText = opt.display || opt.question || opt.label || 'Explore';
