@@ -902,6 +902,293 @@
       font-weight: 500;
     }
 
+    /* ===== SUPPLEMENT PROTOCOL CARDS ===== */
+    .protocol-container {
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    .protocol-container.loaded {
+      opacity: 1;
+    }
+
+    .protocol-section {
+      margin-top: 0.75rem;
+      border-radius: var(--radius-md);
+      overflow: hidden;
+    }
+
+    .protocol-header {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 0.75rem;
+      cursor: pointer;
+      user-select: none;
+      background: rgba(0, 133, 106, 0.04);
+      border: 1px solid rgba(0, 133, 106, 0.15);
+      border-radius: var(--radius-md);
+      transition: background 0.15s ease;
+    }
+    .protocol-header:hover {
+      background: rgba(0, 133, 106, 0.08);
+    }
+
+    .protocol-header-info {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .protocol-title {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #00856A;
+    }
+
+    .protocol-count {
+      font-size: 0.6875rem;
+      color: var(--text-muted);
+    }
+
+    .protocol-chevron {
+      width: 16px;
+      height: 16px;
+      color: #00856A;
+      transition: transform 0.2s ease;
+      flex-shrink: 0;
+    }
+    .protocol-section.expanded .protocol-chevron {
+      transform: rotate(90deg);
+    }
+
+    .protocol-body {
+      display: none;
+      padding: 0.5rem 0 0 0;
+    }
+    .protocol-section.expanded .protocol-body {
+      display: block;
+    }
+
+    .protocol-cards {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .protocol-card {
+      background: var(--bg-source);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border);
+      border-left: 3px solid #6b7280;
+      padding: 0.625rem 0.75rem;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+    .protocol-card:hover {
+      box-shadow: var(--shadow-sm);
+    }
+    .protocol-card.primary { border-left-color: #16a34a; }
+    .protocol-card.supportive { border-left-color: #ca8a04; }
+    .protocol-card.consider { border-left-color: #6b7280; }
+
+    .protocol-card-top {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.5rem;
+    }
+
+    .protocol-card-content {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .protocol-priority-badge {
+      font-size: 0.5625rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      padding: 0.125rem 0.375rem;
+      border-radius: var(--radius-sm);
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .protocol-priority-badge.primary {
+      background: rgba(22, 163, 74, 0.1);
+      color: #16a34a;
+    }
+    .protocol-priority-badge.supportive {
+      background: rgba(202, 138, 4, 0.1);
+      color: #ca8a04;
+    }
+    .protocol-priority-badge.consider {
+      background: rgba(107, 114, 128, 0.1);
+      color: #6b7280;
+    }
+
+    .protocol-product-name {
+      font-size: 0.8125rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 0.125rem;
+    }
+
+    .protocol-brand-line {
+      font-size: 0.6875rem;
+      color: var(--text-muted);
+      margin-bottom: 0.25rem;
+    }
+
+    .protocol-dose-line {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      font-weight: 500;
+      margin-bottom: 0.25rem;
+    }
+
+    .protocol-purpose {
+      font-size: 0.6875rem;
+      color: var(--text-secondary);
+      font-style: italic;
+      line-height: 1.4;
+    }
+
+    .protocol-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 0.375rem;
+      padding-top: 0.375rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .protocol-fullscript-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      font-size: 0.625rem;
+      font-weight: 500;
+      color: #00856A;
+      text-decoration: none;
+      padding: 0.1875rem 0.375rem;
+      border-radius: var(--radius-sm);
+      transition: background 0.15s ease;
+    }
+    .protocol-fullscript-link:hover {
+      background: rgba(0, 133, 106, 0.08);
+      text-decoration: none;
+    }
+    .protocol-fullscript-link svg {
+      width: 10px;
+      height: 10px;
+    }
+
+    .protocol-learn-more {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      font-size: 0.625rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0.1875rem 0.375rem;
+      border-radius: var(--radius-sm);
+      transition: color 0.15s ease, background 0.15s ease;
+    }
+    .protocol-learn-more:hover {
+      color: var(--text-secondary);
+      background: rgba(0,0,0,0.03);
+    }
+    .protocol-learn-more svg {
+      width: 10px;
+      height: 10px;
+      transition: transform 0.2s ease;
+    }
+    .protocol-card.details-open .protocol-learn-more svg {
+      transform: rotate(90deg);
+    }
+
+    .protocol-details {
+      display: none;
+      margin-top: 0.5rem;
+      padding-top: 0.5rem;
+      border-top: 1px solid var(--border);
+    }
+    .protocol-card.details-open .protocol-details {
+      display: block;
+    }
+
+    .protocol-detail-block {
+      margin-bottom: 0.5rem;
+    }
+    .protocol-detail-block:last-child {
+      margin-bottom: 0;
+    }
+
+    .protocol-detail-label {
+      font-size: 0.625rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      margin-bottom: 0.125rem;
+    }
+
+    .protocol-detail-text {
+      font-size: 0.6875rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+      white-space: pre-line;
+    }
+
+    .protocol-copy-row {
+      display: flex;
+      justify-content: flex-end;
+      padding: 0.375rem 0 0 0;
+      margin-top: 0.25rem;
+    }
+
+    .protocol-copy-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      font-size: 0.625rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      background: none;
+      border: 1px solid var(--border);
+      cursor: pointer;
+      padding: 0.25rem 0.5rem;
+      border-radius: var(--radius-sm);
+      transition: all 0.15s ease;
+    }
+    .protocol-copy-btn:hover {
+      color: var(--text-secondary);
+      border-color: var(--text-muted);
+    }
+    .protocol-copy-btn.copied {
+      color: #16a34a;
+      border-color: #16a34a;
+    }
+    .protocol-copy-btn svg {
+      width: 12px;
+      height: 12px;
+    }
+
+    .protocol-powered-by {
+      font-size: 0.5625rem;
+      color: var(--text-muted);
+      text-align: center;
+      padding: 0.375rem 0 0 0;
+      opacity: 0.7;
+    }
+    .protocol-powered-by a {
+      color: #00856A;
+      text-decoration: none;
+    }
+
     /* ===== SOURCE MODAL ===== */
     .source-modal-overlay {
       display: none;
@@ -3049,6 +3336,7 @@
               </div>
             </div>
             ${sourcesHtml}
+            <div class="protocol-container" id="protocol-${messageId}"></div>
             <div class="follow-up-chips" id="chips-${messageId}" style="display:none;"></div>
           </div>
         </div>
@@ -3721,6 +4009,148 @@
       throw lastError;
     }
 
+    // ===== SUPPLEMENT PROTOCOL CARDS =====
+    const PROTOCOL_EXTRACT_URL = 'https://n8n.srv1208741.hstgr.cloud/webhook/nta-protocol-extract';
+    const protocolDataStore = {};
+
+    function renderProtocolSection(protocol, messageId) {
+      if (!protocol || protocol.length === 0) return '';
+
+      protocolDataStore[messageId] = protocol;
+      const count = protocol.length;
+
+      const cardsHtml = protocol.map((item, idx) => {
+        const priority = (item.priority || 'consider').toLowerCase();
+        const priorityLabel = priority === 'primary' ? 'Primary' : priority === 'supportive' ? 'Supportive' : 'Consider';
+        const productName = item.product_name || item.supplement || 'Supplement';
+        const brandLine = item.brand ? `${escapeHtml(item.brand)}${item.common_sizes ? ' \u00B7 ' + escapeHtml(item.common_sizes) : ''}` : '';
+        const doseLine = [item.dose, item.timing].filter(Boolean).join(' \u00B7 ');
+        const fsUrl = item.fullscript_url || `https://fullscript.com/catalog?search=${encodeURIComponent(item.supplement || '')}`;
+
+        // Build details sections from scraped data
+        let detailsHtml = '';
+        const details = [
+          { label: 'Description', text: item.description },
+          { label: 'Supplement Facts', text: item.supplement_facts },
+          { label: 'Suggested Use', text: item.suggested_use },
+          { label: 'Ingredients', text: item.ingredients },
+          { label: 'Allergen & Safety Info', text: [item.allergen_info, item.warnings].filter(Boolean).join(' ') }
+        ].filter(d => d.text && d.text.trim());
+
+        if (details.length > 0) {
+          detailsHtml = `<div class="protocol-details">${details.map(d =>
+            `<div class="protocol-detail-block"><div class="protocol-detail-label">${escapeHtml(d.label)}</div><div class="protocol-detail-text">${escapeHtml(d.text)}</div></div>`
+          ).join('')}</div>`;
+        }
+
+        const learnMoreBtn = details.length > 0
+          ? `<button class="protocol-learn-more" onclick="toggleProtocolDetails(this)">Product Details <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg></button>`
+          : '';
+
+        return `
+          <div class="protocol-card ${escapeHtml(priority)}">
+            <div class="protocol-card-top">
+              <div class="protocol-card-content">
+                <div class="protocol-product-name">${escapeHtml(productName)}</div>
+                ${brandLine ? `<div class="protocol-brand-line">${brandLine}</div>` : ''}
+                ${doseLine ? `<div class="protocol-dose-line">${escapeHtml(doseLine)}</div>` : ''}
+                ${item.purpose ? `<div class="protocol-purpose">${escapeHtml(item.purpose)}</div>` : ''}
+              </div>
+              <span class="protocol-priority-badge ${escapeHtml(priority)}">${priorityLabel}</span>
+            </div>
+            <div class="protocol-actions">
+              <a class="protocol-fullscript-link" href="${escapeHtml(fsUrl)}" target="_blank" rel="noopener">
+                View on Fullscript <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+              </a>
+              ${learnMoreBtn}
+            </div>
+            ${detailsHtml}
+          </div>
+        `;
+      }).join('');
+
+      return `
+        <div class="protocol-section expanded">
+          <div class="protocol-header" onclick="this.parentElement.classList.toggle('expanded')" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click();}">
+            <div class="protocol-header-info">
+              <span class="protocol-title">Supplement Protocol</span>
+              <span class="protocol-count">${count} supplement${count !== 1 ? 's' : ''}</span>
+            </div>
+            <svg class="protocol-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+          </div>
+          <div class="protocol-body">
+            <div class="protocol-cards">${cardsHtml}</div>
+            <div class="protocol-copy-row">
+              <button class="protocol-copy-btn" onclick="copyProtocol(this, '${messageId}')">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                Copy Protocol
+              </button>
+            </div>
+            <div class="protocol-powered-by">Products from <a href="https://fullscript.com/catalog" target="_blank" rel="noopener">Fullscript</a></div>
+          </div>
+        </div>
+      `;
+    }
+
+    function toggleProtocolDetails(button) {
+      const card = button.closest('.protocol-card');
+      if (card) card.classList.toggle('details-open');
+    }
+
+    function copyProtocol(button, messageId) {
+      const protocol = protocolDataStore[messageId];
+      if (!protocol) return;
+
+      const lines = ['Supplement Protocol', '---'];
+      protocol.forEach(item => {
+        const priority = (item.priority || 'consider').toUpperCase();
+        const name = item.product_name || item.supplement || 'Supplement';
+        lines.push(`[${priority}] ${name}`);
+        if (item.brand) lines.push(`${item.brand}${item.common_sizes ? ' \u00B7 ' + item.common_sizes : ''}`);
+        const dose = [item.dose, item.timing].filter(Boolean).join(' \u00B7 ');
+        if (dose) lines.push(dose);
+        if (item.purpose) lines.push(item.purpose);
+        const url = item.fullscript_url || `https://fullscript.com/catalog?search=${encodeURIComponent(item.supplement || '')}`;
+        lines.push(`View: ${url}`);
+        lines.push('');
+      });
+      lines.push('---');
+      lines.push('Browse supplements: https://fullscript.com/catalog');
+
+      navigator.clipboard.writeText(lines.join('\n')).then(() => {
+        button.classList.add('copied');
+        const origHtml = button.innerHTML;
+        button.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg> Copied`;
+        setTimeout(() => { button.classList.remove('copied'); button.innerHTML = origHtml; }, 2000);
+      });
+    }
+
+    async function generateProtocolCards(answer, messageId) {
+      if (!answer || answer.length < 20) return;
+      try {
+        const resp = await fetch(PROTOCOL_EXTRACT_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            answer: answer,
+            session_id: getSessionId()
+          })
+        });
+        if (!resp.ok) return;
+        const data = await resp.json();
+        if (!data.protocol || data.protocol.length === 0) return;
+
+        const container = document.getElementById('protocol-' + messageId);
+        if (!container) return;
+
+        container.innerHTML = renderProtocolSection(data.protocol, messageId);
+        // Fade in
+        requestAnimationFrame(() => container.classList.add('loaded'));
+      } catch (e) {
+        console.error('[Protocol] Failed:', e.message);
+      }
+    }
+
     // ===== FOLLOW-UP CHIPS & ENRICHMENT =====
     // Category-specific loading messages — one random message per enrichment request
     const ENRICHMENT_MESSAGES = {
@@ -3899,6 +4329,10 @@
         const data = await resp.json();
         chatArea.insertAdjacentHTML('beforeend', renderEnrichmentMessage(data, category));
 
+        // Generate protocol cards for enrichment response (async, non-blocking)
+        const enrichMsgEl = chatArea.querySelector('.message-bot:last-of-type');
+        if (enrichMsgEl) generateProtocolCards(data.answer || data.report || '', enrichMsgEl.id);
+
         // Log enrichment to analytics
         const enrichLatency = Date.now() - enrichStartTime;
         logQuery(chipDisplay, data, enrichLatency);
@@ -3962,6 +4396,7 @@
               </div>
             </div>
             ${sourcesHtml}
+            <div class="protocol-container" id="protocol-${messageId}"></div>
           </div>
         </div>
       `;
@@ -4011,6 +4446,8 @@
         // Generate follow-up options (async, non-blocking)
         if (botMessageId) {
           generateFollowUpOptions(message, data, botMessageId);
+          // Generate protocol cards (async, non-blocking)
+          generateProtocolCards(data.answer || '', botMessageId);
         }
       } catch (error) {
         console.error('Error sending message:', error);

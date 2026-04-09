@@ -1,6 +1,7 @@
 # Internal documentation (kept locally, not published)
 CLAUDE.md
 NTA_RESEARCH.md
+Fullscript-Integration-Research.md
 docs/
 scripts/
 
@@ -17,6 +18,16 @@ Curriculum/
 .claude/
 .tmp*
 downloads/
+
+# Node.js (used for scraping scripts, not part of the PWA)
+node_modules/
+package.json
+package-lock.json
+*.json
+!manifest.json
+
+# Scraping output
+fullscript-products*.json
 
 # OS files
 .DS_Store
