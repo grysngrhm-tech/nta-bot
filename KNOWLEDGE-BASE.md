@@ -251,26 +251,28 @@ Website content manually structured into reference documents:
 
 ---
 
-## Supplement Product Catalog — 800 entries
+## Supplement Product Catalog — 832 entries
 
 Separate from the RAG knowledge base, NTA Bot maintains a product catalog used for [Fullscript protocol cards](TECHNICAL.md#supplement-protocol-cards-fullscript-integration). When the bot's answer mentions supplements, each is matched against this catalog to provide clickable product links and expandable product details.
 
 | Brand | Products | Notes |
 |-------|----------|-------|
-| Standard Process | 245 | Whole-food supplements, glandulars, PMGs |
+| Standard Process | 237 | Whole-food supplements, glandulars, PMGs |
 | Biotics Research | 221 | Clinical formulas, emulsified nutrients |
-| Thorne | 60 | Methylated B vitamins, foundational supplements |
-| Integrative Therapeutics | 56 | GI support, specialty formulas |
-| Gaia Herbs | 53 | Herbal extracts, adaptogens, mushrooms |
-| Nordic Naturals | 46 | Omega-3 specialist |
-| Pure Encapsulations | 43 | Hypoallergenic single-ingredient supplements |
-| Designs for Health | 33 | Clinical formulas, GI repair, specialty |
-| Herb Pharm | 19 | Liquid herbal extracts |
+| Integrative Therapeutics | 66 | GI support, specialty formulas, enzymes |
+| Thorne | 62 | Methylated B vitamins, foundational supplements |
+| Gaia Herbs | 60 | Herbal extracts, adaptogens, mushrooms |
+| Pure Encapsulations | 48 | Hypoallergenic single-ingredient supplements |
+| Nordic Naturals | 47 | Omega-3 specialist |
+| Designs for Health | 46 | Clinical formulas, GI repair, specialty |
+| Herb Pharm | 20 | Liquid herbal extracts |
 | Vital Proteins | 16 | Collagen peptides |
-| Host Defense | 7 | Mushroom extracts |
+| Host Defense | 8 | Mushroom extracts |
 | Nature's Way | 1 | Aloe vera |
 
-Each entry includes product name, brand, Fullscript URL, description, supplement facts, suggested use, ingredients, allergen info, and warnings — scraped from Fullscript's public catalog or manually curated with strong aliases for fuzzy matching. This data is NOT part of the RAG retrieval pipeline — it is only used for post-answer product matching.
+**Coverage:** Tested against 196 common supplement names (every vitamin form, mineral, amino acid, herb, adaptogen, mushroom, digestive aid, condition-specific formula, and practitioner shorthand) — **100% match rate with 0 false matches.**
+
+Each entry includes product name, brand, Fullscript URL, description, supplement facts, suggested use, ingredients, allergen info, and warnings — scraped from Fullscript's public catalog or manually curated with strong aliases for fuzzy matching. Products are matched via a [tiered scoring system](TECHNICAL.md#matching-strategy) with quality gates to prevent false positives. This data is NOT part of the RAG retrieval pipeline — it is only used for post-answer product matching.
 
 ---
 

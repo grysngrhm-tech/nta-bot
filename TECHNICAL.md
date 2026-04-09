@@ -45,7 +45,7 @@ NTA Bot is a single-page PWA that communicates with two cloud services:
 │    - Full-text search (tsvector)                         │
 │    - Hybrid search function                              │
 │                                                          │
-│  nta_supplement_catalog (800 rows)                       │
+│  nta_supplement_catalog (832 active products)             │
 │    - Fullscript product data (12 brands)                 │
 │    - Trigram fuzzy matching (pg_trgm)                    │
 │    - match_supplement() RPC function                     │
@@ -244,35 +244,50 @@ Answer text → GPT-5.4-nano (extract supplement mentions)
 
 ### Supplement Catalog
 
-The `nta_supplement_catalog` table contains **800 products** across 12 brands, scraped from [Fullscript's public catalog](https://fullscript.com/catalog):
+The `nta_supplement_catalog` table contains **832 active products** across 12 brands, sourced from [Fullscript's public catalog](https://fullscript.com/catalog) via automated scraping and manual curation:
 
 | Brand | Products | Focus |
 |-------|----------|-------|
-| Standard Process | 245 | Whole-food supplements, glandulars, PMGs |
+| Standard Process | 237 | Whole-food supplements, glandulars, PMGs |
 | Biotics Research | 221 | Clinical formulas, emulsified nutrients |
-| Thorne | 60 | Methylated B vitamins, foundational supplements |
-| Integrative Therapeutics | 56 | GI support, DGL, specialty formulas |
-| Gaia Herbs | 53 | Herbal extracts, adaptogens, mushrooms |
-| Nordic Naturals | 46 | Omega-3 specialist |
-| Pure Encapsulations | 43 | Hypoallergenic single-ingredient supplements |
-| Designs for Health | 33 | Clinical formulas, GI repair, specialty |
-| Herb Pharm | 19 | Liquid herbal extracts |
+| Integrative Therapeutics | 66 | GI support, DGL, specialty formulas |
+| Thorne | 62 | Methylated B vitamins, foundational supplements |
+| Gaia Herbs | 60 | Herbal extracts, adaptogens, mushrooms |
+| Pure Encapsulations | 48 | Hypoallergenic single-ingredient supplements |
+| Nordic Naturals | 47 | Omega-3 specialist |
+| Designs for Health | 46 | Clinical formulas, GI repair, specialty |
+| Herb Pharm | 20 | Liquid herbal extracts |
 | Vital Proteins | 16 | Collagen peptides |
-| Host Defense | 7 | Mushroom extracts |
+| Host Defense | 8 | Mushroom extracts |
 | Nature's Way | 1 | Aloe vera |
 
-Full catalogs scraped for Biotics Research and Standard Process. Targeted product scrapes for remaining brands — focused on the specific supplements most commonly recommended by the NTA curriculum and knowledge base.
+Full catalogs scraped for Biotics Research and Standard Process. Targeted product scrapes for remaining 10 brands — focused on the specific supplements most commonly recommended by the NTA curriculum and knowledge base. Curated with strong aliases for fuzzy matching (e.g., "mag glycinate" → Magnesium Glycinate, "fish oil" → ProOmega 2000).
+
+**Benchmark:** 196 common supplement name queries tested — **100% match rate, 0 false matches.** Includes all vitamin/mineral forms, amino acids, herbs, adaptogens, mushrooms, digestive support, condition-specific formulas, and practitioner shorthand.
 
 Each product stores: display name, brand, canonical name (for matching), aliases array, category, Fullscript URL, description, supplement facts, suggested use, ingredients, allergen info, and warnings.
 
 ### Matching Strategy
 
-`match_supplement(query_name)` uses a multi-strategy approach:
+`match_supplement(query_name)` uses a tiered scoring system that prioritizes precision:
 
-1. **Trigram similarity** on `canonical_name` and `display_name` (pg_trgm extension)
-2. **Alias matching** — each product has manually curated aliases (e.g., "mag glycinate" → Magnesium Glycinate)
-3. **Full-text search** fallback on a generated tsvector column
-4. **Quality gates** — negation filter (rejects "Iron Free" for "Iron" queries), category consistency check (mineral query won't match herbal product), minimum score threshold (>= 0.3)
+| Tier | Strategy | Score | Example |
+|------|----------|-------|---------|
+| 1 | Exact canonical name | 1.0 | "magnesium-glycinate" = canonical |
+| 2 | Exact display name (case-insensitive) | 0.99 | "Magnesium Glycinate" = display |
+| 3 | Exact alias match | 0.95 | "mag glycinate" in aliases array |
+| 4 | Fuzzy alias (similarity-scaled) | 0.5–0.9 | "fish oil capsules" ~ "fish oil" alias |
+| 5 | Trigram on canonical/display name | 0.2–1.0 | pg_trgm similarity |
+| 6 | Full-text search fallback | 0.3 | tsvector/tsquery keyword match |
+
+The tiered approach ensures that exact matches always win over fuzzy ones, and fuzzy alias matches use **actual similarity scores** rather than flat values — preventing false positives where unrelated products share a partial alias match.
+
+**Quality gates in the n8n matching node:**
+- **Negation filter** — rejects "Iron Free" for "Iron" queries
+- **Category consistency** — mineral query won't match herbal product
+- **Name cleaning** — strips parenthetical qualifiers and trailing dose phrases before matching
+- **Deduplication** — collapses "Zinc Picolinate (low dose)" and "Zinc Picolinate (therapeutic)" into one
+- **Score threshold** — minimum >= 0.3
 
 Unmatched supplements fall back to a Fullscript catalog search URL.
 
