@@ -45,8 +45,8 @@ NTA Bot is a single-page PWA that communicates with two cloud services:
 │    - Full-text search (tsvector)                         │
 │    - Hybrid search function                              │
 │                                                          │
-│  nta_supplement_catalog (664 rows)                       │
-│    - Fullscript product data (9 brands)                  │
+│  nta_supplement_catalog (800 rows)                       │
+│    - Fullscript product data (12 brands)                 │
 │    - Trigram fuzzy matching (pg_trgm)                    │
 │    - match_supplement() RPC function                     │
 │                                                          │
@@ -244,21 +244,24 @@ Answer text → GPT-5.4-nano (extract supplement mentions)
 
 ### Supplement Catalog
 
-The `nta_supplement_catalog` table contains 664 products across 9 brands, scraped from [Fullscript's public catalog](https://fullscript.com/catalog):
+The `nta_supplement_catalog` table contains **800 products** across 12 brands, scraped from [Fullscript's public catalog](https://fullscript.com/catalog):
 
 | Brand | Products | Focus |
 |-------|----------|-------|
-| Standard Process | 249 | Whole-food supplements, glandulars, PMGs |
-| Biotics Research | 224 | Clinical formulas, emulsified nutrients |
-| Thorne | 38 | Methylated B vitamins, foundational |
-| Nordic Naturals | 42 | Omega-3 specialist |
-| Gaia Herbs | 48 | Herbal extracts, adaptogens, mushrooms |
-| Integrative Therapeutics | 42 | GI support, DGL, enzymes |
-| Host Defense | 0* | Mushroom extracts |
-| Vital Proteins | 16 | Collagen |
-| Manual essentials | 15 | Top supplements with strong aliases for matching |
+| Standard Process | 245 | Whole-food supplements, glandulars, PMGs |
+| Biotics Research | 221 | Clinical formulas, emulsified nutrients |
+| Thorne | 60 | Methylated B vitamins, foundational supplements |
+| Integrative Therapeutics | 56 | GI support, DGL, specialty formulas |
+| Gaia Herbs | 53 | Herbal extracts, adaptogens, mushrooms |
+| Nordic Naturals | 46 | Omega-3 specialist |
+| Pure Encapsulations | 43 | Hypoallergenic single-ingredient supplements |
+| Designs for Health | 33 | Clinical formulas, GI repair, specialty |
+| Herb Pharm | 19 | Liquid herbal extracts |
+| Vital Proteins | 16 | Collagen peptides |
+| Host Defense | 7 | Mushroom extracts |
+| Nature's Way | 1 | Aloe vera |
 
-*Partial catalogs — Cloudflare rate-limited the scraper before Pure Encapsulations, Designs for Health, Herb Pharm, and remaining products could be collected.
+Full catalogs scraped for Biotics Research and Standard Process. Targeted product scrapes for remaining brands — focused on the specific supplements most commonly recommended by the NTA curriculum and knowledge base.
 
 Each product stores: display name, brand, canonical name (for matching), aliases array, category, Fullscript URL, description, supplement facts, suggested use, ingredients, allergen info, and warnings.
 

@@ -251,22 +251,26 @@ Website content manually structured into reference documents:
 
 ---
 
-## Supplement Product Catalog — 664 entries
+## Supplement Product Catalog — 800 entries
 
 Separate from the RAG knowledge base, NTA Bot maintains a product catalog used for [Fullscript protocol cards](TECHNICAL.md#supplement-protocol-cards-fullscript-integration). When the bot's answer mentions supplements, each is matched against this catalog to provide clickable product links and expandable product details.
 
 | Brand | Products | Notes |
 |-------|----------|-------|
-| Standard Process | 249 | Whole-food supplements, glandulars, PMGs |
-| Biotics Research | 224 | Clinical formulas, emulsified nutrients |
-| Gaia Herbs | 48 | Herbal extracts, adaptogens |
-| Nordic Naturals | 42 | Omega-3 specialist |
-| Integrative Therapeutics | 42 | GI support, specialty formulas |
-| Thorne | 38 | Methylated B vitamins, foundational |
+| Standard Process | 245 | Whole-food supplements, glandulars, PMGs |
+| Biotics Research | 221 | Clinical formulas, emulsified nutrients |
+| Thorne | 60 | Methylated B vitamins, foundational supplements |
+| Integrative Therapeutics | 56 | GI support, specialty formulas |
+| Gaia Herbs | 53 | Herbal extracts, adaptogens, mushrooms |
+| Nordic Naturals | 46 | Omega-3 specialist |
+| Pure Encapsulations | 43 | Hypoallergenic single-ingredient supplements |
+| Designs for Health | 33 | Clinical formulas, GI repair, specialty |
+| Herb Pharm | 19 | Liquid herbal extracts |
 | Vital Proteins | 16 | Collagen peptides |
-| Manual essentials | 15 | Top supplements with curated aliases |
+| Host Defense | 7 | Mushroom extracts |
+| Nature's Way | 1 | Aloe vera |
 
-Each entry includes product name, brand, Fullscript URL, description, supplement facts, suggested use, ingredients, allergen info, and warnings — all scraped from Fullscript's public catalog. This data is NOT part of the RAG retrieval pipeline — it is only used for post-answer product matching.
+Each entry includes product name, brand, Fullscript URL, description, supplement facts, suggested use, ingredients, allergen info, and warnings — scraped from Fullscript's public catalog or manually curated with strong aliases for fuzzy matching. This data is NOT part of the RAG retrieval pipeline — it is only used for post-answer product matching.
 
 ---
 
