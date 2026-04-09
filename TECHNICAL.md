@@ -8,47 +8,44 @@
 NTA Bot is a single-page PWA that communicates with two cloud services:
 
 ```
-┌─────────────────────────────────────────────────────────┐
-│  Browser (GitHub Pages)                                 │
-│  index.html — vanilla HTML/CSS/JS, no build step        │
-│                                                         │
-│  ┌─────────┐  ┌──────────┐  ┌──────────┐              │
-│  │ Chat UI │  │ Voice In │  │ TTS Out  │              │
-│  └────┬────┘  └────┬─────┘  └────┬─────┘              │
-│       │            │              │                     │
-└───────┼────────────┼──────────────┼─────────────────────┘
-        │            │              │
-        ▼            ▼              ▼
-┌───────────────────────────────────────────┐
-│  n8n (Workflow Automation)                │
-│                                           │
-│  Main Agent ──→ Retrieval Tool            │
-│       │              │                    │
-│       │         1. Embed query            │
-│       │         2. Hybrid search          │
-│       │         3. Rerank (GPT-4o-mini)  │
-│       │         4. Diversity enforcement  │
-│       │              │                    │
-│       ◄──────────────┘                    │
-│       │                                   │
-│  GPT-5.4 Standard synthesizes answer      │
-│       │                                   │
-│  Topic Labeler (async, GPT-4o-mini)       │
-│                                           │
-└───────────────┬───────────────────────────┘
-                │
-                ▼
-┌───────────────────────────────────────────┐
-│  Supabase (PostgreSQL + pgvector)         │
-│                                           │
-│  nta_knowledge_chunks (6,387 rows)        │
-│    - 3072-dim vector embeddings           │
-│    - Full-text search (tsvector)          │
-│    - Hybrid search function              │
-│                                           │
-│  nta_query_log (analytics)                │
-│                                           │
-└───────────────────────────────────────────┘
+┌───────────────────────────────────────────────────────────┐
+│  Browser (GitHub Pages)                                   │
+│  index.html — vanilla HTML/CSS/JS, no build step          │
+│                                                           │
+│  ┌─────────┐  ┌──────────┐  ┌──────────┐  ┌───────────┐│
+│  │ Chat UI │  │ Voice In │  │ TTS Out  │  │Follow-Ups ││
+│  └────┬────┘  └────┬─────┘  └────┬─────┘  └─────┬─────┘│
+└───────┼────────────┼──────────────┼──────────────┼───────┘
+        │            │              │              │
+        ▼            ▼              ▼              ▼
+┌──────────────────────────────────────────────────────────┐
+│  n8n (Deterministic Pipeline — no agent loops)           │
+│                                                          │
+│  Reformulate (5.4-nano) → Retrieval → Synthesize (5.4-mini)
+│       │                       │                          │
+│       │                  1. Embed query                  │
+│       │                  2. Hybrid search (30)           │
+│       │                  3. Rerank (5.4-nano, 2400 chars)│
+│       │                  4. Intent-aware diversity        │
+│       │                       │                          │
+│  Structured JSON output ◄─────┘                          │
+│  Sources from retrieval (not model)                      │
+│                                                          │
+│  Follow-Up Options (5.4-mini, async)                     │
+│  Topic Labeler (4o-mini, async)                          │
+└──────────────────────┬───────────────────────────────────┘
+                       │
+                       ▼
+┌──────────────────────────────────────────────────────────┐
+│  Supabase (PostgreSQL + pgvector)                        │
+│                                                          │
+│  nta_knowledge_chunks (6,387 rows)                       │
+│    - 3072-dim vector embeddings                          │
+│    - Full-text search (tsvector)                         │
+│    - Hybrid search function                              │
+│                                                          │
+│  nta_query_log (analytics — chat + enrichment)           │
+└──────────────────────────────────────────────────────────┘
 ```
 
 ## RAG Pipeline
@@ -70,34 +67,38 @@ This returns 30 candidate chunks. We tested 30 vs 50 candidates — the top 10 r
 
 ### 3. LLM Reranking
 
-A second AI model (GPT-4o-mini) reads each of the 30 candidates and scores them 0.0–1.0 for relevance to the original question. This is more accurate than vector similarity alone because it can understand nuance, negation, and context that embedding distance misses.
+GPT-5.4-nano reads each of the 30 candidates (up to 2,400 characters per chunk) and scores them 0.0–1.0 for relevance. This is more accurate than vector similarity alone because it can understand nuance, negation, and context that embedding distance misses.
 
-**Curriculum boost:** When a curriculum chunk and a non-curriculum chunk are equally relevant, the reranker gives the curriculum chunk a +0.05 scoring edge. Without this boost, a GHC textbook chapter about digestion and an NTP lecture about digestion would score identically — but for NTA employees, the curriculum version is the authoritative source. The boost acts as a tiebreaker, not an override: a genuinely better textbook match will still rank higher.
+**Clinical intelligence scoring:** The reranker is prompted to prioritize chunks with specific protocols, dosages, nutrient forms, or clinical mechanisms over general philosophy, definitions, or broad overviews. Curriculum chunks get a +0.05 edge when equally relevant — a tiebreaker, not an override.
 
 ### 4. Diversity Enforcement
 
-After reranking, the pipeline reserves 4 of the final 10 slots for source diversity:
+After reranking, the pipeline applies **intent-aware diversity** — different question types get different source mixes. The query reformulation step (GPT-5.4-nano) classifies each question as one of 5 intents: `clinical`, `supplement`, `programmatic`, `educational`, or `philosophical`. Each intent has a different reserved-slot profile across 7 source categories:
 
-| Slot | Source Type | Purpose |
-|------|-------------|---------|
-| 1-2 | Curriculum | Ensures NTA's own teaching is represented |
-| 3 | External reference (textbook, NIH, or NTA reference) | Brings in scientific depth or scope clarity |
-| 4 | Podcast | Adds practical, real-world perspective |
-| 5-10 | Best remaining by score | Pure relevance, any source type |
+| Intent | Curriculum | Dr. Gaby | NIH | Academic TB | Podcast | NTA Ref | Fill |
+|---|---|---|---|---|---|---|---|
+| clinical | 2 | 2 | 1 | 0 | 0 | 0 | 5 best |
+| supplement | 2 | 1 | 2 | 0 | 0 | 0 | 5 best |
+| programmatic | 2 | 0 | 0 | 0 | 1 | 2 | 5 best |
+| educational | 2 | 0 | 1 | 2 | 0 | 0 | 5 best |
+| philosophical | 2 | 0 | 0 | 0 | 2 | 1 | 5 best |
 
-**Why this matters:** Without diversity enforcement, a question about digestion returns 10 NTP Digestion curriculum chunks — accurate but one-dimensional. With it, you also get the GHC biochemistry chapter explaining the molecular mechanism and a podcast episode with practical client tips. The answer draws from the same breadth of sources an NTA instructor would reference.
+Each reserved slot has a minimum relevance threshold of 0.25 — if no chunk of that type scores above 0.25, the slot is released to "fill best." This prevents forcing irrelevant sources into the answer.
 
-The result count was increased from 8 to 10 when the curriculum was added — more source types meant the synthesis model needed more context to produce cross-source answers.
+**Why this matters:** A clinical question about perimenopause gets Dr. Gaby's protocol data + NIH evidence. A programmatic question about NTP scope gets NTA reference docs + podcast episodes. The source mix matches what would actually be useful for each question type.
 
 ### 5. Answer Synthesis
 
-The top 10 chunks are passed to GPT-5.4 Standard with a system prompt that instructs it to:
+The top 10 chunks are passed to GPT-5.4-mini via a **structured JSON output** schema (`json_schema` response format). The model returns guaranteed-valid JSON with two fields: `answer` (markdown text) and `confidence` (level + explanation). **Sources are NOT in the model output** — they are attached directly from the retrieval pipeline's chunk data, eliminating hallucinated citations and reducing model output size.
 
-- Write one coherent answer (not separate answers per source)
-- Use markdown formatting (bold, italics, lists)
-- Never attribute claims to specific sources in the answer text
-- Include ALL relevant retrieved chunks in the citation array
-- Return structured JSON with answer, sources, and confidence level
+The system prompt instructs the model to:
+- Speak as a senior functional nutritional therapy practitioner with clinical authority
+- Lead with the specific answer, not foundational philosophy
+- Include specific supplement forms, dosing ranges, timing, and cofactors when relevant
+- Target 200-400 words (under 150 for simple facts, up to 500 for complex clinical questions)
+- Never reference "the knowledge base" or "the curriculum says" — just state what it knows
+
+For **enrichment mode** (follow-up chip clicks), a FOCUS DIRECTIVE from the chip's meta prompt is appended to the same core system prompt. The model maintains the same voice and formatting while steering to the specific clinical content requested.
 
 ### 6. Contextual Retrieval
 
@@ -126,18 +127,18 @@ The extraction method varies by source — curriculum transcripts use GPT-4o-min
 
 ## Performance
 
-A typical query completes in **30-45 seconds** end-to-end (median: 35s, p90: 58s). The breakdown from actual n8n execution logs:
+A typical query completes in **10-20 seconds** end-to-end (median: 14s). The breakdown from actual n8n execution logs:
 
 | Step | Time | Notes |
 |------|------|-------|
-| Query embedding | ~400ms | OpenAI text-embedding-3-large |
-| Hybrid search | ~400ms | PostgreSQL vector + FTS on 6,387 chunks |
-| LLM reranking | ~9s | GPT-4o-mini scores 30 candidates (1,200 chars each) |
-| AI Agent loop | ~25-40s | GPT-5.4 Standard: tool call decision + answer synthesis |
-| Memory, formatting, response | <100ms | Negligible |
+| Query reformulation | ~1-2s | GPT-5.4-nano: reformulate + classify intent |
+| Retrieval (embed + search + rerank + diversity) | ~3-5s | Embedding + Supabase + GPT-5.4-nano rerank |
+| Answer synthesis | ~8-12s | GPT-5.4-mini: structured JSON output from 10 chunks |
+| Memory, formatting, source attachment | <100ms | Negligible |
 | Topic labeling | ~2s | Async, non-blocking — runs after response is sent |
+| Follow-up chip generation | ~10-14s | Async, non-blocking — GPT-5.4-mini generates 4 chips |
 
-**The bottleneck is GPT-5.4 Standard.** The AI Agent node makes multiple sequential LLM calls — first to decide to use the search tool, then to synthesize the answer from 10 retrieved chunks. Faster models or streaming would be the primary optimization path.
+**Previous architecture (Langchain agent): 80s average, 140s worst case.** The agent loop made 2-3 sequential GPT-5.4 calls (decide to search → search → synthesize → sometimes search again). The deterministic pipeline eliminates this entirely: one reformulation (nano, fast), one retrieval, one synthesis (mini, fast). A **4.7x speedup** with no quality loss — the same retrieval and source diversity logic runs, just without the agent overhead.
 
 ## Analytics
 
@@ -190,10 +191,24 @@ The service worker (`sw.js`) caches static assets for offline access and provide
 | **Vanilla HTML/CSS/JS** | No build step, instant deploys, full control. The app is simple enough not to need React/Vue. |
 | **n8n** | Visual workflow builder for the RAG pipeline. Easy to modify prompts, add nodes, debug. Self-hosted on Hostinger. |
 | **Supabase** | PostgreSQL with pgvector extension. Hybrid search function combines vector + FTS in one query. Free tier sufficient for current scale. |
-| **GPT-5.4 Standard** | Best available model for answer synthesis quality. |
-| **GPT-4o-mini** | Cost-effective for reranking (reads 30 chunks per query) and topic labeling. |
+| **GPT-5.4-mini** | Best balance of quality and speed for answer synthesis. Reasoning model with 16K completion token budget. |
+| **GPT-5.4-nano** | Fast reasoning model for query reformulation and reranking. |
+| **GPT-4o-mini** | Cost-effective for async topic labeling. |
 | **text-embedding-3-large** | 3,072 dimensions provides high-fidelity semantic search. Native output, no truncation. |
 | **GitHub Pages** | Free hosting, automatic deploys on push. Public repo required on free plan. |
+
+## Interactive Follow-Up System
+
+After each answer, the frontend asynchronously generates 4 follow-up options via GPT-5.4-mini. Each option has two layers:
+
+- **Display text** — a concise question or command the user sees on a clickable chip
+- **Meta prompt** — a detailed hidden focus directive (1000-2000 chars) that steers the enrichment synthesis
+
+**Categories:** Deep Dive (mechanism/science), Protocol (supplement/lifestyle plan with dosing), Assessment Guide (practitioner workflow with intake/labs/referral criteria), Wildcard (creative angle).
+
+When a user clicks a chip, the request goes to the same `/webhook/nta-chat` endpoint with `mode: "enrichment"`. The meta prompt is appended to the core system prompt as a `## FOCUS DIRECTIVE` section, so the enrichment answer maintains the same practitioner voice and formatting rules as regular answers while covering the specific clinical content requested.
+
+Both chat and enrichment responses are logged to `nta_query_log` with latency tracking.
 
 ---
 

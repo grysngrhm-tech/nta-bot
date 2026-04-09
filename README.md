@@ -32,7 +32,7 @@ The bot is password-protected and intended for internal use by NTA staff.
 
 ## Under the Hood
 
-NTA Bot uses **Retrieval-Augmented Generation (RAG)** — instead of relying on what an AI memorized during training, it [searches](TECHNICAL.md#2-hybrid-search) a curated knowledge base for every question, [reranks results](TECHNICAL.md#3-llm-reranking) with a curriculum-priority boost, enforces [source diversity](TECHNICAL.md#4-diversity-enforcement) across content types, and synthesizes the top 10 matches into a clear answer. The full [technical architecture](TECHNICAL.md) covers the complete pipeline and the reasoning behind each design decision.
+NTA Bot uses a **deterministic RAG pipeline** — a fixed sequence of steps that reformulates your question, searches a curated knowledge base, clinically reranks the results, and synthesizes the top 10 matches into a clear answer using GPT-5.4-mini. The pipeline runs in about 14 seconds (median) with no agent loops or multi-step reasoning delays. The full [technical architecture](TECHNICAL.md) covers the complete pipeline and the reasoning behind each design decision.
 
 The [knowledge base](KNOWLEDGE-BASE.md) contains **6,387 curated entries** from 5 source categories:
 
@@ -59,6 +59,7 @@ NTA Ref     ██░░░░░░░░░░░░░░░░░░░░�
 - **[Curriculum priority](TECHNICAL.md#3-llm-reranking)** — When NTA's own curriculum and an external source both cover a topic, the curriculum is silently preferred. The answer reads as one coherent piece, not broken up by source.
 
 **Interaction**
+- **Interactive follow-up chips** — After each answer, 4 context-aware follow-up options appear: Deep Dive (mechanism/science), Protocol (supplement/lifestyle plan), Assessment Guide (practitioner workflow), and Wildcard (creative angle). Click one to generate a detailed follow-up report.
 - **Voice input** — Tap the microphone to speak your question instead of typing.
 - **Read aloud** — Tap the speaker icon on any answer to hear it read back via text-to-speech.
 - **Conversation memory** — Follow-up questions within a session are context-aware.
