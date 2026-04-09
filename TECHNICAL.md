@@ -12,12 +12,12 @@ NTA Bot is a single-page PWA that communicates with two cloud services:
 │  Browser (GitHub Pages)                                   │
 │  index.html — vanilla HTML/CSS/JS, no build step          │
 │                                                           │
-│  ┌─────────┐  ┌──────────┐  ┌──────────┐  ┌───────────┐│
-│  │ Chat UI │  │ Voice In │  │ TTS Out  │  │Follow-Ups ││
-│  └────┬────┘  └────┬─────┘  └────┬─────┘  └─────┬─────┘│
-└───────┼────────────┼──────────────┼──────────────┼───────┘
-        │            │              │              │
-        ▼            ▼              ▼              ▼
+│  ┌─────────┐  ┌──────────┐  ┌──────────┐  ┌───────────┐  ┌──────────┐│
+│  │ Chat UI │  │ Voice In │  │ TTS Out  │  │Follow-Ups │  │Protocol  ││
+│  └────┬────┘  └────┬─────┘  └────┬─────┘  └─────┬─────┘  └────┬─────┘│
+└───────┼────────────┼──────────────┼──────────────┼──────────────┼──────┘
+        │            │              │              │              │
+        ▼            ▼              ▼              ▼              ▼
 ┌──────────────────────────────────────────────────────────┐
 │  n8n (Deterministic Pipeline — no agent loops)           │
 │                                                          │
@@ -32,6 +32,7 @@ NTA Bot is a single-page PWA that communicates with two cloud services:
 │  Sources from retrieval (not model)                      │
 │                                                          │
 │  Follow-Up Options (5.4-mini, async)                     │
+│  Protocol Extract (5.4-nano, async → Supabase catalog)   │
 │  Topic Labeler (4o-mini, async)                          │
 └──────────────────────┬───────────────────────────────────┘
                        │
@@ -43,6 +44,11 @@ NTA Bot is a single-page PWA that communicates with two cloud services:
 │    - 3072-dim vector embeddings                          │
 │    - Full-text search (tsvector)                         │
 │    - Hybrid search function                              │
+│                                                          │
+│  nta_supplement_catalog (664 rows)                       │
+│    - Fullscript product data (9 brands)                  │
+│    - Trigram fuzzy matching (pg_trgm)                    │
+│    - match_supplement() RPC function                     │
 │                                                          │
 │  nta_query_log (analytics — chat + enrichment)           │
 └──────────────────────────────────────────────────────────┘
@@ -196,6 +202,8 @@ The service worker (`sw.js`) caches static assets for offline access and provide
 | **GPT-4o-mini** | Cost-effective for async topic labeling. |
 | **text-embedding-3-large** | 3,072 dimensions provides high-fidelity semantic search. Native output, no truncation. |
 | **GitHub Pages** | Free hosting, automatic deploys on push. Public repo required on free plan. |
+| **Fullscript catalog** | NTA has an existing Fullscript partnership. Product data scraped from public catalog pages. All Fullscript links point to the general catalog (no dispensary lock-in). |
+| **pg_trgm** | PostgreSQL trigram extension for fuzzy supplement name matching. Handles misspellings, abbreviations, and form variations without an external search service. |
 
 ## Interactive Follow-Up System
 
@@ -209,6 +217,78 @@ After each answer, the frontend asynchronously generates 4 follow-up options via
 When a user clicks a chip, the request goes to the same `/webhook/nta-chat` endpoint with `mode: "enrichment"`. The meta prompt is appended to the core system prompt as a `## FOCUS DIRECTIVE` section, so the enrichment answer maintains the same practitioner voice and formatting rules as regular answers while covering the specific clinical content requested.
 
 Both chat and enrichment responses are logged to `nta_query_log` with latency tracking.
+
+## Supplement Protocol Cards (Fullscript Integration)
+
+After each answer renders, the frontend asynchronously calls a separate n8n workflow (`/webhook/nta-protocol-extract`) that scans the answer text for supplement mentions and matches them against a curated product catalog. This is the same async pattern as follow-up chips — the answer appears first, protocol cards fade in after.
+
+### Why a Separate Pipeline
+
+The protocol extraction is **not part of the synthesis pipeline**. This was a deliberate architectural decision:
+
+- **No prompt pollution** — The synthesis model stays focused on writing great clinical answers without protocol extraction instructions bloating the system prompt
+- **No schema bloat** — The `{answer, confidence}` JSON schema remains clean
+- **No latency impact** — Protocol cards load ~2-4 seconds after the answer, non-blocking
+- **Graceful degradation** — If extraction fails, the answer is unaffected
+
+### Pipeline
+
+```
+Answer text → GPT-5.4-nano (extract supplement mentions)
+  → Clean name (strip parentheticals, trailing doses)
+  → Deduplicate variants
+  → For each: Supabase match_supplement() (trigram fuzzy matching)
+  → Quality gates: score threshold, negation filter, category consistency
+  → Return matched products with scraped Fullscript data
+```
+
+### Supplement Catalog
+
+The `nta_supplement_catalog` table contains 664 products across 9 brands, scraped from [Fullscript's public catalog](https://fullscript.com/catalog):
+
+| Brand | Products | Focus |
+|-------|----------|-------|
+| Standard Process | 249 | Whole-food supplements, glandulars, PMGs |
+| Biotics Research | 224 | Clinical formulas, emulsified nutrients |
+| Thorne | 38 | Methylated B vitamins, foundational |
+| Nordic Naturals | 42 | Omega-3 specialist |
+| Gaia Herbs | 48 | Herbal extracts, adaptogens, mushrooms |
+| Integrative Therapeutics | 42 | GI support, DGL, enzymes |
+| Host Defense | 0* | Mushroom extracts |
+| Vital Proteins | 16 | Collagen |
+| Manual essentials | 15 | Top supplements with strong aliases for matching |
+
+*Partial catalogs — Cloudflare rate-limited the scraper before Pure Encapsulations, Designs for Health, Herb Pharm, and remaining products could be collected.
+
+Each product stores: display name, brand, canonical name (for matching), aliases array, category, Fullscript URL, description, supplement facts, suggested use, ingredients, allergen info, and warnings.
+
+### Matching Strategy
+
+`match_supplement(query_name)` uses a multi-strategy approach:
+
+1. **Trigram similarity** on `canonical_name` and `display_name` (pg_trgm extension)
+2. **Alias matching** — each product has manually curated aliases (e.g., "mag glycinate" → Magnesium Glycinate)
+3. **Full-text search** fallback on a generated tsvector column
+4. **Quality gates** — negation filter (rejects "Iron Free" for "Iron" queries), category consistency check (mineral query won't match herbal product), minimum score threshold (>= 0.3)
+
+Unmatched supplements fall back to a Fullscript catalog search URL.
+
+### Frontend Display
+
+Protocol cards render as a collapsible section (collapsed by default) between Sources and Follow-Up Chips:
+
+```
+SUPPLEMENT PROTOCOL  4 supplements  ›
+
+  ● Magnesium Glycinate    400mg · bedtime         Fullscript ↗  ›
+  ● Vitamin D3             5,000 IU · morning      Fullscript ↗  ›
+  ○ Zinc Picolinate        30mg · with dinner      Fullscript ↗  ›
+  ○ Phosphatidylserine     100mg · bedtime         Fullscript ↗  ›
+
+  Products from Fullscript                                  Copy
+```
+
+Priority indicated by dot color: green (primary), amber (supportive), gray (consider). Clicking a row expands to show purpose, brand, product description, supplement facts, and ingredients from the scraped Fullscript data.
 
 ---
 

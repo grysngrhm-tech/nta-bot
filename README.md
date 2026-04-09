@@ -58,6 +58,12 @@ NTA Ref     ██░░░░░░░░░░░░░░░░░░░░�
 - **Confidence indicators** — High, Medium, or Low confidence on each answer so you know how well the knowledge base covered your question.
 - **[Curriculum priority](TECHNICAL.md#3-llm-reranking)** — When NTA's own curriculum and an external source both cover a topic, the curriculum is silently preferred. The answer reads as one coherent piece, not broken up by source.
 
+**Supplement Protocol Cards**
+- **Fullscript integration** — When the bot mentions supplements, a collapsible "Supplement Protocol" section appears with matched products from a 664-product [Fullscript](https://fullscript.com/catalog) catalog (Biotics Research, Standard Process, Thorne, Nordic Naturals, and more).
+- **Compact rows** — Each supplement shows as a single line: priority dot, product name, dose, timing, and a direct Fullscript link.
+- **Expandable details** — Click any row to see the full product description, supplement facts, suggested use, and ingredients.
+- **Copy protocol** — One-click copy of the full supplement list formatted for pasting into emails or client notes.
+
 **Interaction**
 - **Interactive follow-up chips** — After each answer, 4 context-aware follow-up options appear: Deep Dive (mechanism/science), Protocol (supplement/lifestyle plan), Assessment Guide (practitioner workflow), and Wildcard (creative angle). Click one to generate a detailed follow-up report.
 - **Voice input** — Tap the microphone to speak your question instead of typing.
