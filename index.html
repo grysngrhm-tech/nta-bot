@@ -3598,15 +3598,35 @@
       const btn = document.getElementById('inputActionBtn');
       const input = document.getElementById('messageInput');
       if (!btn || !input) return;
+      if (btn.classList.contains('cancel-mode')) return;
+
       const hasText = input.value.trim().length > 0;
 
-      if (btn.classList.contains('cancel-mode')) return; // don't override cancel state
-
+      // When text exists: always show send (even during recording)
+      // When empty + recording: show pulsing mic (listening state handles via CSS)
+      // When empty + idle: show mic
       btn.querySelector('.mic-icon').style.display = hasText ? 'none' : 'block';
       btn.querySelector('.send-icon').style.display = hasText ? 'block' : 'none';
       btn.classList.toggle('has-text', hasText);
-      btn.setAttribute('aria-label', hasText ? 'Send message' : 'Voice input');
-      btn.title = hasText ? 'Send message' : 'Voice input';
+
+      if (hasText) {
+        // Send takes priority over listening visual
+        btn.classList.remove('listening');
+        btn.setAttribute('aria-label', 'Send message');
+        btn.title = 'Send message';
+      } else if (isListening) {
+        btn.setAttribute('aria-label', 'Stop recording');
+        btn.title = 'Stop recording';
+      } else {
+        btn.setAttribute('aria-label', 'Voice input');
+        btn.title = 'Voice input';
+      }
+    }
+
+    function stopRecordingIfActive() {
+      if (isListening && recognition) {
+        recognition.stop();
+      }
     }
 
     function handleInputAction() {
@@ -3617,7 +3637,10 @@
       }
       const input = document.getElementById('messageInput');
       if (input && input.value.trim().length > 0) {
+        stopRecordingIfActive();
         sendMessage();
+      } else if (isListening) {
+        stopRecordingIfActive();
       } else {
         toggleSpeechToText();
       }
@@ -3949,6 +3972,9 @@
       const input = document.getElementById('messageInput');
       const message = input.value.trim();
       if (!message || isLoading) return;
+
+      // Always stop recording before sending
+      stopRecordingIfActive();
 
       try { navigator.vibrate(10); } catch(e) {}
       lastMessageForRetry = message;
