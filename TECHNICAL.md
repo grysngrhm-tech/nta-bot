@@ -131,19 +131,21 @@ The system prompt instructs the model to:
 
 For **enrichment mode** (follow-up chip clicks), a FOCUS DIRECTIVE from the chip's meta prompt is appended to the same core system prompt. The model maintains the same voice and formatting while steering to the specific clinical content requested.
 
-**The model does not produce sources.** It writes the answer and nothing else. Source assembly happens in the next step.
+**The model does not produce source cards.** It writes the answer, and separately reports which evidence chunks it drew from. Source assembly happens in the next step.
 
-### Response Assembly and Source Attachment
+### Response Assembly and Source Filtering
 
-After GPT-5.4-mini returns `{answer, confidence}`, the Format Response node assembles the final webhook response by combining the model output with the retrieval data. Sources are built from the same 10 chunks the model saw as evidence — not from anything the model wrote.
+The structured JSON schema requires three fields from the model: `answer`, `confidence`, and `cited_sources` — an array of chunk indices (1-based, matching the `[1]`, `[2]`, ... labels in the evidence text). The model lists every chunk that informed any part of its answer, including chunks that cover similar ground. Chunks irrelevant to the answer are omitted.
 
-The assembly process:
-1. Parse the model's structured JSON output (`answer` + `confidence`)
-2. Take the 10 chunks from retrieval (already carrying `document_name`, `document_type`, `section_hierarchy`, `section_title`, `source_url`, and `content`)
-3. Group chunks by document + section hierarchy + section title, merging content from overlapping chunks
+The Format Response node assembles the final webhook response:
+1. Parse the model's structured JSON output (`answer`, `confidence`, `cited_sources`)
+2. Filter the 10 retrieval chunks down to only those the model cited
+3. Group the cited chunks by document + section hierarchy + section title, merging content from overlapping chunks
 4. Return the complete response: `{answer, confidence, sources}` in a single webhook response
 
-This means **sources cannot be hallucinated**. They are metadata from the actual database rows that matched the query. The model never sees, generates, or influences the source list — it is assembled server-side from retrieval data and attached to the response after synthesis completes.
+**Sources cannot be hallucinated.** The model reports which chunk indices it used, but the actual source metadata (document name, section hierarchy, section title, source URL, content) comes from the retrieval pipeline's database rows — not from anything the model wrote. If the model returns an empty or invalid `cited_sources` array, Format Response falls back to including all 10 chunks.
+
+This filtering matters because the 10 chunks the model receives are optimized for context breadth (via [diversity enforcement](#5-diversity-enforcement-intent-aware-source-mixing)), not citation relevance. A chunk might be included because it filled a diversity slot or scored moderately on reranking, but the model may not have drawn from it. Showing it to the user as a "source" would be misleading. The `cited_sources` field lets the model separate "evidence I had access to" from "evidence I actually used."
 
 The frontend receives this single response and renders the answer, confidence badge, and source cards together. No second call is needed for sources.
 
