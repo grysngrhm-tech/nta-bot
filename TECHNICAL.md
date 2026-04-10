@@ -5,7 +5,7 @@
 
 ## How It Works
 
-Every query follows the same fixed path: **reformulate → retrieve → synthesize → respond**. There are no agent loops, no multi-step reasoning chains, no variable execution paths. The pipeline reformulates the user's question into optimized search terms, retrieves 30 candidates via hybrid search, reranks them with clinical intelligence scoring, enforces source diversity by intent, and synthesizes the top 10 into a structured JSON response with cited sources. A typical query completes in about 14 seconds — a **4.7x speedup** over the previous Langchain agent architecture (80s average, 140s worst case).
+Every query follows the same fixed path: **reformulate → retrieve → rerank → synthesize → respond**. There are no agent loops, no multi-step reasoning chains, no variable execution paths. The pipeline reformulates the user's question into optimized search terms (while preserving the original for later steps), retrieves 30 candidates via hybrid search, reranks them against the user's original question with clinical intelligence scoring, enforces source diversity by intent, and synthesizes the top 10 into a structured JSON response with cited sources. A typical query completes in about 14 seconds — a **4.7x speedup** over the previous Langchain agent architecture (80s average, 140s worst case).
 
 The backend (Supabase knowledge base + n8n retrieval pipeline) and frontend (GitHub Pages PWA) are fully decoupled. The current chat app is one consumer of that pipeline. The same search, reranking, and synthesis infrastructure could serve different interfaces — each with its own system prompt and UI — without touching the retrieval layer. See [RAG Roadmap](RAG_ROADMAP.md) for specifics.
 
@@ -27,14 +27,18 @@ The system has three layers: a static frontend, a deterministic n8n pipeline, an
 ┌──────────────────────────────────────────────────────────┐
 │  n8n (Deterministic Pipeline — no agent loops)           │
 │                                                          │
-│  Reformulate (5.4-nano) → Retrieval → Synthesize (5.4-mini)
+│  Reformulate (5.4-nano) ──┬── search query (optimized)   │
+│       │                   └── intent classification      │
 │       │                       │                          │
+│       │               Retrieval (search query used)      │
 │       │                  1. Embed query                  │
 │       │                  2. Hybrid search (30)           │
 │       │                  3. Rerank (5.4-nano, 2400 chars)│
+│       │                     └── scores against ORIGINAL  │
 │       │                  4. Intent-aware diversity        │
 │       │                       │                          │
-│  Structured JSON output ◄─────┘                          │
+│  Synthesize (5.4-mini) ◄─────┘                          │
+│    └── receives ORIGINAL question + top 10 chunks        │
 │  Sources from retrieval (not model)                      │
 │                                                          │
 │  Follow-Up Options (5.4-mini, async)                     │
@@ -62,30 +66,45 @@ The system has three layers: a static frontend, a deterministic n8n pipeline, an
 
 ## RAG Pipeline
 
-### 1. Query Embedding (text-embedding-3-large, 3,072 dimensions)
+### 1. Query Reformulation (GPT-5.4-nano)
 
-When a user asks a question, it's converted into a 3,072-dimensional vector using OpenAI's `text-embedding-3-large` model. This is the same model used to embed all [knowledge base entries](KNOWLEDGE-BASE.md#quality-metrics) at ingestion time, ensuring the vector spaces are aligned.
+Before anything is searched, GPT-5.4-nano rewrites the user's question into an optimized search query and classifies its intent. The model receives the user's message plus the last 10 conversation turns (for pronoun resolution and context), and returns two things:
 
-### 2. Hybrid Search (vector + full-text, 30 candidates)
+- **Reformulated query** — search-optimized text with expanded abbreviations, synonyms, and related terms (capped at 80 words)
+- **Intent classification** — one of 5 types: `clinical`, `supplement`, `programmatic`, `educational`, or `philosophical`
+
+For example, "What foods provide DAO" becomes "foods that increase DAO (diamine oxidase) activity or act as DAO cofactors histamine intolerance guidance" — a much wider net for the embedding and keyword search to cast.
+
+**Both versions of the question are preserved downstream.** The reformulated query drives embedding and search (optimized for recall). The user's original question is passed separately to the reranking step (optimized for precision). The synthesis model also sees the original question, not the reformulated one — so the answer reads as a direct response to what the user actually asked.
+
+If reformulation fails (bad JSON, timeout), the pipeline falls back to the user's original question for all steps.
+
+### 2. Query Embedding (text-embedding-3-large, 3,072 dimensions)
+
+The reformulated query is converted into a 3,072-dimensional vector using OpenAI's `text-embedding-3-large` model. This is the same model used to embed all [knowledge base entries](KNOWLEDGE-BASE.md#quality-metrics) at ingestion time, ensuring the vector spaces are aligned.
+
+### 3. Hybrid Search (vector + full-text, 30 candidates)
 
 The embedded query is passed to a custom PostgreSQL function (`nta_hybrid_search`) that combines two search strategies:
 
 - **Vector similarity search** (weight: 0.7) — finds chunks whose embeddings are closest to the query embedding in meaning-space
-- **Full-text search** (weight: 0.3) — keyword matching using PostgreSQL's built-in tsvector/tsquery
+- **Full-text search** (weight: 0.3) — keyword matching using PostgreSQL's built-in tsvector/tsquery. Also uses the reformulated query text.
 
 **Why both?** Vector search understands meaning ("how does sugar affect the brain" matches content about dopamine pathways), but it can miss exact terms. When someone searches for "NAQ" or "FNTP," full-text search catches those precisely. The 0.7/0.3 split was chosen because most questions are conceptual (favoring vectors) but NTA terminology is specific enough that keyword matching adds real value.
 
 This returns 30 candidate chunks. We tested 30 vs 50 candidates — the top 10 reranked results were identical, confirming 30 is sufficient without wasting reranking tokens.
 
-### 3. LLM Reranking (GPT-5.4-nano, clinical intelligence scoring)
+### 4. LLM Reranking (GPT-5.4-nano, clinical intelligence scoring)
 
 GPT-5.4-nano reads each of the 30 candidates (up to 2,400 characters per chunk) and scores them 0.0–1.0 for relevance. This is more accurate than vector similarity alone because it can understand nuance, negation, and context that embedding distance misses.
 
-**Clinical intelligence scoring:** The reranker is prompted to prioritize chunks with specific protocols, dosages, nutrient forms, or clinical mechanisms over general philosophy, definitions, or broad overviews. [Curriculum](KNOWLEDGE-BASE.md#nta-curriculum--1777-entries) chunks get a +0.05 edge when equally relevant — a tiebreaker, not an override.
+**The reranker scores against the user's original question, not the reformulated query.** The reformulated version is search-optimized — full of expanded synonyms and related terms that are useful for casting a wide retrieval net, but introduce noise for precision scoring. The reranker sees the original question as the primary scoring target, with the reformulated query provided as search context so it understands intent. This separation keeps recall high (wide search) and precision high (tight scoring).
 
-### 4. Diversity Enforcement (intent-aware source mixing)
+**Clinical intelligence scoring:** The reranker prioritizes chunks with specific protocols, dosages, nutrient forms, or clinical mechanisms over general philosophy, definitions, or broad overviews. [Curriculum](KNOWLEDGE-BASE.md#nta-curriculum--1777-entries) chunks get a +0.05 edge when equally relevant — a tiebreaker, not an override.
 
-After reranking, the pipeline applies **intent-aware diversity** — different question types get different source mixes. The query reformulation step (GPT-5.4-nano) classifies each question as one of 5 intents: `clinical`, `supplement`, `programmatic`, `educational`, or `philosophical`. Each intent has a different reserved-slot profile across 7 source categories:
+### 5. Diversity Enforcement (intent-aware source mixing)
+
+After reranking, the pipeline applies **intent-aware diversity** — different question types get different source mixes, based on the intent classified during [reformulation](#1-query-reformulation-gpt-54-nano). Each intent has a different reserved-slot profile across 7 source categories:
 
 | Intent | Curriculum | Dr. Gaby | NIH | Academic TB | Podcast | NTA Ref | Fill |
 |---|---|---|---|---|---|---|---|
@@ -99,9 +118,9 @@ Each reserved slot has a minimum relevance threshold of 0.25 — if no chunk of 
 
 **Why this matters:** A clinical question about perimenopause gets [Dr. Gaby's](KNOWLEDGE-BASE.md#separate-clinical-reference--dr-gaby-1420-entries) protocol data + [NIH](KNOWLEDGE-BASE.md#nih-office-of-dietary-supplements--672-entries) evidence. A programmatic question about NTP scope gets [NTA reference docs](KNOWLEDGE-BASE.md#nta-reference--116-entries) + [podcast episodes](KNOWLEDGE-BASE.md#podcast-library--990-entries). The source mix matches what would actually be useful for each question type.
 
-### 5. Answer Synthesis (GPT-5.4-mini, structured JSON output)
+### 6. Answer Synthesis (GPT-5.4-mini, structured JSON output)
 
-The top 10 chunks are passed to GPT-5.4-mini via a **structured JSON output** schema (`json_schema` response format). The model returns guaranteed-valid JSON with two fields: `answer` (markdown text) and `confidence` (level + explanation). **Sources are NOT in the model output** — they are attached directly from the retrieval pipeline's chunk data, eliminating hallucinated citations and reducing model output size.
+The top 10 chunks are passed to GPT-5.4-mini alongside the **user's original question** (not the reformulated search query) via a **structured JSON output** schema (`json_schema` response format). The model returns guaranteed-valid JSON with two fields: `answer` (markdown text) and `confidence` (level + explanation). **Sources are NOT in the model output** — they are attached directly from the retrieval pipeline's chunk data, eliminating hallucinated citations and reducing model output size.
 
 The system prompt instructs the model to:
 - Speak as a senior functional nutritional therapy practitioner with clinical authority
@@ -112,7 +131,7 @@ The system prompt instructs the model to:
 
 For **enrichment mode** (follow-up chip clicks), a FOCUS DIRECTIVE from the chip's meta prompt is appended to the same core system prompt. The model maintains the same voice and formatting while steering to the specific clinical content requested.
 
-### 6. Contextual Retrieval
+### 7. Contextual Retrieval
 
 Every chunk in the knowledge base has an AI-generated context prefix prepended at ingestion time. This technique (from [Anthropic's research](https://www.anthropic.com/news/contextual-retrieval)) improves search accuracy by bridging the gap between a chunk's content and its position in the source document.
 

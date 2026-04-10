@@ -25,7 +25,7 @@ Concretely:
 
 - **Knowledge base** — Any application that can call a Supabase RPC function or hit an n8n webhook gets the same hybrid search and reranking. No re-ingestion needed.
 - **Retrieval pipeline** — Endpoint-driven. The pipeline already supports multiple modes (chat and enrichment run through the same `/webhook/nta-chat` with different configurations).
-- **System prompt** — Controls voice, constraints, and response format. Injected dynamically at the [synthesis step](TECHNICAL.md#5-answer-synthesis-gpt-54-mini-structured-json-output). Different tools get different prompts, same retrieval.
+- **System prompt** — Controls voice, constraints, and response format. Injected dynamically at the [synthesis step](TECHNICAL.md#6-answer-synthesis-gpt-54-mini-structured-json-output). Different tools get different prompts, same retrieval.
 - **Supplement catalog** — Standalone table with its own `match_supplement()` RPC. Available to any interface that needs product matching.
 
 ## Future Directions
@@ -48,7 +48,7 @@ Let students query curriculum content during study. A student working through th
 
 Surface relevant curriculum entries, [NIH data](KNOWLEDGE-BASE.md#nih-office-of-dietary-supplements--672-entries), [textbook references](KNOWLEDGE-BASE.md#textbooks--2832-entries), and podcast citations inside NTA's course platform. An instructor preparing a module on blood sugar regulation could query for everything the curriculum already teaches on that topic across all three programs — checking for consistency, identifying gaps, or pulling supporting references.
 
-**Grounding:** The retrieval pipeline's [intent-aware diversity](TECHNICAL.md#4-diversity-enforcement-intent-aware-source-mixing) already assembles cross-source evidence for educational queries. An instructor tool would swap the clinical synthesis prompt for one optimized for content review and cross-program comparison.
+**Grounding:** The retrieval pipeline's [intent-aware diversity](TECHNICAL.md#5-diversity-enforcement-intent-aware-source-mixing) already assembles cross-source evidence for educational queries. An instructor tool would swap the clinical synthesis prompt for one optimized for content review and cross-program comparison.
 
 ### Practitioner Support in Nutri-Q
 

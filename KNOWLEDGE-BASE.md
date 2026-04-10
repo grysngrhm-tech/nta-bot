@@ -29,7 +29,7 @@ NTA Ref     ██░░░░░░░░░░░░░░░░░░░░�
 
 ### Quality Metrics
 
-- **100%** of entries have [contextual retrieval prefixes](TECHNICAL.md#6-contextual-retrieval) — AI-generated structural context that tells the search engine where each entry fits in its source document, significantly improving relevance for NTA-specific queries.
+- **100%** of entries have [contextual retrieval prefixes](TECHNICAL.md#7-contextual-retrieval) — AI-generated structural context that tells the search engine where each entry fits in its source document, significantly improving relevance for NTA-specific queries.
 - **Chunk size:** Median **267 tokens**, mean **659 tokens**. The gap reflects intentional design — curriculum and podcast entries are GPT-extracted into focused ~200-token reference entries, while textbook chunks retain longer ~1,200-token sections for biochemical depth.
 - **Embedding model:** text-embedding-3-large at native 3,072 dimensions (no truncation)
 - **Source URL coverage:** All textbook, NIH, and podcast entries link to their original source. Curriculum entries have no external URL (proprietary content).
@@ -38,7 +38,7 @@ NTA Ref     ██░░░░░░░░░░░░░░░░░░░░�
 
 ## NTA Curriculum — 1,777 entries
 
-The highest-priority source in the knowledge base. When curriculum and external sources are equally relevant, the [retrieval pipeline](TECHNICAL.md#3-llm-reranking-gpt-54-nano-clinical-intelligence-scoring) silently prefers curriculum. These are NTA's own words — complete lecture transcripts from all three programs, processed through GPT-4o-mini to extract educational content while preserving NTA's teaching voice, terminology, and direct quotes.
+The highest-priority source in the knowledge base. When curriculum and external sources are equally relevant, the [retrieval pipeline](TECHNICAL.md#4-llm-reranking-gpt-54-nano-clinical-intelligence-scoring) silently prefers curriculum. These are NTA's own words — complete lecture transcripts from all three programs, processed through GPT-4o-mini to extract educational content while preserving NTA's teaching voice, terminology, and direct quotes.
 
 ### Extraction Method
 
