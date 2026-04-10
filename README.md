@@ -13,11 +13,17 @@
 
 ## What is NTA Bot?
 
-NTA Bot is an AI knowledge assistant that gives NTA staff instant access to the full depth of the organization's curriculum, reference textbooks, and supplementary content — without searching through lecture recordings, PDF transcripts, or scattered reference materials.
+NTA Bot is a search and synthesis engine for NTA's entire body of knowledge. Ask a question in plain language, get a cited answer grounded in NTA's curriculum, reference textbooks, podcast library, and NIH research — in about 14 seconds.
 
-NTA's teaching materials span thousands of pages across multiple programs (NTP, PHWC, FOH), four reference textbooks, 86 podcast episodes, and dozens of reference documents. NTA Bot makes all of that searchable from one place. Every answer is grounded exclusively in NTA's own materials — the bot doesn't use the open internet or generate from its training data. It searches a curated knowledge base of 6,387 entries, synthesizes what it finds into a clear response, and cites every source so the user can verify exactly where the information came from. If the knowledge base doesn't have an answer, the bot says so rather than guessing.
+It replaces the manual process of searching through lecture recordings, PDF transcripts, and scattered reference materials. The bot searches a curated knowledge base of 6,387 entries, synthesizes the best matches into a clear response, and cites every source so the answer can be verified. It does not use the web or generate from general AI training data. If the knowledge base doesn't cover a topic, the bot says so rather than guessing.
 
-Beyond the current chat interface, NTA Bot is a demonstration of a broader capability: a unified, curated knowledge layer with a reusable retrieval pipeline. The same backend — the same knowledge base, search infrastructure, and synthesis engine — could serve other NTA tools and interfaces with different system prompts and constraints. The [RAG Roadmap](RAG_ROADMAP.md) explores what that looks like.
+The chat app is the first interface, but the real achievement is the layer underneath: a unified, curated knowledge base with a reusable retrieval pipeline. The same backend could power future NTA tools — student aids, instructor dashboards, practitioner support inside Nutri-Q — each querying the same knowledge with different constraints. The [RAG Roadmap](RAG_ROADMAP.md) maps out what that looks like.
+
+## Why This Matters
+
+- **Static curriculum becomes queryable.** Thousands of pages of lectures, textbooks, and reference materials are now searchable as a single, structured knowledge layer.
+- **Answers are grounded and cited.** Every response traces back to specific sources — no hallucination, no guessing, no unverifiable claims.
+- **The backend is reusable.** The same retrieval infrastructure can serve multiple interfaces without re-ingesting content. One knowledge base, many applications.
 
 ## What Can You Ask?
 
@@ -30,7 +36,7 @@ Beyond the current chat interface, NTA Bot is a demonstration of a broader capab
 
 ## Knowledge Base
 
-The [knowledge base](KNOWLEDGE-BASE.md) contains **6,387 curated entries** from 5 source categories, searched via a [deterministic RAG pipeline](TECHNICAL.md#rag-pipeline) that returns answers in about 14 seconds (median):
+The [knowledge base](KNOWLEDGE-BASE.md) contains **6,387 curated entries** across 5 source categories:
 
 ```
 Curriculum  ████████████████████████████░░░░░░░░░░░░░░  1,777  (28%)
@@ -62,12 +68,12 @@ See the [User Guide](USER_GUIDE.md) for practical tips on getting the best answe
 
 ## Documentation
 
-| Document | Description |
-|----------|-------------|
-| **[User Guide](USER_GUIDE.md)** | Practical guidance for NTA employees — how to ask better questions, interpret answers, and use features effectively |
-| **[Technical Architecture](TECHNICAL.md)** | How the system works — RAG pipeline, retrieval strategy, synthesis, and infrastructure decisions |
-| **[Knowledge Base](KNOWLEDGE-BASE.md)** | What the bot knows — source inventory, content scope, extraction methods, and licensing |
-| **[RAG Roadmap](RAG_ROADMAP.md)** | Where this goes next — how the same backend could serve future NTA tools and interfaces |
+| If you want to... | Read |
+|---|---|
+| Use the bot effectively | **[User Guide](USER_GUIDE.md)** — asking better questions, interpreting answers, using features |
+| Understand how it works | **[Technical Architecture](TECHNICAL.md)** — RAG pipeline, retrieval strategy, infrastructure |
+| Know what's in the knowledge base | **[Knowledge Base](KNOWLEDGE-BASE.md)** — source inventory, scope, extraction, licensing |
+| See where this goes next | **[RAG Roadmap](RAG_ROADMAP.md)** — future NTA tools built on the same backend |
 
 ## How to Access
 
@@ -80,9 +86,7 @@ See the [User Guide](USER_GUIDE.md) for practical tips on getting the best answe
 
 ## Feedback & Contact
 
-NTA Bot is actively maintained. The knowledge base can be expanded with new curriculum materials, podcast episodes, or reference content at any time.
-
-For feedback, feature requests, or bug reports, contact **Grayson Graham**.
+For feedback, feature requests, or bug reports, contact **Grayson Graham**. The knowledge base is actively maintained and can be expanded with new curriculum, podcast episodes, or reference content at any time.
 
 ---
 

@@ -5,9 +5,9 @@
 
 ## Overview
 
-NTA Bot draws from a single curated knowledge base — **6,387 entries** spanning NTA's own curriculum, four reference textbooks, government health references, 86 podcast episodes, and NTA's website content. Every answer the bot produces is grounded in this corpus and cites its sources, so the quality and breadth of the knowledge base directly determines the quality of the answers.
+The bot is only as good as its sources. NTA Bot draws from a single curated corpus — **6,387 entries** spanning NTA's own curriculum, four reference textbooks, government health references, 86 podcast episodes, and NTA's website content. Every answer cites its sources, so this inventory is the ground truth for what the system can and cannot answer.
 
-This corpus is also the foundation that makes the [retrieval pipeline](TECHNICAL.md#rag-pipeline) reusable across future NTA tools. The same curated entries, embeddings, and search infrastructure could serve different interfaces — from student study aids to practitioner support — without re-ingesting or restructuring the content.
+Because all content is embedded, indexed, and queryable through a single [retrieval pipeline](TECHNICAL.md#rag-pipeline), this corpus also functions as reusable infrastructure — any future NTA tool can search the same entries without re-ingesting content.
 
 | Content Type | Entries | Sources |
 |-------------|---------|---------|
@@ -29,7 +29,7 @@ NTA Ref     ██░░░░░░░░░░░░░░░░░░░░�
 
 ### Quality Metrics
 
-- **100%** of entries have contextual retrieval prefixes — AI-generated structural context that tells the search engine where each entry fits in its source document, dramatically improving relevance for NTA-specific queries. See [Contextual Retrieval](TECHNICAL.md#6-contextual-retrieval) for how this works.
+- **100%** of entries have [contextual retrieval prefixes](TECHNICAL.md#6-contextual-retrieval) — AI-generated structural context that tells the search engine where each entry fits in its source document, significantly improving relevance for NTA-specific queries.
 - **Chunk size:** Median **267 tokens**, mean **659 tokens**. The gap reflects intentional design — curriculum and podcast entries are GPT-extracted into focused ~200-token reference entries, while textbook chunks retain longer ~1,200-token sections for biochemical depth.
 - **Embedding model:** text-embedding-3-large at native 3,072 dimensions (no truncation)
 - **Source URL coverage:** All textbook, NIH, and podcast entries link to their original source. Curriculum entries have no external URL (proprietary content).
@@ -38,7 +38,7 @@ NTA Ref     ██░░░░░░░░░░░░░░░░░░░░�
 
 ## NTA Curriculum — 1,777 entries
 
-The core of the knowledge base. These are NTA's own words — complete lecture transcripts from all three programs, processed through GPT-4o-mini to extract educational content while preserving NTA's teaching voice, terminology, and direct quotes.
+The highest-priority source in the knowledge base. When curriculum and external sources are equally relevant, the [retrieval pipeline](TECHNICAL.md#3-llm-reranking-gpt-54-nano-clinical-intelligence-scoring) silently prefers curriculum. These are NTA's own words — complete lecture transcripts from all three programs, processed through GPT-4o-mini to extract educational content while preserving NTA's teaching voice, terminology, and direct quotes.
 
 ### Extraction Method
 
@@ -107,7 +107,7 @@ NTA's curriculum assigns two core science textbooks that are commercially copyri
 1. **Introduction to the Human Body** by Tortora & Derrickson (11th ed) — Anatomy & Physiology
 2. **Advanced Human Nutrition** by Medeiros & Wildman (4th ed) — Nutritional biochemistry
 
-Rather than leave these subjects uncovered, the knowledge base assembles equivalent coverage from free and licensed sources that teach the same science at a comparable depth. The result is comprehensive A&P and nutrition biochemistry coverage without copyright constraints.
+The knowledge base assembles equivalent coverage from free and licensed sources that teach the same science at comparable depth — comprehensive A&P and nutrition biochemistry coverage without copyright constraints.
 
 ### Replacing Tortora — OpenStax A&P (643 entries)
 

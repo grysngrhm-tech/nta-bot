@@ -24,25 +24,25 @@ NTA Bot searches a curated knowledge base of **6,387 entries** across five categ
 - **NIH ODS (672 entries)** — Government fact sheets on 28 vitamins, minerals, and nutrients. Best for: recommended intakes, deficiency signs, drug interactions, food sources, toxicity limits.
 - **NTA Reference (116 entries)** — Scope of practice, program descriptions, credentials, philosophy, and terminology. Best for: "What is an NTP?," "What's the difference between NTP and PHWC?," NTA's mission and values.
 
-The bot does **not** use the open internet. It cannot answer questions about current events, specific client cases, or topics not covered in the knowledge base. If it doesn't have enough information to answer confidently, it will say so.
+The bot does **not** search the web or generate from general AI training data. It only uses NTA's curated sources. If it doesn't have enough information to answer confidently, it says so.
 
 ## Asking Better Questions
 
-The quality of the answer depends heavily on how you ask. A few adjustments can make a big difference:
+Specific questions get better answers. The bot works by matching your question against 6,387 knowledge entries — the more precise your language, the better the match.
 
 **Be specific rather than broad.**
 
-| Instead of... | Try... |
-|---------------|--------|
-| "Tell me about digestion" | "Explain the role of HCl in the stomach phase of the north-to-south digestive process" |
-| "What about magnesium?" | "What are the signs and symptoms of magnesium deficiency, and which forms are best absorbed?" |
-| "How do I help a client with stress?" | "What does the NTP curriculum recommend for supporting a client with HPA axis dysfunction?" |
+| Instead of... | Try... | Why it's better |
+|---------------|--------|-----------------|
+| "Tell me about digestion" | "Explain the role of HCl in the stomach phase of the north-to-south digestive process" | Targets a specific mechanism in a specific curriculum framework |
+| "What about magnesium?" | "What are the signs and symptoms of magnesium deficiency, and which forms are best absorbed?" | Gives the retrieval system two clear targets: symptoms and supplement forms |
+| "How do I help a client with stress?" | "What does the NTP curriculum recommend for supporting a client with HPA axis dysfunction?" | Names the program, the mechanism, and the clinical context |
 
-**Use NTA terminology when you can.** The knowledge base is built around NTA's language — terms like "Five Foundations," "north-to-south," "bio-individuality," "NAQ," "NACA," "NTP," "PHWC," and "FNTP" will get you more precise results than generic phrasing.
+**Use NTA terminology.** Terms like "Five Foundations," "north-to-south," "bio-individuality," "NAQ," "NACA," "NTP," "PHWC," and "FNTP" match directly against curriculum content. Generic phrasing forces the system to infer what you mean.
 
-**Ask follow-ups.** The bot remembers your conversation within a session. If the first answer gives you a starting point, ask a more targeted follow-up — "What specific supplements does Dr. Gaby recommend for that?" or "How would you assess that in a client?"
+**Ask follow-ups.** The bot remembers your conversation within a session. Start broad, then narrow: "What specific supplements does Dr. Gaby recommend for that?" or "How would you assess that in a client?"
 
-**Ask about scope distinctions directly.** Questions like "Can an NTP recommend supplements?" or "What's the difference between NTP and PHWC scope?" pull from the most authoritative source material on those topics.
+**Ask about scope distinctions directly.** "Can an NTP recommend supplements?" and "What's the difference between NTP and PHWC scope?" pull from the most authoritative source material on those topics.
 
 ## Understanding Answers
 
@@ -68,7 +68,7 @@ Every answer includes collapsible source cards below the response, grouped by ca
 
 Each category card shows how many documents and sections were cited. Expand a card to see the specific documents, section titles, and — for textbooks, NIH, and podcasts — links to the original source. You can click "View source text" on any section to read the exact passage the bot used.
 
-Sources come directly from the retrieval system, not from the AI model. The model writes the answer; the sources are attached from the actual search results. This means the citations are always real — they can't be hallucinated.
+Sources come from the retrieval system, not the AI model. The model writes the answer; sources are attached from the actual search results. Citations are always real — they cannot be hallucinated.
 
 ## Follow-Up Chips
 
@@ -104,6 +104,20 @@ Protocol cards are not always present — they only appear when the answer menti
 - **Sample questions** — The welcome screen shows 4 curated questions from different categories, refreshed on each visit. Use these to explore what the bot can do.
 - **New chat** — Tap the pencil icon in the input bar to clear the conversation and return to the welcome screen.
 
+## Example Workflows
+
+**Student studying digestion:**
+1. "Explain the north-to-south digestive process" → get the curriculum overview
+2. Click **Deep Dive** → mechanism detail on HCl, bile, and enzymes
+3. "What does the NIH say about zinc's role in digestive enzyme production?" → cross-reference with government data
+4. Click **Protocol** → get a digestive support supplement protocol with Fullscript links
+
+**Practitioner preparing for a client session:**
+1. "What are the clinical signs of blood sugar dysregulation?" → review the foundations
+2. "How would you assess blood sugar regulation using the NAQ and functional labs?" → get the assessment workflow
+3. Click **Assessment Guide** → full intake-to-referral practitioner workflow
+4. "What does Dr. Gaby recommend for insulin resistance?" → pull condition-specific protocols
+
 ## Tips & Limitations
 
 **What works well:**
@@ -113,10 +127,10 @@ Protocol cards are not always present — they only appear when the answer menti
 - Comparing how different sources cover a topic (e.g., curriculum vs. textbook vs. NIH)
 
 **What the bot can't do:**
-- Access the internet or any information outside the knowledge base
+- Search the web or access anything outside the knowledge base
 - Answer questions about specific clients or real-time data
-- Replace professional judgment — the bot synthesizes what's in its sources, not clinical advice for a specific situation
-- Cover topics not represented in its knowledge base (check the [full inventory](KNOWLEDGE-BASE.md) if you're unsure what's included)
+- Replace professional judgment — answers reflect what the sources say, not clinical advice for a specific situation
+- Cover topics outside its corpus (see the [full inventory](KNOWLEDGE-BASE.md) for exact scope)
 
 **When to double-check:**
 - Low-confidence answers — the bot is telling you it's working with limited material
