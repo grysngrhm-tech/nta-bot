@@ -120,7 +120,7 @@ Each reserved slot has a minimum relevance threshold of 0.25 — if no chunk of 
 
 ### 6. Answer Synthesis (GPT-5.4-mini, structured JSON output)
 
-The top 10 chunks are passed to GPT-5.4-mini alongside the **user's original question** (not the reformulated search query) via a **structured JSON output** schema (`json_schema` response format). The model returns guaranteed-valid JSON with two fields: `answer` (markdown text) and `confidence` (level + explanation). **Sources are NOT in the model output** — they are attached directly from the retrieval pipeline's chunk data, eliminating hallucinated citations and reducing model output size.
+The top 10 chunks are passed to GPT-5.4-mini alongside the **user's original question** (not the reformulated search query) via a **structured JSON output** schema (`json_schema` response format). The model returns guaranteed-valid JSON with two fields only: `answer` (markdown text) and `confidence` (level + explanation).
 
 The system prompt instructs the model to:
 - Speak as a senior functional nutritional therapy practitioner with clinical authority
@@ -130,6 +130,22 @@ The system prompt instructs the model to:
 - Never reference "the knowledge base" or "the curriculum says" — just state what it knows
 
 For **enrichment mode** (follow-up chip clicks), a FOCUS DIRECTIVE from the chip's meta prompt is appended to the same core system prompt. The model maintains the same voice and formatting while steering to the specific clinical content requested.
+
+**The model does not produce sources.** It writes the answer and nothing else. Source assembly happens in the next step.
+
+### Response Assembly and Source Attachment
+
+After GPT-5.4-mini returns `{answer, confidence}`, the Format Response node assembles the final webhook response by combining the model output with the retrieval data. Sources are built from the same 10 chunks the model saw as evidence — not from anything the model wrote.
+
+The assembly process:
+1. Parse the model's structured JSON output (`answer` + `confidence`)
+2. Take the 10 chunks from retrieval (already carrying `document_name`, `document_type`, `section_hierarchy`, `section_title`, `source_url`, and `content`)
+3. Group chunks by document + section hierarchy + section title, merging content from overlapping chunks
+4. Return the complete response: `{answer, confidence, sources}` in a single webhook response
+
+This means **sources cannot be hallucinated**. They are metadata from the actual database rows that matched the query. The model never sees, generates, or influences the source list — it is assembled server-side from retrieval data and attached to the response after synthesis completes.
+
+The frontend receives this single response and renders the answer, confidence badge, and source cards together. No second call is needed for sources.
 
 ### 7. Contextual Retrieval
 
@@ -232,12 +248,29 @@ The service worker (`sw.js`) caches static assets for offline access and provide
 | **Fullscript catalog** | NTA has an existing Fullscript partnership. Product data scraped from public catalog pages. All Fullscript links point to the general catalog (no dispensary lock-in). |
 | **pg_trgm** | PostgreSQL trigram extension for fuzzy supplement name matching. Handles misspellings, abbreviations, and form variations without an external search service. |
 
-## Interactive Follow-Up System
+## Async Post-Response Steps
 
-After each answer, the frontend asynchronously generates 4 follow-up options via GPT-5.4-mini. Each option has two layers:
+After the main response (answer + sources + confidence) is returned to the frontend, two additional processes run asynchronously. The user sees the answer immediately; these features fade in a few seconds later. Both are non-blocking — if either fails, the answer is unaffected.
+
+```
+Main response delivered (answer + sources + confidence)
+  │
+  ├── Async: Follow-Up Chips (/webhook/nta-followup-options)
+  │     └── GPT-5.4-mini generates 4 chips → frontend renders ~10-14s later
+  │
+  ├── Async: Protocol Cards (/webhook/nta-protocol-extract)
+  │     └── GPT-5.4-nano extracts supplements → catalog match → renders ~2-4s later
+  │
+  └── Async: Topic Labeling (/webhook/nta-topic-label)
+        └── GPT-4o-mini classifies topic → logged to nta_query_log (invisible to user)
+```
+
+### Follow-Up Chips
+
+The frontend calls `/webhook/nta-followup-options` with the question and answer. GPT-5.4-mini generates 4 follow-up options, each with two layers:
 
 - **Display text** — a concise question or command the user sees on a clickable chip
-- **Meta prompt** — a detailed hidden focus directive (1000-2000 chars) that steers the enrichment synthesis
+- **Meta prompt** — a hidden focus directive (1000-2000 chars) that steers the follow-up synthesis
 
 **Categories:** Deep Dive (mechanism/science), Protocol (supplement/lifestyle plan with dosing), Assessment Guide (practitioner workflow with intake/labs/referral criteria), Wildcard (creative angle). See the [User Guide](USER_GUIDE.md#follow-up-chips) for when to use each.
 
@@ -245,20 +278,17 @@ When a user clicks a chip, the request goes to the same `/webhook/nta-chat` endp
 
 Both chat and enrichment responses are logged to `nta_query_log` with latency tracking.
 
-## Supplement Protocol Cards (Fullscript Integration)
+### Supplement Protocol Cards (Fullscript Integration)
 
-After each answer renders, the frontend asynchronously calls a separate n8n workflow (`/webhook/nta-protocol-extract`) that scans the answer text for supplement mentions and matches them against a [curated product catalog](KNOWLEDGE-BASE.md#supplement-product-catalog--832-products). This is the same async pattern as follow-up chips — the answer appears first, protocol cards fade in after.
+The frontend calls `/webhook/nta-protocol-extract` with the answer text. A separate n8n workflow scans the text for supplement mentions and matches each against a [curated product catalog](KNOWLEDGE-BASE.md#supplement-product-catalog--832-products).
 
-### Why a Separate Pipeline
-
-Protocol extraction runs **outside the synthesis pipeline**:
-
-- **No prompt pollution** — The synthesis model stays focused on writing great clinical answers without protocol extraction instructions bloating the system prompt
-- **No schema bloat** — The `{answer, confidence}` JSON schema remains clean
-- **No latency impact** — Protocol cards load ~2-4 seconds after the answer, non-blocking
+Protocol extraction runs outside the synthesis pipeline for four reasons:
+- **No prompt pollution** — The synthesis model writes clinical answers without protocol extraction logic in the system prompt
+- **No schema bloat** — The `{answer, confidence}` JSON schema stays clean
+- **No latency impact** — Protocol cards load ~2-4 seconds after the answer
 - **Graceful degradation** — If extraction fails, the answer is unaffected
 
-### Pipeline
+**Pipeline:**
 
 ```
 Answer text → GPT-5.4-nano (extract supplement mentions)
