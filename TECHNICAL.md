@@ -1,7 +1,13 @@
 # NTA Bot — Technical Architecture
 
-> Deep dive into the infrastructure and mechanisms behind NTA Bot.
-> For a general overview, see the [README](README.md). For detailed knowledge base contents, see [KNOWLEDGE-BASE.md](KNOWLEDGE-BASE.md).
+> How the system works — pipeline design, retrieval strategy, and infrastructure decisions.
+> For a general overview, see [README.md](README.md). For knowledge base contents, see [KNOWLEDGE-BASE.md](KNOWLEDGE-BASE.md). For practical user guidance, see [USER_GUIDE.md](USER_GUIDE.md). For future directions, see [RAG_ROADMAP.md](RAG_ROADMAP.md).
+
+## How It Works
+
+NTA Bot is a retrieval-augmented generation (RAG) system that answers questions by searching a curated knowledge base of 6,387 entries and synthesizing the best matches into a cited response. It runs a **deterministic pipeline** — a fixed sequence of steps (reformulate, retrieve, synthesize) that executes the same way every time, with no agent loops or multi-step reasoning delays. A typical query completes in about 14 seconds, a **4.7x speedup** over the previous Langchain agent architecture (which averaged 80 seconds with worst cases over two minutes).
+
+The architecture is intentionally decoupled: the retrieval backend (Supabase knowledge base + n8n pipeline) and the frontend (GitHub Pages PWA) are independent. The same search, reranking, and synthesis infrastructure could serve different interfaces — a student study tool, a practitioner aid inside Nutri-Q, an instructor dashboard — each with its own system prompt and UI, all querying the same knowledge layer. The current chat app is one consumer of that pipeline.
 
 ## System Architecture
 
@@ -56,11 +62,11 @@ NTA Bot is a single-page PWA that communicates with two cloud services:
 
 ## RAG Pipeline
 
-### 1. Query Embedding
+### 1. Query Embedding (text-embedding-3-large, 3,072 dimensions)
 
-When a user asks a question, it's converted into a 3,072-dimensional vector using OpenAI's `text-embedding-3-large` model. This is the same model used to embed all knowledge base chunks at ingestion time, ensuring the vector spaces are aligned.
+When a user asks a question, it's converted into a 3,072-dimensional vector using OpenAI's `text-embedding-3-large` model. This is the same model used to embed all [knowledge base entries](KNOWLEDGE-BASE.md#quality-metrics) at ingestion time, ensuring the vector spaces are aligned.
 
-### 2. Hybrid Search
+### 2. Hybrid Search (vector + full-text, 30 candidates)
 
 The embedded query is passed to a custom PostgreSQL function (`nta_hybrid_search`) that combines two search strategies:
 
@@ -71,13 +77,13 @@ The embedded query is passed to a custom PostgreSQL function (`nta_hybrid_search
 
 This returns 30 candidate chunks. We tested 30 vs 50 candidates — the top 10 reranked results were identical, confirming 30 is sufficient without wasting reranking tokens.
 
-### 3. LLM Reranking
+### 3. LLM Reranking (GPT-5.4-nano, clinical intelligence scoring)
 
 GPT-5.4-nano reads each of the 30 candidates (up to 2,400 characters per chunk) and scores them 0.0–1.0 for relevance. This is more accurate than vector similarity alone because it can understand nuance, negation, and context that embedding distance misses.
 
-**Clinical intelligence scoring:** The reranker is prompted to prioritize chunks with specific protocols, dosages, nutrient forms, or clinical mechanisms over general philosophy, definitions, or broad overviews. Curriculum chunks get a +0.05 edge when equally relevant — a tiebreaker, not an override.
+**Clinical intelligence scoring:** The reranker is prompted to prioritize chunks with specific protocols, dosages, nutrient forms, or clinical mechanisms over general philosophy, definitions, or broad overviews. [Curriculum](KNOWLEDGE-BASE.md#nta-curriculum--1777-entries) chunks get a +0.05 edge when equally relevant — a tiebreaker, not an override.
 
-### 4. Diversity Enforcement
+### 4. Diversity Enforcement (intent-aware source mixing)
 
 After reranking, the pipeline applies **intent-aware diversity** — different question types get different source mixes. The query reformulation step (GPT-5.4-nano) classifies each question as one of 5 intents: `clinical`, `supplement`, `programmatic`, `educational`, or `philosophical`. Each intent has a different reserved-slot profile across 7 source categories:
 
@@ -91,9 +97,9 @@ After reranking, the pipeline applies **intent-aware diversity** — different q
 
 Each reserved slot has a minimum relevance threshold of 0.25 — if no chunk of that type scores above 0.25, the slot is released to "fill best." This prevents forcing irrelevant sources into the answer.
 
-**Why this matters:** A clinical question about perimenopause gets Dr. Gaby's protocol data + NIH evidence. A programmatic question about NTP scope gets NTA reference docs + podcast episodes. The source mix matches what would actually be useful for each question type.
+**Why this matters:** A clinical question about perimenopause gets [Dr. Gaby's](KNOWLEDGE-BASE.md#separate-clinical-reference--dr-gaby-1420-entries) protocol data + [NIH](KNOWLEDGE-BASE.md#nih-office-of-dietary-supplements--672-entries) evidence. A programmatic question about NTP scope gets [NTA reference docs](KNOWLEDGE-BASE.md#nta-reference--116-entries) + [podcast episodes](KNOWLEDGE-BASE.md#podcast-library--990-entries). The source mix matches what would actually be useful for each question type.
 
-### 5. Answer Synthesis
+### 5. Answer Synthesis (GPT-5.4-mini, structured JSON output)
 
 The top 10 chunks are passed to GPT-5.4-mini via a **structured JSON output** schema (`json_schema` response format). The model returns guaranteed-valid JSON with two fields: `answer` (markdown text) and `confidence` (level + explanation). **Sources are NOT in the model output** — they are attached directly from the retrieval pipeline's chunk data, eliminating hallucinated citations and reducing model output size.
 
@@ -129,7 +135,7 @@ All content enters the knowledge base through the same six-step pipeline regardl
 5. **Insert** — Write to Supabase with full metadata (document name, type, section hierarchy, source URL)
 6. **Contextualize** — Run contextual retrieval to add bridging prefixes and re-embed
 
-The extraction method varies by source — curriculum transcripts use GPT-4o-mini to extract educational content from conversational lectures, while textbooks use direct section-based chunking. For source-specific extraction details, see [KNOWLEDGE-BASE.md](KNOWLEDGE-BASE.md).
+The extraction method varies by source — [curriculum transcripts](KNOWLEDGE-BASE.md#extraction-method) use GPT-4o-mini to extract educational content from conversational lectures, while textbooks use direct section-based chunking. For source-specific extraction details, see [KNOWLEDGE-BASE.md](KNOWLEDGE-BASE.md).
 
 ## Performance
 
@@ -162,6 +168,8 @@ The [analytics dashboard](https://grysngrhm-tech.github.io/nta-bot/dashboard.htm
 - **Session Replay** — Multi-question research journeys with device info and topic progression.
 - **Trending Topics** — Week-over-week comparison of topic frequency.
 
+This data is already [useful for content planning](RAG_ROADMAP.md#content-gap-intelligence) — identifying which topics generate the most questions relative to available knowledge base coverage.
+
 ## Frontend Architecture
 
 ### Single-File Design
@@ -184,7 +192,7 @@ SOURCES & REFERENCES
 └── PODCAST     2 documents · 3 sections  ›
 ```
 
-Each category card is collapsed by default. Expanding reveals documents with their sections, external links, and "View source text" buttons. Left border colors match badge colors for instant visual identification.
+Each category card is collapsed by default. Expanding reveals documents with their sections, external links, and "View source text" buttons. Left border colors match badge colors for instant visual identification. See the [User Guide](USER_GUIDE.md#understanding-answers) for how to read these as an end user.
 
 ### PWA & Offline
 
@@ -212,7 +220,7 @@ After each answer, the frontend asynchronously generates 4 follow-up options via
 - **Display text** — a concise question or command the user sees on a clickable chip
 - **Meta prompt** — a detailed hidden focus directive (1000-2000 chars) that steers the enrichment synthesis
 
-**Categories:** Deep Dive (mechanism/science), Protocol (supplement/lifestyle plan with dosing), Assessment Guide (practitioner workflow with intake/labs/referral criteria), Wildcard (creative angle).
+**Categories:** Deep Dive (mechanism/science), Protocol (supplement/lifestyle plan with dosing), Assessment Guide (practitioner workflow with intake/labs/referral criteria), Wildcard (creative angle). See the [User Guide](USER_GUIDE.md#follow-up-chips) for when to use each.
 
 When a user clicks a chip, the request goes to the same `/webhook/nta-chat` endpoint with `mode: "enrichment"`. The meta prompt is appended to the core system prompt as a `## FOCUS DIRECTIVE` section, so the enrichment answer maintains the same practitioner voice and formatting rules as regular answers while covering the specific clinical content requested.
 
@@ -220,7 +228,7 @@ Both chat and enrichment responses are logged to `nta_query_log` with latency tr
 
 ## Supplement Protocol Cards (Fullscript Integration)
 
-After each answer renders, the frontend asynchronously calls a separate n8n workflow (`/webhook/nta-protocol-extract`) that scans the answer text for supplement mentions and matches them against a curated product catalog. This is the same async pattern as follow-up chips — the answer appears first, protocol cards fade in after.
+After each answer renders, the frontend asynchronously calls a separate n8n workflow (`/webhook/nta-protocol-extract`) that scans the answer text for supplement mentions and matches them against a [curated product catalog](KNOWLEDGE-BASE.md#supplement-product-catalog--832-products). This is the same async pattern as follow-up chips — the answer appears first, protocol cards fade in after.
 
 ### Why a Separate Pipeline
 
@@ -311,4 +319,5 @@ Priority indicated by dot color: green (primary), amber (supportive), gray (cons
 ---
 
 *For knowledge base contents and source details, see [KNOWLEDGE-BASE.md](KNOWLEDGE-BASE.md).*
+*For practical user guidance, see [USER_GUIDE.md](USER_GUIDE.md).*
 *For general overview, see [README.md](README.md).*

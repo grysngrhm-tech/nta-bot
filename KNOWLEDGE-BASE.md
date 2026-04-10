@@ -1,18 +1,20 @@
 # NTA Bot — Knowledge Base
 
-> Detailed inventory of all content sources, what was included, what was excluded, and why.
-> For how the knowledge base is searched and used, see [TECHNICAL.md](TECHNICAL.md). For a general overview, see [README.md](README.md).
+> What the bot knows, where it comes from, and why it matters.
+> For how the knowledge base is searched and ranked, see [TECHNICAL.md](TECHNICAL.md). For a general overview, see [README.md](README.md). For how this corpus could serve future NTA tools, see [RAG_ROADMAP.md](RAG_ROADMAP.md).
 
 ## Overview
 
-NTA Bot's knowledge base contains **6,387 curated entries** across 5 content types, sourced from NTA's own curriculum, four reference textbooks, government health references, 86 podcast episodes, and NTA's website.
+NTA Bot draws from a single curated knowledge base — **6,387 entries** spanning NTA's own curriculum, four reference textbooks, government health references, 86 podcast episodes, and NTA's website content. Every answer the bot produces is grounded in this corpus and cites its sources, so the quality and breadth of the knowledge base directly determines the quality of the answers.
+
+This corpus is also the foundation that makes the [retrieval pipeline](TECHNICAL.md#rag-pipeline) reusable across future NTA tools. The same curated entries, embeddings, and search infrastructure could serve different interfaces — from student study aids to practitioner support — without re-ingesting or restructuring the content.
 
 | Content Type | Entries | Sources |
 |-------------|---------|---------|
 | [Curriculum](#nta-curriculum--1777-entries) | 1,777 | NTP, PHWC, FOH lecture transcripts |
 | [Textbooks](#textbooks--2832-entries) | 2,832 | 4 books (3 open-licensed + 1 proprietary) |
-| [NIH Reference](#nih-office-of-dietary-supplements--672-entries) | 672 | 28 Health Professional fact sheets |
 | [Podcast](#podcast-library--990-entries) | 990 | 86 episodes |
+| [NIH Reference](#nih-office-of-dietary-supplements--672-entries) | 672 | 28 Health Professional fact sheets |
 | [NTA Reference](#nta-reference--116-entries) | 116 | Website content, scope docs, guides |
 
 ### Content Distribution
@@ -27,10 +29,10 @@ NTA Ref     ██░░░░░░░░░░░░░░░░░░░░�
 
 ### Quality Metrics
 
-- **100%** of chunks have contextual retrieval prefixes (AI-generated structural context)
+- **100%** of entries have contextual retrieval prefixes — AI-generated structural context that tells the search engine where each entry fits in its source document, dramatically improving relevance for NTA-specific queries. See [Contextual Retrieval](TECHNICAL.md#6-contextual-retrieval) for how this works.
 - **Chunk size:** Median **267 tokens**, mean **659 tokens**. The gap reflects intentional design — curriculum and podcast entries are GPT-extracted into focused ~200-token reference entries, while textbook chunks retain longer ~1,200-token sections for biochemical depth.
 - **Embedding model:** text-embedding-3-large at native 3,072 dimensions (no truncation)
-- **Source URL coverage:** All textbook, NIH, and podcast chunks link to their original source. Curriculum chunks have no external URL (proprietary content).
+- **Source URL coverage:** All textbook, NIH, and podcast entries link to their original source. Curriculum entries have no external URL (proprietary content).
 
 ---
 
@@ -49,8 +51,8 @@ Lecture transcript PDFs are too conversational for direct chunking (full of "wel
 
 ### NTP Program — 1,005 entries from 16 modules
 
-| Module | Chunks | Topics Covered |
-|--------|--------|----------------|
+| Module | Entries | Topics Covered |
+|--------|---------|----------------|
 | Digestion | 245 | North-to-south process, HCl, bile, enzymes, gut health, microbiome, leaky gut |
 | Blood Sugar Regulation | 136 | Insulin, glucagon, cortisol, carbohydrate metabolism, diabetes, hypoglycemia |
 | Bioindividual Nutrition | 92 | Bio-individuality, metabolic typing, traditional diets, Weston Price foundations |
@@ -65,9 +67,12 @@ Lecture transcript PDFs are too conversational for direct chunking (full of "wel
 | Lab Interpretation | 31 | Functional lab ranges, blood chemistry, metabolic markers |
 | NACA Units 6-9 | 39 | Progressive clinical application across multiple case types |
 
-### PHWC Program — 531 entries from 81 video transcripts
+### PHWC Program — 565 entries
 
 Covers Weeks 1-29 of the coaching program: client-centered relationships, trust and rapport, motivational interviewing, coaching skills, behavior change frameworks, scope of practice, ethics, powerful questions, goal setting, wellness wheel, and practicum.
+
+- **531 entries** from 81 video transcripts (weekly lecture content)
+- **34 entries** from the PHWC Curriculum Deep Dive reference document (coaching foundations and behavior change overview)
 
 **Note:** 4 video transcripts (W10V1, W11V1, W3V2, W9V1) failed text extraction — these are scanned image PDFs that require OCR tooling not currently available.
 
@@ -75,8 +80,8 @@ Covers Weeks 1-29 of the coaching program: client-centered relationships, trust 
 
 Foundations of Healing (consumer-facing program) covering the Five Foundations at an accessible level:
 
-| Module | Chunks |
-|--------|--------|
+| Module | Entries |
+|--------|---------|
 | Nutrient-Dense Diet | 59 |
 | Stress Management | 39 |
 | Digestion | 33 |
@@ -97,12 +102,12 @@ Foundations of Healing (consumer-facing program) covering the Five Foundations a
 
 ### The Mapping Strategy
 
-NTA's curriculum assigns two core science textbooks that are commercially copyrighted:
+NTA's curriculum assigns two core science textbooks that are commercially copyrighted and cannot be directly included in a RAG database:
 
 1. **Introduction to the Human Body** by Tortora & Derrickson (11th ed) — Anatomy & Physiology
 2. **Advanced Human Nutrition** by Medeiros & Wildman (4th ed) — Nutritional biochemistry
 
-Neither can be directly included in a RAG database. The knowledge base assembles equivalent coverage from free and licensed sources:
+Rather than leave these subjects uncovered, the knowledge base assembles equivalent coverage from free and licensed sources that teach the same science at a comparable depth. The result is comprehensive A&P and nutrition biochemistry coverage without copyright constraints.
 
 ### Replacing Tortora — OpenStax A&P (643 entries)
 
@@ -186,7 +191,7 @@ In addition to standing on their own as a reference source, these fact sheets al
 
 **License:** Public domain (U.S. federal government publication — no restrictions).
 
-### Nutrients Covered
+### Nutrients Covered (28 fact sheets)
 
 **Vitamins (13):** Vitamin A, Thiamin (B1), Riboflavin (B2), Niacin (B3), Pantothenic Acid (B5), Vitamin B6, Biotin (B7), Folate (B9), Vitamin B12, Vitamin C, Vitamin D, Vitamin E, Vitamin K
 
@@ -217,7 +222,7 @@ Each fact sheet is chunked at the H2/H3 section level, preserving all substantiv
 
 ## Podcast Library — 990 entries
 
-All 86 episodes of the NTA **Nutritional Therapy and Wellness Podcast**, from Ep. 000 (Introduction) through Ep. 085 (Sugar, Sugar).
+All 86 episodes of the NTA **Nutritional Therapy and Wellness Podcast**, from Ep. 000 (Introduction) through Ep. 085 (Sugar, Sugar). The podcast gives the knowledge base a conversational, practitioner-facing perspective that complements the more formal textbook and curriculum content.
 
 ### Processing Pipeline
 
@@ -238,22 +243,20 @@ Digestion, Blood Sugar Regulation, Sleep, Stress Management, Nutrient-Dense Diet
 
 ## NTA Reference — 116 entries
 
-Website content manually structured into reference documents:
+Website content and organizational documents manually structured into reference entries. These cover the questions NTA employees hear most often — what the programs are, what practitioners can and can't do, and what NTA stands for.
 
 | Document | Entries |
 |----------|---------|
-| Scope of Practice Reference — NTP, FNTP & PHWC | 24 |
-| NTP Curriculum Deep Dive — Five Foundations & Clinical Application | 45 |
-| NTA Programs and Credentials Guide | 36 |
-| PHWC Curriculum Deep Dive — Coaching Foundations & Behavior Change | 34 |
 | NTA Philosophy and Terminology Reference | 48 |
+| NTA Programs and Credentials Guide | 36 |
+| Scope of Practice Reference — NTP, FNTP & PHWC | 24 |
 | Free Consumer Guides (Healthy Fats, Digestion, Herbal Recipes) | 8 |
 
 ---
 
-## Supplement Product Catalog — 832 entries
+## Supplement Product Catalog — 832 products
 
-Separate from the RAG knowledge base, NTA Bot maintains a product catalog used for [Fullscript protocol cards](TECHNICAL.md#supplement-protocol-cards-fullscript-integration). When the bot's answer mentions supplements, each is matched against this catalog to provide clickable product links and expandable product details.
+Separate from the RAG knowledge base, NTA Bot maintains a curated product catalog used for [supplement protocol cards](TECHNICAL.md#supplement-protocol-cards-fullscript-integration). When the bot's answer mentions supplements, each is matched against this catalog to provide clickable Fullscript product links and expandable product details.
 
 | Brand | Products | Notes |
 |-------|----------|-------|
@@ -292,4 +295,5 @@ Each entry includes product name, brand, Fullscript URL, description, supplement
 ---
 
 *For how this content is searched and ranked, see [TECHNICAL.md](TECHNICAL.md).*
+*For practical guidance on using the bot, see [USER_GUIDE.md](USER_GUIDE.md).*
 *For general overview, see [README.md](README.md).*

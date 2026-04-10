@@ -13,13 +13,11 @@
 
 ## What is NTA Bot?
 
-NTA Bot is an AI knowledge assistant built for NTA employees. It gives staff instant access to the full depth of NTA's curriculum, reference textbooks, and supplementary content — without needing to search through lecture recordings, PDF transcripts, or scattered reference materials.
+NTA Bot is an AI knowledge assistant that gives NTA staff instant access to the full depth of the organization's curriculum, reference textbooks, and supplementary content — without searching through lecture recordings, PDF transcripts, or scattered reference materials.
 
-The problem it solves: NTA's teaching materials span thousands of pages across multiple programs (NTP, PHWC, FOH), five assigned textbooks, 86 podcast episodes, and dozens of reference documents. Finding a specific piece of information — how the curriculum explains blood sugar regulation, what an NTP can and can't do with lab results, what Dr. Gaby recommends for a specific condition — means knowing which source to look in and where. NTA Bot makes all of that searchable from one place.
+NTA's teaching materials span thousands of pages across multiple programs (NTP, PHWC, FOH), four reference textbooks, 86 podcast episodes, and dozens of reference documents. NTA Bot makes all of that searchable from one place. Every answer is grounded exclusively in NTA's own materials — the bot doesn't use the open internet or generate from its training data. It searches a curated knowledge base of 6,387 entries, synthesizes what it finds into a clear response, and cites every source so the user can verify exactly where the information came from. If the knowledge base doesn't have an answer, the bot says so rather than guessing.
 
-Every answer is grounded exclusively in NTA's own materials. The bot doesn't use the open internet or generate from its training data. It searches a curated knowledge base of over 6,300 entries, synthesizes what it finds into a clear response, and cites every source so the user can verify exactly where the information came from. If the knowledge base doesn't have an answer, the bot says so rather than guessing.
-
-The bot is password-protected and intended for internal use by NTA staff.
+Beyond the current chat interface, NTA Bot is a demonstration of a broader capability: a unified, curated knowledge layer with a reusable retrieval pipeline. The same backend — the same knowledge base, search infrastructure, and synthesis engine — could serve other NTA tools and interfaces with different system prompts and constraints. The [RAG Roadmap](RAG_ROADMAP.md) explores what that looks like.
 
 ## What Can You Ask?
 
@@ -30,11 +28,9 @@ The bot is password-protected and intended for internal use by NTA staff.
 - "What coaching techniques does the PHWC program teach for building client trust?"
 - "What does Dr. Gaby's Nutritional Medicine say about nutritional treatments for migraines?"
 
-## Under the Hood
+## Knowledge Base
 
-NTA Bot uses a **deterministic RAG pipeline** — a fixed sequence of steps that reformulates your question, searches a curated knowledge base, clinically reranks the results, and synthesizes the top 10 matches into a clear answer using GPT-5.4-mini. The pipeline runs in about 14 seconds (median) with no agent loops or multi-step reasoning delays. The full [technical architecture](TECHNICAL.md) covers the complete pipeline and the reasoning behind each design decision.
-
-The [knowledge base](KNOWLEDGE-BASE.md) contains **6,387 curated entries** from 5 source categories:
+The [knowledge base](KNOWLEDGE-BASE.md) contains **6,387 curated entries** from 5 source categories, searched via a [deterministic RAG pipeline](TECHNICAL.md#rag-pipeline) that returns answers in about 14 seconds (median):
 
 ```
 Curriculum  ████████████████████████████░░░░░░░░░░░░░░  1,777  (28%)
@@ -45,40 +41,33 @@ NTA Ref     ██░░░░░░░░░░░░░░░░░░░░�
 ```
 
 - **[Curriculum](KNOWLEDGE-BASE.md#nta-curriculum--1777-entries)** — Complete NTP, PHWC, and FOH lecture transcripts, GPT-extracted to preserve NTA's teaching voice
-- **Textbooks** — Four books [assembled from free sources](KNOWLEDGE-BASE.md#the-mapping-strategy) to cover the scope of NTA's assigned textbooks, plus [Dr. Gaby's Nutritional Medicine](KNOWLEDGE-BASE.md#separate-clinical-reference--dr-gaby-1420-entries) (1,420 entries)
+- **[Textbooks](KNOWLEDGE-BASE.md#textbooks--2832-entries)** — Four books [assembled from free sources](KNOWLEDGE-BASE.md#the-mapping-strategy) to cover the scope of NTA's assigned textbooks, plus [Dr. Gaby's Nutritional Medicine](KNOWLEDGE-BASE.md#separate-clinical-reference--dr-gaby-1420-entries) (1,420 entries)
 - **[Podcast](KNOWLEDGE-BASE.md#podcast-library--990-entries)** — 86 episodes distilled into educational reference entries
-- **[NIH ODS](KNOWLEDGE-BASE.md#nih-office-of-dietary-supplements--672-entries)** — 28 peer-reviewed fact sheets on every vitamin and mineral
+- **[NIH ODS](KNOWLEDGE-BASE.md#nih-office-of-dietary-supplements--672-entries)** — 28 peer-reviewed fact sheets on essential vitamins, minerals, and nutrients
 - **[NTA Reference](KNOWLEDGE-BASE.md#nta-reference--116-entries)** — Scope of practice, programs, philosophy, and terminology
 
 ## Features
 
-**Answers**
-- **Cited sources** — Every answer includes collapsible [source cards grouped by category](TECHNICAL.md#source-card-system) (Curriculum, Textbook, NIH, Podcast, Web) with authority badges. Expand to view the original chunk text or click through to the source.
-- **Rich formatting** — Bold key terms, italics for emphasis, bullet lists for scannability. No walls of text.
-- **Confidence indicators** — High, Medium, or Low confidence on each answer so you know how well the knowledge base covered your question.
-- **[Curriculum priority](TECHNICAL.md#3-llm-reranking)** — When NTA's own curriculum and an external source both cover a topic, the curriculum is silently preferred. The answer reads as one coherent piece, not broken up by source.
+- **Cited sources** — Every answer includes collapsible source cards grouped by category with authority badges
+- **Confidence indicators** — High, Medium, or Low confidence on each answer
+- **Curriculum priority** — NTA's own curriculum is silently preferred when equally relevant to external sources
+- **[Supplement protocol cards](TECHNICAL.md#supplement-protocol-cards-fullscript-integration)** — Matched products from an [832-product Fullscript catalog](KNOWLEDGE-BASE.md#supplement-product-catalog--832-products) with direct links, expandable details, and one-click copy
+- **Interactive follow-up chips** — 4 context-aware options after each answer: Deep Dive, Protocol, Assessment Guide, and Wildcard
+- **Voice input & read aloud** — Speak your question or listen to the answer
+- **Conversation memory** — Follow-up questions within a session are context-aware
+- **[Analytics dashboard](https://grysngrhm-tech.github.io/nta-bot/dashboard.html)** — Topic demand vs coverage, trending topics, source usage, and content gap detection
+- **Mobile friendly, offline capable** — PWA that works on any device with no install
 
-**Supplement Protocol Cards**
-- **Fullscript integration** — When the bot mentions supplements, a collapsible "Supplement Protocol" section appears with matched products from a 664-product [Fullscript](https://fullscript.com/catalog) catalog (Biotics Research, Standard Process, Thorne, Nordic Naturals, and more).
-- **Compact rows** — Each supplement shows as a single line: priority dot, product name, dose, timing, and a direct Fullscript link.
-- **Expandable details** — Click any row to see the full product description, supplement facts, suggested use, and ingredients.
-- **Copy protocol** — One-click copy of the full supplement list formatted for pasting into emails or client notes.
+See the [User Guide](USER_GUIDE.md) for practical tips on getting the best answers.
 
-**Interaction**
-- **Interactive follow-up chips** — After each answer, 4 context-aware follow-up options appear: Deep Dive (mechanism/science), Protocol (supplement/lifestyle plan), Assessment Guide (practitioner workflow), and Wildcard (creative angle). Click one to generate a detailed follow-up report.
-- **Voice input** — Tap the microphone to speak your question instead of typing.
-- **Read aloud** — Tap the speaker icon on any answer to hear it read back via text-to-speech.
-- **Conversation memory** — Follow-up questions within a session are context-aware.
-- **Sample questions** — 160 curated questions across 4 categories refresh on each visit to help new users explore.
+## Documentation
 
-**Analytics & Monitoring**
-- **[Analytics dashboard](https://grysngrhm-tech.github.io/nta-bot/dashboard.html)** — [Topic demand vs coverage](TECHNICAL.md#dashboard-metrics), trending topics, source usage rankings, session replay, and a searchable question feed.
-- **[Content gap detection](TECHNICAL.md#dashboard-metrics)** — Identifies high-demand topics with low knowledge base coverage, signaling opportunities for new curriculum content or podcast episodes.
-
-**Platform**
-- **Mobile friendly** — Works on phone, tablet, and desktop. No app install needed.
-- **[Offline capable](TECHNICAL.md#pwa--offline)** — Service worker caches the app for offline access.
-- **No build step** — [Single HTML file](TECHNICAL.md#single-file-design), deploys instantly on push to GitHub Pages.
+| Document | Description |
+|----------|-------------|
+| **[User Guide](USER_GUIDE.md)** | Practical guidance for NTA employees — how to ask better questions, interpret answers, and use features effectively |
+| **[Technical Architecture](TECHNICAL.md)** | How the system works — RAG pipeline, retrieval strategy, synthesis, and infrastructure decisions |
+| **[Knowledge Base](KNOWLEDGE-BASE.md)** | What the bot knows — source inventory, content scope, extraction methods, and licensing |
+| **[RAG Roadmap](RAG_ROADMAP.md)** | Where this goes next — how the same backend could serve future NTA tools and interfaces |
 
 ## How to Access
 
