@@ -96,7 +96,7 @@ nta_entitled_search(
 )
 ```
 
-This function applies a WHERE clause on `section_hierarchy` and `document_type` before scoring, so non-entitled chunks never enter the candidate pool. The existing `nta_hybrid_search` function stays intact for staff access (no filter).
+This function applies a WHERE clause on `section_hierarchy` and `document_type` before scoring, so non-entitled chunks never enter the candidate pool. The existing [`nta_hybrid_search`](TECHNICAL.md#3-hybrid-search-vector--full-text-30-candidates) function stays intact for staff access (no filter).
 
 ---
 
@@ -108,7 +108,7 @@ NTA's entire staff is remote and lives in Slack. The fastest way to put the know
 
 ### Architecture
 
-The Slack bot is an **n8n workflow adapter** on top of the existing pipeline. No changes to the retrieval backend, synthesis model, or knowledge base. n8n has native Slack support: a **Slack Trigger node** receives events via HTTP (Event Subscriptions), and a **Slack action node** posts messages, updates messages, uploads files, and handles threading.
+The Slack bot is an **n8n workflow adapter** on top of the existing pipeline. No changes to the retrieval backend, synthesis model, or knowledge base. n8n has native Slack support: a [Slack Trigger node](TECHNICAL.md#system-architecture) receives events via HTTP (Event Subscriptions), and a Slack action node posts messages, updates messages, uploads files, and handles threading.
 
 ```
 Slack Event (DM or /nta slash command)
@@ -138,8 +138,8 @@ The NTA Bot web UI renders markdown answers, collapsible source accordions, foll
 | Web UI Feature | Slack Approach |
 |---------------|----------------|
 | Markdown answer (bold, headings, lists) | **Markdown block** (added Feb 2025 — accepts standard markdown including headings, nested lists, code blocks, tables). 12K character limit per payload. |
-| Follow-up chips (4 buttons) | **Actions block** with 4 button elements. Each button's `value` carries the meta prompt. Click → interaction payload → n8n calls unified pipeline with `mode: "enrichment"` → threaded reply. |
-| Protocol cards (images + Fullscript links) | **Section blocks** with image accessories + **context blocks** for metadata. Functional, not as visually rich. Can overflow into a modal. |
+| [Follow-up chips](TECHNICAL.md#follow-up-chips) (4 buttons) | **Actions block** with 4 button elements. Each button's `value` carries the meta prompt. Click → interaction payload → n8n calls unified pipeline with `mode: "enrichment"` → threaded reply. |
+| [Protocol cards](TECHNICAL.md#supplement-protocol-cards-fullscript-integration) (images + Fullscript links) | **Section blocks** with image accessories + **context blocks** for metadata. Functional, not as visually rich. Can overflow into a modal. |
 | Category badges (colored) | **Custom emoji** per category (`:badge-curriculum:`, `:badge-nih:`, etc.). No colored text in Slack. |
 | TTS audio playback | Upload audio via `files.getUploadURLExternal` → `files.completeUploadExternal`. Slack renders inline MP3 player. |
 
@@ -180,7 +180,7 @@ The goal: turn every NTP with a Nutri-Q subscription into a practitioner who wie
 
 ### Current Nutri-Q State
 
-Nutri-Q is NTA's proprietary client management platform, brought in-house in March 2024. Core capabilities: NAQ V2 (300+ questions → Symptom Burden Graphs across Five Foundations and body systems), Symptom Burden Comparison Reports, practice management (scheduling, HIPAA-compliant document sharing, Stripe billing), Food & Mood Journal, and Fullscript/Practice Better integrations.
+Nutri-Q is NTA's proprietary client management platform, brought in-house in March 2024. Core capabilities: NAQ V2 (300+ questions → Symptom Burden Graphs across Five Foundations and body systems), Symptom Burden Comparison Reports, practice management (scheduling, HIPAA-compliant document sharing, Stripe billing), Food & Mood Journal, and [Fullscript](TECHNICAL.md#supplement-protocol-cards-fullscript-integration)/Practice Better integrations.
 
 Key gaps: no intelligent interpretation of NAQ results (the SBG is a visualization, not an analysis), static brand-authored recommendation templates, no natural-language querying of client data, no cross-client pattern analysis, and no public API.
 
@@ -215,7 +215,7 @@ The system proactively analyzes client data and surfaces insights without the pr
 - **NAQ Interpretation Engine:** When a client completes the NAQ, automatically generate a narrative clinical summary identifying priority foundations, likely imbalances, cascading effects, and recommended assessment focus — with citations to specific curriculum modules, Dr. Gaby protocols, and NIH evidence. This is the RAG pipeline triggered by structured data instead of a natural-language question.
 - **Food & Mood Journal Analysis:** NLP on journal entries to surface patterns: "Jane has mentioned bloating after meals 8 times in the last 2 weeks, primarily after dairy and wheat. Cross-referencing with her elevated Upper GI score..."
 - **Progress Tracking Intelligence:** On follow-up NAQ, generate comparison analysis with percentage changes per category and protocol effectiveness assessment.
-- **Smart Protocol Generation:** Dynamically generate supplement + food + lifestyle protocols based on the specific combination of elevated SBG categories, drawing on Dr. Gaby (1,420 chunks covering 300+ conditions), NTP curriculum, and NIH evidence.
+- **Smart Protocol Generation:** Dynamically generate supplement + food + lifestyle protocols based on the specific combination of elevated SBG categories, drawing on [Dr. Gaby](KNOWLEDGE-BASE.md#separate-clinical-reference--dr-gaby-1420-entries) (1,420 chunks covering 300+ conditions), [NTP curriculum](KNOWLEDGE-BASE.md#nta-curriculum--1777-entries), and [NIH evidence](KNOWLEDGE-BASE.md#nih-office-of-dietary-supplements--672-entries).
 
 ### Nutri-Q API Requirements
 
@@ -357,7 +357,7 @@ This is **not** semantic embedding — it's traditional feature engineering. Eac
 
 **Approach 2: Narrative Embeddings (Qualitative Similarity)**
 
-Generate a clinical summary paragraph from the client's profile and embed it using `text-embedding-3-large` (the same model powering the RAG knowledge base):
+Generate a clinical summary paragraph from the client's profile and embed it using [`text-embedding-3-large`](TECHNICAL.md#2-query-embedding-text-embedding-3-large-3072-dimensions) (the same model powering the RAG knowledge base):
 
 ```
 "38-year-old female presenting with significant upper GI dysfunction (24/30) and

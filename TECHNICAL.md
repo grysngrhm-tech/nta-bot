@@ -1,13 +1,13 @@
 # NTA Bot — Technical Architecture
 
 > How the system works — pipeline design, retrieval strategy, and infrastructure decisions.
-> For a general overview, see [README.md](README.md). For knowledge base contents, see [KNOWLEDGE-BASE.md](KNOWLEDGE-BASE.md). For practical user guidance, see [USER_GUIDE.md](USER_GUIDE.md). For future directions, see [RAG_ROADMAP.md](RAG_ROADMAP.md).
+> For a general overview, see [README.md](README.md). For knowledge base contents, see [KNOWLEDGE-BASE.md](KNOWLEDGE-BASE.md). For practical user guidance, see [USER_GUIDE.md](USER_GUIDE.md). For the platform roadmap, see [RAG_ROADMAP.md](RAG_ROADMAP.md).
 
 ## How It Works
 
 Every query follows the same fixed path: **reformulate → retrieve → rerank → synthesize → respond**. There are no agent loops, no multi-step reasoning chains, no variable execution paths. The pipeline reformulates the user's question into optimized search terms (while preserving the original for later steps), retrieves 30 candidates via hybrid search, reranks them against the user's original question with clinical intelligence scoring, enforces source diversity by intent, and synthesizes the top 10 into a structured JSON response with cited sources. A typical query completes in about 14 seconds — a **4.7x speedup** over the previous Langchain agent architecture (80s average, 140s worst case).
 
-The backend (Supabase knowledge base + n8n retrieval pipeline) and frontend (GitHub Pages PWA) are fully decoupled. The current chat app is one consumer of that pipeline. The same search, reranking, and synthesis infrastructure could serve different interfaces — each with its own system prompt and UI — without touching the retrieval layer. See [RAG Roadmap](RAG_ROADMAP.md) for specifics.
+The backend (Supabase knowledge base + n8n retrieval pipeline) and frontend (GitHub Pages PWA) are fully decoupled. The current chat app is one consumer of that pipeline. The same search, reranking, and synthesis infrastructure could serve different interfaces — each with its own system prompt and UI — without touching the retrieval layer. See the [Platform Roadmap](RAG_ROADMAP.md#the-platform-thesis) for the phased plan.
 
 ## System Architecture
 

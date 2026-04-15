@@ -17,7 +17,7 @@ NTA Bot is a search and synthesis engine for NTA's entire body of knowledge. Ask
 
 It replaces the manual process of searching through lecture recordings, PDF transcripts, and scattered reference materials. The bot searches a curated knowledge base of 6,387 entries, synthesizes the best matches into a clear response, and cites every source so the answer can be verified. It does not use the web or generate from general AI training data. If the knowledge base doesn't cover a topic, the bot says so rather than guessing.
 
-The chat app is the first interface, but the real achievement is the layer underneath: a unified, curated knowledge base with a reusable retrieval pipeline. The same backend could power future NTA tools — student aids, instructor dashboards, practitioner support inside Nutri-Q — each querying the same knowledge with different constraints. The [RAG Roadmap](RAG_ROADMAP.md) maps out what that looks like.
+The chat app is the first interface, but the real achievement is the layer underneath: a unified, curated knowledge base with a reusable retrieval pipeline. The same backend can serve multiple surfaces — a [Slack bot](RAG_ROADMAP.md#phase-1-slack-bot) for staff, [AI integration into Nutri-Q](RAG_ROADMAP.md#phase-2-practitioner-intelligence--nutri-q) for practitioners, and [curriculum tools in Canvas and Circle](RAG_ROADMAP.md#phase-3-curriculum-intelligence) for students and instructors — each querying the same knowledge with different constraints. The [Platform Roadmap](RAG_ROADMAP.md) maps out the phased plan.
 
 ## Why This Matters
 
@@ -73,7 +73,7 @@ See the [User Guide](USER_GUIDE.md) for practical tips on getting the best answe
 | Use the bot effectively | **[User Guide](USER_GUIDE.md)** — asking better questions, interpreting answers, using features |
 | Understand how it works | **[Technical Architecture](TECHNICAL.md)** — RAG pipeline, retrieval strategy, infrastructure |
 | Know what's in the knowledge base | **[Knowledge Base](KNOWLEDGE-BASE.md)** — source inventory, scope, extraction, licensing |
-| See where this goes next | **[RAG Roadmap](RAG_ROADMAP.md)** — future NTA tools built on the same backend |
+| See where this goes next | **[Platform Roadmap](RAG_ROADMAP.md)** — Slack bot, Nutri-Q AI, Canvas/Circle integration, and beyond |
 
 ## How to Access
 
