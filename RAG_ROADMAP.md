@@ -252,54 +252,66 @@ Practitioner access to the knowledge base is gated by the same entitlement syste
 
 ---
 
-## Phase 3: Curriculum Intelligence — Circle
+## Phase 3: Curriculum Intelligence
 
-**Priority: Exploration. Prove the integration works, then evaluate whether it can replace Canvas.**
+**Priority: Exploration. Bring the AI assistant to where curriculum already lives.**
 
-NTA uses Canvas for instructor-led education and Circle for the membership community and on-demand content. Canvas handles what Circle cannot: robust assessment, grading, and detailed progress tracking. The question is whether an AI integration into Circle can close those gaps.
+NTA uses Canvas for instructor-led education and Circle for the membership community and on-demand content. Both platforms support integration, and the AI assistant can enhance both — serving different roles in each.
 
-### Circle's LMS Limitations
+### Canvas Integration (Instructor-Led Curriculum)
 
-| Capability | Canvas | Circle |
-|-----------|--------|--------|
-| Quiz question types | 10+ (essay, matching, fill-blank, calculated, ordering) | 2 (single/multi-answer multiple choice) |
-| Automated grading | Full gradebook with weighted categories, rubrics, late policies | Basic pass/fail only |
-| Assignment submission | File uploads, text entry, media, peer review | No assignment feature |
-| Certificates | Built-in with templates | Not available (requires external tool + Zapier) |
-| Progress dashboards | Detailed per-student analytics, at-risk indicators | Basic — no per-student API endpoint |
-| Quiz API | Full CRUD | No quiz API at all |
+Canvas supports LTI 1.3 (Learning Tools Interoperability), which lets external tools embed directly inside courses as native-feeling components. This is the natural path for bringing the knowledge base to students — it enhances the existing LMS rather than replacing anything.
 
-Circle's strengths are community, content delivery (drip schedules, video completion tracking, sequential progression), and the membership model. Its weaknesses are exactly the instructor-mediated evaluation features that an AI system could potentially provide.
+**The `top_navigation` placement** is the most compelling integration point. It opens a persistent 320px side drawer alongside course content — students can browse their modules, watch lectures, and read materials while the AI assistant stays open in a panel on the right. Canvas even provides a `lti.getPageContent` API that lets the tool read what page the student is currently viewing, enabling page-aware answers.
 
-### The AI-as-Assessment-Engine Concept
+Other Canvas LTI placements:
 
-Instead of waiting for Circle to build LMS features it may never prioritize, use the RAG infrastructure to provide intelligent assessment that goes beyond what either Canvas or Circle offer natively:
+| Placement | Experience |
+|-----------|-----------|
+| `top_navigation` | Persistent side drawer (320px) — stays open while browsing course content |
+| `course_navigation` | Left sidebar tab (e.g., "NTA Assistant") — opens full-page in iframe |
+| `link_selection` | Inline module item — instructors place the bot inside specific modules |
 
-1. **AI-Driven Comprehension Assessment:** After a student completes a lesson, the AI generates targeted questions from the curriculum chunks covering that lesson. Students answer in natural language. The AI evaluates comprehension using the retrieval pipeline, checking responses against source material. Not static quiz banks — dynamically generated, adapting to what the student has covered.
+**What Canvas gives us that simplifies the architecture:**
+- **Module progress API:** Canvas knows exactly where each student is — `course_progress` returns `requirement_count` and `requirement_completed_count`, and the Modules API returns per-student module state (`locked`, `unlocked`, `started`, `completed`). No need to track progress via webhooks.
+- **Grade passback (AGS):** If the AI generates comprehension assessments, scores can be written directly back to the Canvas gradebook via the Assignment and Grade Services API.
+- **Student roster (NRPS):** Names and Role Provisioning Services provides the full course roster with roles.
+- **Analytics API:** Per-student page views, participation, quiz statistics, assignment grade distributions.
 
-2. **Adaptive Study Sessions:** Students query the AI about topics they're struggling with. The system knows their position in the curriculum (via Circle `lesson_completion` webhook → entitlement profile update) and scopes responses to material they've covered. Persistent struggle on a topic flags it for review.
+**Implementation is lightweight.** The LTI tool is a thin wrapper — handle OIDC auth (libraries like `ltijs` for Node.js handle this), then serve the existing chat UI in an iframe that posts to the same n8n webhooks. On launch, Canvas passes student identity, course context, and role via signed JWT. The tool calls Canvas REST API for module progress and feeds it to the RAG pipeline for curriculum-aware filtering.
 
-3. **Instructor Dashboard Intelligence:** Aggregate student queries across a cohort to show where students are struggling. "42% of Module 3 students asked about bile acid conjugation — consider adding supplementary material."
+**Private installation — no marketplace needed.** Canvas admin creates a Developer Key (LTI 1.3), installs by Client ID. Can be deployed account-wide or per-course. Instructors can optionally place the bot as a module item within specific modules using Deep Linking.
+
+**Real-world precedent:** University of Michigan's Maizey is exactly this pattern — a RAG-based AI tutor embedded in Canvas courses via LTI. Instructors configure it in under 10 minutes, students access it from within Canvas, each course gets its own context.
+
+**What this enables for students and instructors:**
+
+1. **Curriculum-Aware Study Aid:** Students ask questions while studying. The system knows their course and module position (from Canvas APIs) and scopes answers to material they've covered, using the entitlement system described in Knowledge Access Control.
+
+2. **Adaptive Assessment:** After completing a lesson, the AI generates targeted comprehension questions from the curriculum chunks. Students answer in natural language. The AI evaluates responses against source material — not static quiz banks, but dynamically generated from the knowledge base. Scores can be written back to Canvas via AGS.
+
+3. **Instructor Dashboard Intelligence:** Aggregate student queries across a cohort to surface where students are struggling. "42% of Module 3 students asked about bile acid conjugation — consider adding supplementary material."
 
 4. **Cross-Program Consistency Check:** Instructors query the AI to see how a concept is taught across all programs — ensuring consistent terminology and aligned depth.
 
-### Circle API Integration Points
+### Circle Integration (Community & On-Demand Content)
 
-Circle's Admin API v2 (requires Business+ plan at $199/mo) supports the hooks we need:
+Circle serves NTA's membership community and on-demand courses — a different audience from the instructor-led Canvas curriculum. The AI assistant can serve this audience through Circle's API:
 
-**Inbound (Circle → RAG backend):** `lesson_completion`, `section_completion`, `course_completion`, `subscription.activated` webhooks → update entitlement profiles. Member API → read student profiles, group membership, tags.
+**Inbound (Circle → RAG backend):** `lesson_completion`, `section_completion`, `course_completion`, `subscription.activated` webhooks → update entitlement profiles and unlock on-demand course content in the knowledge base. Member API → read profiles, group membership, tags.
 
-**Outbound (RAG backend → Circle):** Admin API → create posts in spaces. Headless Member API → embed AI interactions in a custom frontend. DM/notification → send assessment results.
+**Outbound (RAG backend → Circle):** Admin API → post AI-generated content to spaces. Headless Member API (Business+ plan, $199/mo) → embed AI interactions in a custom frontend. DM/notification → send study prompts.
 
-**What Circle's API cannot do:** Create/manage quizzes, query student progress via REST (must track via webhooks), inject custom UI into the course player, access quiz scores. The assessment system lives **outside Circle's native quiz feature** — as a custom frontend using the Headless API, or as bot-style interactions within Circle's post/comment system.
+Circle's API does not support quiz management, student progress queries via REST, or custom UI injection into the course player. For on-demand courses, the AI assistant would operate as a bot-style interaction within Circle spaces or as a custom frontend using the Headless API — not through Circle's native course features.
 
-Student and graduate access filtering follows the entitlement system described in Knowledge Access Control. Circle webhooks keep the student's progress record current; the retrieval pipeline applies the curriculum gate at query time.
+### Open Questions
 
-### Feasibility Assessment
+How the Canvas and Circle integrations evolve over time is a conversation for the curriculum and technology teams together. Some questions worth exploring:
 
-Replacing Canvas entirely requires: generating questions from curriculum content, evaluating natural-language responses, tracking scores for instructors, and meeting accreditation requirements. The first three are technically feasible. The fourth is an institutional constraint that needs independent evaluation.
-
-**Recommended approach:** Build the AI study aid and adaptive assessment alongside Canvas for one cohort. Measure whether AI-assessed comprehension correlates with Canvas exam scores. Use that data to evaluate the replacement path.
+- Which student populations benefit most from the AI assistant — instructor-led students, on-demand learners, or graduates continuing their education?
+- Does AI-assessed comprehension in Canvas correlate with traditional exam performance? Running the AI alongside Canvas for one cohort would provide data.
+- Are there accreditation requirements that constrain how AI can be used in assessment?
+- How should the AI assistant's role differ between instructor-led courses (where an instructor is available) and on-demand content (where it isn't)?
 
 ---
 
