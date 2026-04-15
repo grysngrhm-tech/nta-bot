@@ -6,11 +6,9 @@
 
 ---
 
-## What Already Exists
+## The Platform Thesis
 
-NTA Bot is a working internal tool. Staff use it today. But the more significant achievement is what sits behind the chat interface — a production-grade retrieval pipeline and curated knowledge base that is fully decoupled from any single frontend.
-
-In production right now:
+NTA Bot is a working internal tool. Staff use it today. But the more significant achievement is what sits behind the chat interface:
 
 - **[6,387 curated knowledge entries](KNOWLEDGE-BASE.md#overview)** with contextual retrieval prefixes across 5 source categories (curriculum, textbook, NIH, podcast, NTA reference)
 - A **[deterministic retrieval pipeline](TECHNICAL.md#rag-pipeline)** — hybrid search, clinical reranking, intent-aware diversity — returning cited answers in ~14 seconds
@@ -18,13 +16,9 @@ In production right now:
 - An **[832-product supplement catalog](KNOWLEDGE-BASE.md#supplement-product-catalog--832-products)** with fuzzy matching, producing protocol cards with real Fullscript product data
 - An **[analytics layer](TECHNICAL.md#analytics)** tracking every query with topic classification, source attribution, confidence scoring, and session context
 
----
+The chat app is one consumer of this pipeline. The pipeline doesn't know or care what called it — it receives a query, retrieves evidence, synthesizes an answer, and returns structured JSON with source metadata. Adding another consumer requires three things: **authentication, a system prompt, and a surface.** Everything else stays the same.
 
-## The Platform Thesis
-
-The chat app is one consumer of the retrieval pipeline. The pipeline doesn't know or care what called it — it receives a query, retrieves evidence, synthesizes an answer, and returns structured JSON with source metadata. Adding another consumer requires three things: **authentication, a system prompt, and a surface**. Everything else — knowledge base, embeddings, search function, reranking, diversity enforcement, analytics — stays the same.
-
-This roadmap proposes three new surfaces, each serving a different NTA stakeholder:
+This roadmap proposes three new surfaces:
 
 | Surface | Stakeholder | Value |
 |---------|-------------|-------|
@@ -33,8 +27,6 @@ This roadmap proposes three new surfaces, each serving a different NTA stakehold
 | **Circle AI** | Students + instructors | Curriculum-aware study aid and assessment engine |
 
 All three consume the same backend. All three feed the same analytics pipeline. All three respect the same knowledge access control system.
-
-The infrastructure investment — curating 6,387 knowledge entries, building the retrieval pipeline, proving it works in production — is already made. That infrastructure is the asset. Everything in this roadmap is about putting it to work in more places.
 
 ---
 
@@ -47,23 +39,20 @@ Every surface beyond the staff chat app requires an entitlement system. Students
 | Tier | User Type | Knowledge Base Scope |
 |------|-----------|---------------------|
 | **Staff** | NTA employees | Full knowledge base — all 6,387 chunks, all source types |
-| **NTP Student** | Enrolled in NTP program | NTP curriculum gated by current module + all textbooks, NIH, podcast, NTA reference |
-| **PHWC Student** | Enrolled in PHWC program | PHWC curriculum gated by current week + all textbooks, NIH, podcast, NTA reference |
-| **FOH Student** | Enrolled in FOH program | FOH curriculum gated by current module/day + NTA reference, podcast |
-| **NTP Graduate** | Completed NTP certification | Full NTP curriculum + all textbooks, NIH, podcast, NTA reference |
+| **Active Student** | Enrolled in a program | Program curriculum gated by current module + all textbooks, NIH, podcast, NTA reference |
+| **Graduate** | Completed certification | Full curriculum for their program + all textbooks, NIH, podcast, NTA reference |
 | **FNTP** | NTP + FCA certification | Same as NTP Graduate (FCA is hands-on — no additional text content) |
-| **PHWC Graduate** | Completed PHWC certification | Full PHWC curriculum + textbooks, NIH, podcast, NTA reference |
 | **Practitioner** | Active Nutri-Q subscription | Base scope by credential + any purchased on-demand course content |
 
 ### Curriculum Gating Logic
 
-Active students receive progressive access to curriculum content based on their position in the program. Reference materials (textbooks, NIH, podcast, NTA reference docs) are always available — these are equivalent to what a student could find in any library or open resource. Curriculum content — NTA's proprietary lecture material — is the gated layer.
+Active students receive progressive access to curriculum content based on their position in the program. Reference materials (textbooks, NIH, podcast, NTA reference docs) are always available — equivalent to what a student could find in any library. Curriculum content — NTA's proprietary lecture material — is the gated layer.
 
 **How it works at retrieval time:**
 
 1. The frontend passes the user's profile with each request: `program`, `current_module`, `current_week`, `certifications[]`, `purchased_courses[]`
 2. The retrieval pipeline applies a filter before hybrid search, scoping `nta_knowledge_chunks` by the user's entitlements
-3. Curriculum chunks are identified by `document_type = 'curriculum'` and `section_hierarchy[0]` (e.g., `'NTP Curriculum'`, `'PHWC Curriculum'`, `'FOH Curriculum'`)
+3. Curriculum chunks are identified by `document_type = 'curriculum'` and `section_hierarchy[0]` (e.g., `'NTP Curriculum'`, `'FOH Curriculum'`)
 4. Module/week position is encoded in `section_hierarchy[1]` (e.g., `'Digestion'`, `'Week 12'`)
 
 **Example — NTP student in Module 3 (Digestion):**
@@ -80,24 +69,21 @@ Accessible:
 Not accessible:
   - NTP Curriculum: Blood Sugar Regulation, Supplements, Sleep, Stress Management,
     A&P, Labs, NACA, Case Study, Foundations Review (future modules)
-  - PHWC Curriculum: all (different program)
-  - FOH Curriculum: all (different program, unless separately enrolled)
+  - Other program curricula (unless separately enrolled)
 ```
 
 ### On-Demand Course Unlocking
 
-When a graduate purchases an on-demand course (e.g., "Advanced Supplementation" on Circle), the system must immediately expand their knowledge base scope to include that course's content. The flow:
+When a graduate purchases an on-demand course (e.g., "Advanced Supplementation" on Circle), the system immediately expands their knowledge base scope:
 
 1. Circle fires a `subscription.activated` or custom webhook on purchase
 2. Webhook handler updates the user's entitlement profile: `purchased_courses[] += 'advanced-supplementation'`
 3. Next retrieval request includes the new course content in the filter scope
-4. No re-ingestion, no delay — the chunks already exist in the knowledge base, they just become visible
+4. No re-ingestion, no delay — the chunks already exist, they just become visible
 
-This means every piece of curriculum content in `nta_knowledge_chunks` needs a `course_id` or `access_scope` tag so the filter can match entitlements to chunks. This metadata can be backfilled onto existing chunks using the `section_hierarchy` and `document_name` fields that already encode program and module information.
+This requires every curriculum chunk in `nta_knowledge_chunks` to carry a `course_id` or `access_scope` tag. This metadata can be backfilled using the `section_hierarchy` and `document_name` fields that already encode program and module information.
 
 ### Implementation: Filter at the Database Level
-
-The cleanest implementation adds a Postgres function that wraps `nta_hybrid_search` with entitlement filtering:
 
 ```sql
 nta_entitled_search(
@@ -110,7 +96,7 @@ nta_entitled_search(
 )
 ```
 
-This function applies a WHERE clause on `section_hierarchy` and `document_type` before scoring, so non-entitled chunks never enter the candidate pool. The existing `nta_hybrid_search` function stays intact for staff access (no filter). The entitled variant calls the same scoring logic with a narrower input set.
+This function applies a WHERE clause on `section_hierarchy` and `document_type` before scoring, so non-entitled chunks never enter the candidate pool. The existing `nta_hybrid_search` function stays intact for staff access (no filter).
 
 ---
 
@@ -122,7 +108,7 @@ NTA's entire staff is remote and lives in Slack. The fastest way to put the know
 
 ### Architecture
 
-The Slack bot is an **n8n workflow adapter** on top of the existing pipeline. No changes to the retrieval backend, synthesis model, or knowledge base. The new workflow receives Slack events, calls the existing `/webhook/nta-chat` endpoint, transforms the response into Slack Block Kit format, and posts back.
+The Slack bot is an **n8n workflow adapter** on top of the existing pipeline. No changes to the retrieval backend, synthesis model, or knowledge base. n8n has native Slack support: a **Slack Trigger node** receives events via HTTP (Event Subscriptions), and a **Slack action node** posts messages, updates messages, uploads files, and handles threading.
 
 ```
 Slack Event (DM or /nta slash command)
@@ -140,77 +126,37 @@ Slack Event (DM or /nta slash command)
 
 Two entry points, both routing to the same backend:
 
-1. **Direct message:** Staff opens a DM with the NTA Bot app. Each DM thread is a conversation session. Thread `ts` becomes the session ID for memory and analytics.
-2. **Slash command:** `/nta <question>` works in any channel. Responds in an ephemeral message (visible only to the user) or a threaded reply, depending on context.
+1. **Direct message:** Staff DMs the NTA Bot app. Each thread is a conversation session (`thread_ts` = session ID).
+2. **Slash command:** `/nta <question>` works in any channel. Responds ephemeral or in-thread. The 3-second Slack timeout means we acknowledge immediately and deliver the real answer async (~14s later).
 
 No dedicated channel. No password gate — Slack workspace membership is the access control.
 
 ### Slack Block Kit Mapping
 
-The NTA Bot web UI renders markdown answers, collapsible source accordions, follow-up chips, and protocol cards. Slack doesn't support all of these natively. Here's the mapping:
+The NTA Bot web UI renders markdown answers, collapsible source accordions, follow-up chips, and protocol cards. Here's how each maps to Slack:
 
 | Web UI Feature | Slack Approach |
 |---------------|----------------|
-| Markdown answer (bold, headings, lists) | **Markdown block** (Slack added this Feb 2025 — accepts standard markdown including headings, nested lists, code blocks, tables). 12,000 character cumulative limit per payload. |
-| Source citation accordions | **No collapsible sections in Slack.** Two options: (1) Compact inline summary showing source count and top categories, with a **"View Sources" button** that opens a **modal** (100 blocks — plenty of room for the full grouped source layout). (2) Sources posted as a separate threaded reply, keeping the main answer clean. |
-| Follow-up chips (4 buttons) | **Actions block** with 4 button elements. Each button's `value` carries the meta prompt. On click, Slack sends an interaction payload → n8n calls the unified pipeline with `mode: "enrichment"` → response posted as a new threaded reply. |
-| Protocol cards (supplement images + Fullscript links) | **Section blocks** with image accessories + **context blocks** for metadata (brand, form, size). Not as visually rich as the web cards, but functional. Protocol details can overflow into a modal if needed. |
-| Category badges (colored) | **No colored text in Slack.** Use custom emoji per category: `:badge-curriculum:`, `:badge-textbook:`, `:badge-nih:`, `:badge-podcast:`, `:badge-web:`. Upload the badge SVGs as custom workspace emoji. |
-| TTS audio playback | **Supported.** Upload audio via `files.getUploadURLExternal` → `files.completeUploadExternal`. Slack renders an inline audio player for MP3 files. |
-| Loading indicator | **Ephemeral acknowledgment message:** "Searching the knowledge base..." posted immediately on slash command (Slack requires a response within 3 seconds). Replaced or followed by the real answer ~14 seconds later. |
+| Markdown answer (bold, headings, lists) | **Markdown block** (added Feb 2025 — accepts standard markdown including headings, nested lists, code blocks, tables). 12K character limit per payload. |
+| Follow-up chips (4 buttons) | **Actions block** with 4 button elements. Each button's `value` carries the meta prompt. Click → interaction payload → n8n calls unified pipeline with `mode: "enrichment"` → threaded reply. |
+| Protocol cards (images + Fullscript links) | **Section blocks** with image accessories + **context blocks** for metadata. Functional, not as visually rich. Can overflow into a modal. |
+| Category badges (colored) | **Custom emoji** per category (`:badge-curriculum:`, `:badge-nih:`, etc.). No colored text in Slack. |
+| TTS audio playback | Upload audio via `files.getUploadURLExternal` → `files.completeUploadExternal`. Slack renders inline MP3 player. |
 
-### Source Citation in Slack — Detailed Design
+**Source citations** need the most rethinking — Slack has no collapsible sections. The recommended layout:
 
-The web UI's grouped accordion layout won't translate to Slack. The recommended approach:
-
-**Main answer message:**
 ```
-[Markdown block: full answer text]
-[Divider]
-[Context block: "5 sources cited — Curriculum (2), Textbook (2), NIH (1)"]
-[Actions block: "View Sources" button | "Deep Dive" | "Protocol" | "Assessment Guide" | "Wildcard"]
+Main answer message:
+  [Markdown block: full answer text]
+  [Divider]
+  [Context block: "5 sources cited — Curriculum (2), Textbook (2), NIH (1)"]
+  [Actions block: "View Sources" button | "Deep Dive" | "Protocol" | "Assessment Guide" | "Wildcard"]
+
+"View Sources" modal (on button click, 100 blocks available):
+  [Grouped by category with badge emoji, document names, and section paths]
 ```
-
-**"View Sources" modal (on button click):**
-```
-[Header: "Sources"]
-[Section: ":badge-curriculum: Curriculum — 2 documents, 3 sections"]
-  [Context: "NTP Curriculum > Digestion > Week 2, Video 3"]
-  [Context: "NTP Curriculum > Digestion > Week 3, Video 1"]
-  [Context: "PHWC Curriculum > Week 12 > Video 2"]
-[Divider]
-[Section: ":badge-textbook: Textbook — 2 documents, 2 sections"]
-  [Context: "OpenStax A&P > Chapter 23: The Digestive System > 23.7 Chemical Digestion"]
-  [Context: "Dr. Gaby Nutritional Medicine > Part 4: GI > Hypochlorhydria"]
-[Divider]
-[Section: ":badge-nih: NIH — 1 document, 1 section"]
-  [Context: "Zinc — Health Professional Fact Sheet > Zinc and Immune Function"]
-```
-
-This preserves the full source detail from the web UI while keeping the main Slack message clean and scannable.
-
-### Analytics Integration
-
-Slack queries log to the same `nta_query_log` table. Additional fields:
-
-- `source_surface: 'slack'` — distinguishes Slack queries from web chat queries
-- `slack_user_id` — maps to the Slack user (enables per-user analytics without PII)
-- `slack_thread_ts` — thread identifier for session reconstruction
-
-This is the first consumer that feeds the analytics pipeline from a surface other than the web chat. The `source_surface` field becomes the segmentation key for all future multi-surface analytics.
-
-### n8n Implementation
-
-n8n has native Slack support:
-
-- **Slack Trigger node** (`n8n-nodes-base.slackTrigger`) — receives events via HTTP (Slack Event Subscriptions). Configure the n8n webhook URL in the Slack app's Event Subscriptions settings. Supports `app_mention`, `message`, and any Slack event type. Verifies Slack signing secret (n8n 1.106.0+).
-- **Slack node** (action) — posts messages, updates messages, uploads files, handles threading via `thread_ts`. Supports Block Kit JSON payloads.
-
-The Slack adapter workflow sits alongside the existing Main Agent workflow. It doesn't modify the pipeline — it translates between Slack's event format and the existing webhook interface.
 
 ### Slack App Configuration
-
-The app needs these scopes and features:
 
 **Bot Token Scopes:** `app_mentions:read`, `chat:write`, `commands`, `files:read`, `files:write`, `im:history`, `im:read`, `im:write`, `users:read`
 
@@ -220,9 +166,9 @@ The app needs these scopes and features:
 
 **Interactivity:** Request URL pointing to n8n webhook for button clicks, modal submissions
 
-**App Home:** Home tab with knowledge base overview, sample questions, and category tiles (mirrors the web UI's welcome panel). Published via `views.publish()` on `app_home_opened` event.
+**App Home:** Home tab with knowledge base overview and sample questions. Published via `views.publish()` on `app_home_opened` event.
 
-**Deployment:** Internal workspace install only. Single bot token (`xoxb-...`). No Marketplace listing, no OAuth flow, no public distribution.
+**Deployment:** Internal workspace install only. Single bot token (`xoxb-...`). No Marketplace listing.
 
 ---
 
@@ -230,28 +176,13 @@ The app needs these scopes and features:
 
 **Priority: Highest long-term value. This is where the knowledge base becomes a clinical superpower.**
 
-The goal: turn every NTP with a Nutri-Q subscription into a practitioner who wields the entire NTA knowledge base — 6,387 curated entries across curriculum, textbooks, NIH evidence, clinical references, and podcast insights — to analyze their clients, suggest solutions, and help reverse the trend of reversible poor health.
+The goal: turn every NTP with a Nutri-Q subscription into a practitioner who wields the entire NTA knowledge base to analyze their clients, suggest evidence-backed solutions, and help reverse the trend of reversible poor health.
 
 ### Current Nutri-Q State
 
-Nutri-Q is NTA's proprietary client management platform, brought in-house in March 2024 after separating from the previous vendor (Robo Wellness). Current tech stack is a JavaScript SPA (likely SvelteKit) with mobile apps on iOS and Android.
+Nutri-Q is NTA's proprietary client management platform, brought in-house in March 2024. Core capabilities: NAQ V2 (300+ questions → Symptom Burden Graphs across Five Foundations and body systems), Symptom Burden Comparison Reports, practice management (scheduling, HIPAA-compliant document sharing, Stripe billing), Food & Mood Journal, and Fullscript/Practice Better integrations.
 
-**What it does today:**
-- **NAQ (Nutritional Assessment Questionnaire):** 300+ questions evaluating nutrient status and organ system imbalances. Produces a Symptom Burden Graph (SBG) — a visual bar chart showing severity across body system categories. NAQ V2 produces two graphs: Foundations SBG and Body Systems SBG, aligned with NTA's Five Foundations framework.
-- **Symptom Burden Comparison Report:** Two-page output ranking issues by score and identifying potential nutritional deficiencies by priority.
-- **Practice management:** Client profiles, appointment scheduling (Google Calendar sync), HIPAA-compliant document sharing, Stripe billing.
-- **Food & Mood Journal:** Clients log meals and feelings; practitioners see charts over time.
-- **Fullscript integration:** OAuth-based supplement protocol creation with brand-authored recommendation templates.
-- **Practice Better integration:** API-key-based NAQ delivery within Practice Better's workflow.
-
-**What it lacks:**
-- No intelligent interpretation of NAQ results — the SBG is a visualization, not an analysis
-- Static recommendation templates — brand-authored, not dynamically generated from the client's specific pattern
-- No natural-language querying of client data
-- No cross-client pattern analysis
-- No lab results integration or tracking
-- No telehealth or real-time messaging
-- No public API (integrations are vendor-specific: Fullscript OAuth, Practice Better API key)
+Key gaps: no intelligent interpretation of NAQ results (the SBG is a visualization, not an analysis), static brand-authored recommendation templates, no natural-language querying of client data, no cross-client pattern analysis, and no public API.
 
 ### The AI Integration Vision
 
@@ -259,9 +190,8 @@ This is not about bolting a chatbot onto the existing Nutri-Q. The AI layer shou
 
 #### Mode 1: In-Context Knowledge Assistant
 
-A chat interface embedded within Nutri-Q, similar to the existing NTA Bot but context-aware. The practitioner can ask questions while reviewing a specific client's data, and the system incorporates that context.
+A chat interface embedded within Nutri-Q, context-aware of the client being reviewed. The practitioner asks questions while viewing a client's data, and the system incorporates that context automatically:
 
-**Example interaction:**
 ```
 Practitioner is viewing Client Jane's NAQ results.
 SBG shows elevated: Upper GI (stomach), Liver/Gallbladder, Sugar Handling.
@@ -272,62 +202,30 @@ System context automatically includes:
   - Jane's SBG scores and top elevated categories
   - Jane's food & mood journal entries (last 30 days)
   - Jane's current supplement protocol (if any)
-  - Practitioner's credential tier (NTP vs FNTP — affects scope of recommendations)
-
-RAG retrieval scoped to:
-  - Dr. Gaby: digestive conditions, liver support, blood sugar protocols
-  - NTP Curriculum: Digestion module, BSR module, Supplements module
-  - NIH: relevant nutrient fact sheets
-  - Podcast: episodes on gut health, blood sugar
+  - Practitioner's credential tier (affects scope of recommendations)
 
 Response: Structured protocol with supplement recommendations (matched to Fullscript catalog),
 dietary guidance, lifestyle modifications — all grounded in NTA curriculum and clinical references.
 ```
 
-The key difference from the standalone chat bot: **client context is injected automatically.** The practitioner doesn't need to describe the client's situation — the system already has the NAQ data, journal entries, and history.
-
 #### Mode 2: Automated Clinical Intelligence
 
-The system proactively analyzes client data and surfaces insights within the Nutri-Q UI — without the practitioner asking.
+The system proactively analyzes client data and surfaces insights without the practitioner asking:
 
-**NAQ Interpretation Engine:**
-When a client completes the NAQ, the system automatically generates a narrative clinical summary:
-
-```
-"Jane's Foundations SBG indicates primary dysfunction in digestion (Upper GI: 24/30,
-Liver/Gallbladder: 18/30) with downstream impact on sugar handling (19/30). The pattern
-suggests likely hypochlorhydria with bile insufficiency cascading into impaired fat-soluble
-vitamin absorption and blood sugar dysregulation. Priority foundations: Digestion first,
-then Blood Sugar Regulation.
-
-Recommended assessment focus: gastric pH, bile output, fasting glucose trends.
-See: NTP Curriculum > Digestion > Week 2, Video 3 (HCl assessment protocol)
-     Dr. Gaby > Part 4: GI Conditions > Hypochlorhydria
-     NIH > Zinc Fact Sheet (cofactor for HCl production)"
-```
-
-This is the RAG pipeline doing what it already does — retrieving relevant evidence and synthesizing a grounded answer — but triggered by structured client data instead of a natural-language question. The "query" is constructed from the NAQ scores: elevated categories become search terms, score severity determines retrieval emphasis.
-
-**Food & Mood Journal Analysis:**
-NLP analysis of journal text entries to surface patterns the practitioner might miss. "Jane has mentioned bloating after meals 8 times in the last 2 weeks, primarily after meals containing dairy and wheat. Cross-referencing with her elevated Upper GI score..."
-
-**Progress Tracking Intelligence:**
-When a follow-up NAQ is completed, the system generates a comparison analysis: "Jane's Upper GI score decreased from 24 to 16 (-33%) over 3 months. Liver/Gallbladder dropped from 18 to 11 (-39%). Sugar handling improved from 19 to 13 (-32%). The digestive protocol is working — consider advancing to blood sugar focus."
-
-**Smart Protocol Generation:**
-Go beyond static templates. Dynamically generate supplement + food + lifestyle protocols based on the specific combination of elevated SBG categories, drawing on Dr. Gaby's clinical references (1,420 chunks covering 300+ conditions), NTP curriculum protocols, and NIH evidence. Each recommendation is grounded in specific knowledge base entries with citations.
+- **NAQ Interpretation Engine:** When a client completes the NAQ, automatically generate a narrative clinical summary identifying priority foundations, likely imbalances, cascading effects, and recommended assessment focus — with citations to specific curriculum modules, Dr. Gaby protocols, and NIH evidence. This is the RAG pipeline triggered by structured data instead of a natural-language question.
+- **Food & Mood Journal Analysis:** NLP on journal entries to surface patterns: "Jane has mentioned bloating after meals 8 times in the last 2 weeks, primarily after dairy and wheat. Cross-referencing with her elevated Upper GI score..."
+- **Progress Tracking Intelligence:** On follow-up NAQ, generate comparison analysis with percentage changes per category and protocol effectiveness assessment.
+- **Smart Protocol Generation:** Dynamically generate supplement + food + lifestyle protocols based on the specific combination of elevated SBG categories, drawing on Dr. Gaby (1,420 chunks covering 300+ conditions), NTP curriculum, and NIH evidence.
 
 ### Nutri-Q API Requirements
 
-The rebuilt Nutri-Q needs an API layer that supports bidirectional data flow with the RAG backend:
+The rebuilt Nutri-Q needs bidirectional data flow with the RAG backend:
 
-**Nutri-Q → RAG Backend (client context for queries):**
+**Nutri-Q → RAG Backend (client context):**
 ```json
 {
   "client_id": "uuid",
-  "naq_scores": {
-    "upper_gi": 24, "liver_gallbladder": 18, "sugar_handling": 19, ...
-  },
+  "naq_scores": { "upper_gi": 24, "liver_gallbladder": 18, "sugar_handling": 19 },
   "journal_entries": [ { "date": "...", "meals": "...", "mood": "..." } ],
   "current_protocols": [ { "supplement": "...", "dose": "...", "timing": "..." } ],
   "lab_results": [ { "test": "...", "value": "...", "date": "..." } ],
@@ -336,12 +234,12 @@ The rebuilt Nutri-Q needs an API layer that supports bidirectional data flow wit
 }
 ```
 
-**RAG Backend → Nutri-Q (analysis results for display):**
+**RAG Backend → Nutri-Q (analysis results):**
 ```json
 {
-  "naq_interpretation": { "summary": "...", "priority_foundations": [...], "citations": [...] },
+  "naq_interpretation": { "summary": "...", "priority_foundations": [], "citations": [] },
   "protocol_recommendations": {
-    "supplements": [ { "name": "...", "dose": "...", "fullscript_match": {...}, "rationale": "..." } ],
+    "supplements": [ { "name": "...", "dose": "...", "fullscript_match": {}, "rationale": "..." } ],
     "dietary": [ { "recommendation": "...", "rationale": "..." } ],
     "lifestyle": [ { "recommendation": "...", "rationale": "..." } ]
   },
@@ -350,11 +248,7 @@ The rebuilt Nutri-Q needs an API layer that supports bidirectional data flow wit
 }
 ```
 
-### Credential-Gated Access
-
-Practitioners see knowledge base content matching their credential tier and purchased courses. An NTP who purchases "Advanced Supplementation" on Circle immediately unlocks that curriculum in their Nutri-Q AI assistant — same entitlement system described in the Knowledge Access Control section.
-
-The Fullscript supplement catalog (832 products, `match_supplement()` RPC) is available to all practitioners regardless of tier. Protocol card matching, dosing data, and Fullscript links are not gated — the clinical context and curriculum rationale around them are.
+Practitioner access to the knowledge base is gated by the same entitlement system described in Knowledge Access Control — credentials determine base scope, on-demand course purchases expand it. The Fullscript supplement catalog is available to all practitioners regardless of tier.
 
 ---
 
@@ -362,126 +256,50 @@ The Fullscript supplement catalog (832 products, `match_supplement()` RPC) is av
 
 **Priority: Exploration. Prove the integration works, then evaluate whether it can replace Canvas.**
 
-NTA currently uses Canvas for instructor-led online education and has migrated the membership community and on-demand content to Circle. Canvas handles what Circle cannot: instructor-student interaction with grading, robust assessment/testing, and detailed progress tracking. The question is whether an AI integration into Circle can close those gaps.
+NTA uses Canvas for instructor-led education and Circle for the membership community and on-demand content. Canvas handles what Circle cannot: robust assessment, grading, and detailed progress tracking. The question is whether an AI integration into Circle can close those gaps.
 
 ### Circle's LMS Limitations
 
-Circle is a community platform with course features, not a learning management system. The gaps that keep NTA on Canvas:
-
 | Capability | Canvas | Circle |
 |-----------|--------|--------|
-| Quiz question types | 10+ (essay, matching, fill-blank, calculated, ordering) | 2 (single-answer, multi-answer multiple choice) |
+| Quiz question types | 10+ (essay, matching, fill-blank, calculated, ordering) | 2 (single/multi-answer multiple choice) |
 | Automated grading | Full gradebook with weighted categories, rubrics, late policies | Basic pass/fail only |
 | Assignment submission | File uploads, text entry, media, peer review | No assignment feature |
 | Certificates | Built-in with templates | Not available (requires external tool + Zapier) |
 | Progress dashboards | Detailed per-student analytics, at-risk indicators | Basic — no per-student API endpoint |
-| Proctored exams | LockDown Browser, Honorlock integrations | Not available |
-| SCORM/LTI | Full support | Not available |
 | Quiz API | Full CRUD | No quiz API at all |
 
-Circle's strengths are community (discussions, events, chat), content delivery (drip schedules, video completion tracking, sequential progression), and the membership/subscription model. Its weaknesses are exactly the instructor-mediated evaluation features that an AI system could potentially provide.
+Circle's strengths are community, content delivery (drip schedules, video completion tracking, sequential progression), and the membership model. Its weaknesses are exactly the instructor-mediated evaluation features that an AI system could potentially provide.
 
 ### The AI-as-Assessment-Engine Concept
 
-Instead of waiting for Circle to build LMS features it may never prioritize, use the RAG infrastructure to provide intelligent assessment that goes beyond what either Canvas or Circle offer natively.
+Instead of waiting for Circle to build LMS features it may never prioritize, use the RAG infrastructure to provide intelligent assessment that goes beyond what either Canvas or Circle offer natively:
 
-**What this could look like:**
+1. **AI-Driven Comprehension Assessment:** After a student completes a lesson, the AI generates targeted questions from the curriculum chunks covering that lesson. Students answer in natural language. The AI evaluates comprehension using the retrieval pipeline, checking responses against source material. Not static quiz banks — dynamically generated, adapting to what the student has covered.
 
-1. **AI-Driven Comprehension Assessment:** After a student completes a lesson in Circle, the AI generates targeted questions based on the lesson content (pulled from the knowledge base). These aren't static quiz banks — they're dynamically generated from the curriculum chunks, adapting to what the student has covered. The student answers in natural language. The AI evaluates comprehension using the same retrieval pipeline that powers clinical answers, checking the student's response against the curriculum source material.
+2. **Adaptive Study Sessions:** Students query the AI about topics they're struggling with. The system knows their position in the curriculum (via Circle `lesson_completion` webhook → entitlement profile update) and scopes responses to material they've covered. Persistent struggle on a topic flags it for review.
 
-2. **Adaptive Study Sessions:** A student asks the AI about a topic they're struggling with. The system knows their position in the curriculum (via Circle webhook on lesson completion) and scopes the response to material they've covered plus supporting references. If the student consistently asks about concepts from a specific module, the system flags that module for review.
+3. **Instructor Dashboard Intelligence:** Aggregate student queries across a cohort to show where students are struggling. "42% of Module 3 students asked about bile acid conjugation — consider adding supplementary material."
 
-3. **Instructor Dashboard Intelligence:** Aggregate student queries across a cohort to show instructors where students are struggling. "42% of Module 3 students asked about bile acid conjugation — consider adding supplementary material." This is content gap intelligence applied to the educational surface.
-
-4. **Cross-Program Consistency Check:** When an instructor is updating content, they can query the AI to see how a concept is taught across NTP, PHWC, and FOH programs — ensuring consistent terminology and aligned depth.
+4. **Cross-Program Consistency Check:** Instructors query the AI to see how a concept is taught across all programs — ensuring consistent terminology and aligned depth.
 
 ### Circle API Integration Points
 
-Circle's API (Admin API v2, requires Business+ plan at $199/mo) supports the integration hooks we need:
+Circle's Admin API v2 (requires Business+ plan at $199/mo) supports the hooks we need:
 
-**Inbound (Circle → RAG backend):**
-- `lesson_completion` webhook → update student's `current_module` in entitlement profile
-- `section_completion` webhook → track progress within a module
-- `course_completion` webhook → upgrade student to graduate tier
-- `subscription.activated` webhook → unlock on-demand course content
-- Member API → read student profile, group membership, tags
+**Inbound (Circle → RAG backend):** `lesson_completion`, `section_completion`, `course_completion`, `subscription.activated` webhooks → update entitlement profiles. Member API → read student profiles, group membership, tags.
 
-**Outbound (RAG backend → Circle):**
-- Admin API → create posts in spaces (e.g., post AI-generated study questions to a course space)
-- Headless Member API → embed AI interactions in a custom frontend component
-- DM/notification → send study prompts or assessment results to individual students
+**Outbound (RAG backend → Circle):** Admin API → create posts in spaces. Headless Member API → embed AI interactions in a custom frontend. DM/notification → send assessment results.
 
-**What Circle's API cannot do:**
-- Create or manage quizzes programmatically (no quiz CRUD endpoints)
-- Query a student's current lesson position via REST (must track via webhooks)
-- Inject custom UI widgets into Circle's native course player
-- Access quiz scores or results
+**What Circle's API cannot do:** Create/manage quizzes, query student progress via REST (must track via webhooks), inject custom UI into the course player, access quiz scores. The assessment system lives **outside Circle's native quiz feature** — as a custom frontend using the Headless API, or as bot-style interactions within Circle's post/comment system.
 
-This means the assessment system would need to live **outside Circle's native quiz feature** — either as a custom frontend (using Circle's Headless API for the community/content layer) or as a bot-style interaction within Circle's post/comment system. Students would interact with the AI assessment in a dedicated Circle space or via DM, not through Circle's built-in quiz UI.
-
-### Student Curriculum Filtering — Specific Logic
-
-When a student queries the AI from within Circle, the retrieval pipeline filters the knowledge base based on their enrollment and progress:
-
-**Data flow:**
-1. Circle fires `lesson_completion` webhook when a student finishes a lesson
-2. n8n webhook handler updates the student's progress record in Supabase: `{ user_id, program: 'NTP', completed_modules: ['Bioindividual Nutrition', 'Nutrient-Dense Diet', 'Digestion'], current_module: 'Blood Sugar Regulation', current_week: 4 }`
-3. When the student queries the AI, the frontend passes their `user_id`
-4. The retrieval pipeline looks up entitlements and applies the curriculum gate
-
-**Module completion map (NTP example):**
-
-The NTP curriculum has 16 modules taught in a specific sequence. A student who has completed through Module 3 (Digestion) can access:
-
-```
-Curriculum access (progressive):
-  Module 1: Bioindividual Nutrition (BON) — 92 chunks ✓
-  Module 2: Nutrient-Dense Diet (NDD) — 80 chunks ✓
-  Module 3: Digestion (DIG) — 245 chunks ✓
-  Module 4: Blood Sugar Regulation (BSR) — 136 chunks ✗ (not yet completed)
-  ...remaining modules locked...
-
-Reference access (always available):
-  Textbooks: all 2,832 chunks (OpenStax A&P, GHC Nutrition, Nutrition for Nurses, Dr. Gaby)
-  NIH: all 672 chunks
-  Podcast: all 990 chunks
-  NTA Reference: all 116 chunks
-```
-
-**Graduate/Practitioner filtering:**
-
-Once a student completes their program, their tier upgrades to Graduate. Their base knowledge scope expands to the full curriculum for their program. Additional on-demand courses expand scope further:
-
-```
-NTP Graduate base access:
-  All NTP Curriculum — 1,005 chunks
-  All textbooks — 2,832 chunks
-  All NIH — 672 chunks
-  All podcast — 990 chunks
-  All NTA Reference — 116 chunks
-  Total: ~5,615 of 6,387 chunks
-
-NTP Graduate + "Advanced Supplementation" course purchase:
-  Base NTP access + Advanced Supplementation course chunks
-  (These chunks would be ingested from the course content
-   and tagged with course_id for entitlement matching)
-
-NTP Graduate + PHWC certification:
-  Full NTP + full PHWC curriculum access
-  Total: ~6,180 of 6,387 chunks
-```
+Student and graduate access filtering follows the entitlement system described in Knowledge Access Control. Circle webhooks keep the student's progress record current; the retrieval pipeline applies the curriculum gate at query time.
 
 ### Feasibility Assessment
 
-Replacing Canvas entirely requires the AI assessment system to handle:
-- Generating contextually appropriate questions from curriculum content
-- Evaluating natural-language student responses against source material
-- Tracking and reporting scores/progress to instructors
-- Meeting any accreditation requirements for NTA's certification programs
+Replacing Canvas entirely requires: generating questions from curriculum content, evaluating natural-language responses, tracking scores for instructors, and meeting accreditation requirements. The first three are technically feasible. The fourth is an institutional constraint that needs independent evaluation.
 
-The first three are technically feasible with the existing RAG infrastructure. The fourth — accreditation requirements — is an institutional constraint that needs to be evaluated independently. If NTA's accrediting body requires traditional proctored exams or specific assessment formats, the AI system may supplement Canvas rather than replace it.
-
-**Recommended approach:** Build the AI study aid and adaptive assessment as a Circle integration first. Run it alongside Canvas for one cohort. Measure whether AI-assessed comprehension correlates with Canvas exam scores. Use that data to evaluate the Canvas replacement path.
+**Recommended approach:** Build the AI study aid and adaptive assessment alongside Canvas for one cohort. Measure whether AI-assessed comprehension correlates with Canvas exam scores. Use that data to evaluate the replacement path.
 
 ---
 
@@ -489,7 +307,7 @@ The first three are technically feasible with the existing RAG infrastructure. T
 
 ### Bio-Individuality Engine — Making Bio-Individuality Computable
 
-Bio-individuality is the foundational NTA principle: each person has unique physiology, history, and lifestyle, and healing requires individualized support. Today, bio-individuality is practiced through practitioner intuition, experience, and one-on-one assessment. It is conceptual, practitioner-driven, and difficult to compare across individuals.
+Bio-individuality is the foundational NTA principle: each person has unique physiology, history, and lifestyle, and healing requires individualized support. Today it is practiced through practitioner intuition, experience, and one-on-one assessment — conceptual, practitioner-driven, and difficult to compare across individuals.
 
 This concept proposes a system that makes bio-individuality **computable** — representable as data that can be compared, searched, and learned from at scale.
 
@@ -511,15 +329,15 @@ Each person's profile is organized into three domains aligned with NTA philosoph
 | **Current State** | Symptoms, diagnoses, digestion, energy, sleep, mood, stress, metabolic indicators | NAQ V2 scores (300+ questions across 16+ body system categories), lab results |
 | **Behavior & Environment** | Diet patterns, exercise, lifestyle habits, daily stressors and constraints | Food & mood journal, lifestyle intake, supplement protocols |
 
-Together, these reflect NTA's view of the body as a network of systems influenced by both internal and external factors. The NAQ already captures the Current State domain in rich structured detail. The other two domains require extending the intake questionnaire or pulling from existing Nutri-Q data (journals, practitioner notes).
+The NAQ already captures the Current State domain in rich structured detail. The other two domains require extending the intake questionnaire or pulling from existing Nutri-Q data (journals, practitioner notes). These extensions would be designed into the rebuilt Nutri-Q intake flow — the NAQ remains the clinical core; the extended intake provides the contextual dimensions that make similarity matching meaningful.
 
 #### How It Works: Two Vector Approaches
 
-The core technical step is turning each person's profile into a vector — a numerical representation that enables similarity comparison. But "vector" means two different things here, and both are valuable:
+Turning each person's profile into a vector enables similarity comparison. But "vector" means two different things here, and both are valuable:
 
 **Approach 1: Structured Profile Vectors (Quantitative Similarity)**
 
-Take the NAQ category scores, lab values, and lifestyle factors and construct a fixed-dimension numerical vector:
+Construct a fixed-dimension numerical vector from NAQ category scores, lab values, and lifestyle factors:
 
 ```
 Client Jane: [upper_gi=24, liver_gallbladder=18, sugar_handling=19, mineral_needs=12,
@@ -527,187 +345,113 @@ Client Jane: [upper_gi=24, liver_gallbladder=18, sugar_handling=19, mineral_need
               exercise_freq=2, diet_quality=6, supplement_adherence=7, ...]
 ```
 
-Each dimension is a named, interpretable feature. Normalize scores to consistent scales, weight by clinical significance. Store in pgvector. Cosine similarity finds clients with similar profiles.
-
-This is **not** the same as semantic embedding — it's traditional feature engineering. The NAQ provides 16+ body system category scores out of the box. Add lifestyle factors, lab values, and behavioral data and the vector has 50-100+ meaningful dimensions.
-
-**Advantages:** Fully interpretable. A practitioner can see *exactly* why two clients are considered similar (their Upper GI, Liver/Gallbladder, and Sugar Handling scores are all within 3 points of each other). Supports explainable queries: "Find clients similar to Jane in the digestion and blood sugar domains specifically."
+This is **not** semantic embedding — it's traditional feature engineering. Each dimension is named and interpretable. Normalize scores, weight by clinical significance, store in pgvector. A practitioner can see *exactly* why two clients are similar: "matched on Upper GI, Liver/Gallbladder, and Sugar Handling scores within similar ranges."
 
 **Approach 2: Narrative Embeddings (Qualitative Similarity)**
 
-Generate a text narrative from the client's profile data — a clinical summary paragraph — and embed it using the same `text-embedding-3-large` model that powers the RAG knowledge base:
+Generate a clinical summary paragraph from the client's profile and embed it using `text-embedding-3-large` (the same model powering the RAG knowledge base):
 
 ```
 "38-year-old female presenting with significant upper GI dysfunction (24/30) and
 liver/gallbladder stress (18/30), cascading into blood sugar dysregulation (19/30).
 Food journal shows frequent bloating after dairy and gluten-containing meals. Reports
-chronic fatigue, poor sleep onset, high work stress. Currently on a basic digestive
-enzyme protocol with minimal improvement after 6 weeks..."
+chronic fatigue, poor sleep onset, high work stress..."
 ```
 
-This captures nuance that structured scores miss: the *narrative* of the client's situation, including free-text journal entries, practitioner observations, and context that doesn't fit neatly into numbered categories.
+This captures nuance that structured scores miss: free-text journal entries, practitioner observations, relationships between symptoms. Enables natural-language queries: "Find clients who had bloating and fatigue that didn't respond to initial digestive enzyme protocols."
 
-**Advantages:** Handles unstructured data (journals, notes). Captures relationships between symptoms that structured vectors treat as independent dimensions. Uses the same embedding infrastructure already in production. Enables natural-language queries: "Find clients who had bloating and fatigue that didn't respond to initial digestive enzyme protocols."
-
-**The hybrid approach (recommended):** Use structured vectors for quantitative matching on core NAQ scores and measurable factors. Use narrative embeddings for qualitative matching on clinical context. Weight and combine similarity scores from both to produce a composite match.
+**The hybrid approach (recommended):** Use structured vectors for quantitative matching on core NAQ scores. Use narrative embeddings for qualitative matching on clinical context. Weight and combine both for a composite similarity score.
 
 #### The Killer Application: Outcome-Linked Similarity
 
 Finding similar clients is interesting. Finding similar clients **whose digestion scores improved 30%+ on a specific protocol** is actionable.
 
-The real value emerges when similarity search is combined with outcome tracking:
-
-1. Client Jane completes NAQ → her profile vector is generated
+1. Client Jane completes NAQ → profile vector generated
 2. System finds the 50 most similar historical profiles (anonymized, cross-practitioner)
-3. Of those 50, 32 completed follow-up NAQs (outcome data available)
-4. Of those 32, 18 showed significant improvement in the elevated categories
+3. Of those, 32 completed follow-up NAQs (outcome data available)
+4. Of those, 18 showed significant improvement in the elevated categories
 5. System analyzes: what protocols were those 18 on? What dietary changes? What timeline?
-6. Practitioner sees: "Clients with profiles similar to Jane who showed improvement most commonly used [Protocol X] with [Dietary Change Y], typically seeing measurable improvement in [8-12 weeks]"
+6. Practitioner sees: "Clients with profiles similar to Jane who improved most commonly used [Protocol X] with [Dietary Change Y], typically seeing measurable improvement in [8-12 weeks]"
 
-This turns the collective experience of every NTP using Nutri-Q into a searchable evidence base. It's not prescriptive — it's pattern-informed. The practitioner still makes the call, but now they have the aggregated wisdom of thousands of similar cases informing their judgment.
-
-**Specific queries this enables:**
-
-- *"Show me clients with a similar SBG pattern to Jane who improved their digestion scores. What protocols did their practitioners use?"*
-- *"What's the typical improvement timeline for clients with this combination of elevated Upper GI + Liver/Gallbladder + Sugar Handling?"*
-- *"Are there clients similar to Jane whose scores did NOT improve? What was different about their cases?"*
-- *"What supplement protocol has the highest correlation with improvement for this symptom pattern?"*
+This turns the collective experience of every NTP using Nutri-Q into a searchable evidence base. Not prescriptive — pattern-informed. The practitioner makes the call with the aggregated wisdom of thousands of similar cases.
 
 #### Architecture: Separate System, Shared Infrastructure
 
-This is **not** an extension of the RAG pipeline — it's a parallel system that shares infrastructure and philosophy:
+This is a parallel system to the RAG pipeline, not an extension of it:
 
 | | NTA Bot (RAG) | Bio-Individuality Engine |
 |---|---|---|
 | **Maps** | Knowledge | People |
-| **Input** | Text (questions) | Structured data (NAQ scores, journals, labs) + text (narratives) |
-| **Vectors represent** | Semantic meaning of content | Health profile similarity |
+| **Input** | Text (questions) | Structured data + text (narratives) |
 | **Similarity finds** | Relevant knowledge chunks | Similar clients |
-| **Output** | Cited answers from curriculum/textbooks/NIH | Patterns, outcomes, protocol correlations |
-| **Embedding model** | text-embedding-3-large (for narrative vectors) | text-embedding-3-large (narrative) + custom feature vectors (structured) |
-| **Storage** | `nta_knowledge_chunks` in pgvector | `nta_client_profiles` in pgvector (separate table, separate index) |
+| **Output** | Cited answers | Patterns, outcomes, protocol correlations |
+| **Storage** | `nta_knowledge_chunks` | `nta_client_profiles` (separate table/index) |
 
-The two systems are deeply intertwined in practice. When the Bio-Individuality Engine surfaces a pattern ("clients like Jane improved with Protocol X"), the RAG pipeline provides the clinical rationale ("here's why Protocol X targets hypochlorhydria, with citations from Dr. Gaby and the NTP Digestion module"). One system finds the pattern; the other explains it.
+The two systems are deeply intertwined in practice. When the Bio-Individuality Engine surfaces a pattern ("clients like Jane improved with Protocol X"), the RAG pipeline provides the clinical rationale ("here's why Protocol X targets hypochlorhydria, with citations from Dr. Gaby and the NTP Digestion module"). One finds the pattern; the other explains it.
 
-#### The Questionnaire as Data Model
-
-The questionnaire is not just intake — it is the data model, the structure of bio-individuality, and the input for all downstream analysis. The NAQ V2 already provides the Current State domain with 300+ questions producing category-level scores across the Five Foundations and body systems. For the Bio-Individuality Engine to reach its potential, the questionnaire must also capture the Predisposition and Behavior & Environment domains with the same rigor:
-
-- **Predisposition inputs:** Family health history (structured, not free-text), known genetic factors, long-term environmental exposures, health timeline
-- **Behavior & Environment inputs:** Dietary patterns (beyond the food journal — structured diet type, meal frequency, cooking habits), exercise type/frequency/intensity, sleep hygiene specifics, stress sources and coping mechanisms, environmental factors (urban/rural, toxin exposure, water quality)
-
-These extensions would be designed into the rebuilt Nutri-Q intake flow, not bolted onto the existing NAQ. The NAQ remains the clinical assessment core; the extended intake provides the contextual dimensions that make similarity matching meaningful.
-
-#### Dependencies and Phasing
+#### Dependencies
 
 This system depends on Phase 2 (Nutri-Q AI) being in production and generating data:
 
-1. **Phase 2 lays the foundation:** Nutri-Q AI captures NAQ scores, protocols, journal entries, and follow-up outcomes in structured form. The data collection infrastructure is designed from day one with the Bio-Individuality Engine in mind — even before the engine itself is built.
-2. **Critical mass:** Similarity matching becomes useful at ~500-1,000 client profiles with outcome data. Below that, patterns are statistically unreliable. The system should accumulate data silently during Phase 2 and activate when the threshold is reached.
-3. **Feature engineering:** Define the structured vector schema — which NAQ categories, which lifestyle factors, what weighting. This requires collaboration with NTA's curriculum team to determine clinical significance weights.
-4. **Embedding pipeline:** Build the narrative generation and embedding pipeline for qualitative similarity. This leverages the same GPT models and embedding infrastructure already in production.
-5. **Outcome tracking:** The hardest dependency. Requires practitioners to log protocols AND administer follow-up NAQs AND have the system link the two. The rebuilt Nutri-Q must make this workflow friction-free.
+1. **Data collection from day one:** Nutri-Q AI must capture NAQ scores, protocols, journal entries, and follow-up outcomes in structured form — designed with the Bio-Individuality Engine in mind before the engine itself is built.
+2. **Critical mass:** Similarity matching becomes useful at ~500-1,000 client profiles with outcome data. The system accumulates data silently during Phase 2 and activates when the threshold is reached.
+3. **Feature engineering:** Define the structured vector schema in collaboration with NTA's curriculum team — which categories, which factors, what clinical significance weights.
+4. **Outcome tracking:** The hardest dependency. Requires practitioners to log protocols AND administer follow-up NAQs AND have the system link the two. The rebuilt Nutri-Q must make this workflow friction-free.
 
 #### Privacy and Ethics
 
-Client data must be anonymized before any cross-practitioner analysis. The system operates on aggregate patterns, never individual records. Requirements:
-
-- **Practitioner opt-in:** Contributing anonymized client data to the network is voluntary per practitioner
-- **Client consent:** Individual client consent is required before their data enters the anonymized pool
-- **Anonymization:** No PII in the vector store. Profiles are reduced to scores, categories, and outcomes — no names, dates of birth, or identifying information
-- **Transparency:** Practitioners can see why the system flagged a similarity ("matched on Upper GI, Liver/Gallbladder, and Sugar Handling scores within similar ranges") — no black-box matching
-- **Non-prescriptive:** The system surfaces patterns and correlations. It never prescribes. The practitioner always makes the final clinical judgment
+- **Practitioner opt-in:** Contributing anonymized client data to the network is voluntary
+- **Client consent:** Required before data enters the anonymized pool
+- **Anonymization:** No PII in the vector store — profiles are reduced to scores, categories, and outcomes
+- **Transparency:** Practitioners can see why the system flagged a similarity — no black-box matching
+- **Non-prescriptive:** The system surfaces patterns and correlations. It never prescribes. The practitioner always makes the final clinical judgment.
 
 #### Long-Term Vision
 
-Once bio-individuality becomes computable, it becomes:
-
-- **Searchable** — find people with similar profiles across the entire network
-- **Comparable** — measure how two clients differ and where they overlap
-- **Learnable** — the system improves its pattern recognition as more data flows through it
-
-This creates something NTA has never had: a living, data-driven evidence base built from real practitioner-client interactions across thousands of cases. Not replacing the curriculum or the textbooks — adding a new dimension of evidence that grows with every client who walks through an NTP's door.
+Once bio-individuality becomes computable, it becomes searchable, comparable, and learnable. This creates something NTA has never had: a living, data-driven evidence base built from real practitioner-client interactions across thousands of cases — a new dimension of evidence that grows with every client who walks through an NTP's door.
 
 ### Content Gap Intelligence
 
-Use analytics data from all surfaces (Slack, Circle, Nutri-Q, web chat) to systematically identify where questions outpace available knowledge base content. The analytics pipeline already logs every query with topic classification, source types cited, and confidence level. The dashboard's Topic Demand vs Coverage analysis already shows which categories generate the most questions relative to available entries.
+Use analytics data from all surfaces to systematically identify where questions outpace available knowledge base content. This becomes actionable after multiple surfaces are feeding the analytics pipeline — more surfaces → more queries → more signal about gaps → more targeted content investment.
 
-This becomes actionable after multiple surfaces are feeding the analytics pipeline. The value compounds with usage: more surfaces → more queries → more signal about where the knowledge base has gaps → more targeted content investment by the curriculum team.
-
-**The key requirement is collecting good data from the start.** Every surface must log queries with consistent metadata (`source_surface`, `topic_category`, `confidence_level`, `source_types_cited`) so that gap analysis works across the entire ecosystem. This is why the analytics schema includes `source_surface` from Phase 1 onward.
+**The key requirement is collecting good data from the start.** Every surface logs queries with consistent metadata (`source_surface`, `topic_category`, `confidence_level`, `source_types_cited`) so gap analysis works across the ecosystem from day one.
 
 ### Curriculum Development Tools
 
-Help content authors check consistency across programs, identify coverage overlaps, and verify that key concepts are taught with aligned terminology. An author updating the NTP Stress Management module could query "How is the HPA axis explained across all NTA programs?" and see coverage from NTP, PHWC, FOH, podcasts, and supporting textbooks.
-
-This is a natural extension of the instructor support tools in Phase 3 — same retrieval pipeline with a system prompt emphasizing cross-program comparison and coverage analysis rather than clinical synthesis or student instruction.
+Cross-program consistency checking for content authors — same retrieval pipeline with a system prompt emphasizing comparison and coverage analysis rather than clinical synthesis or student instruction.
 
 ---
 
-## Shared Infrastructure Requirements
-
-Every new surface adds operational concerns around the existing retrieval infrastructure. None of these require architectural changes to the pipeline itself.
+## Shared Infrastructure
 
 ### Authentication & Identity
 
-The current chat app uses a client-side password. Multi-surface deployment requires proper auth:
-
-- **Slack:** Workspace membership is the identity. Slack user ID maps to analytics. No additional auth needed.
-- **Circle:** Circle handles member identity. SSO or JWT-based auth links Circle members to their entitlement profile in Supabase.
-- **Nutri-Q:** Practitioner login in the rebuilt Nutri-Q. Credential tier and purchased courses stored in the user profile.
-
-A shared `nta_user_profiles` table in Supabase links identities across surfaces to a single entitlement record.
+A shared `nta_user_profiles` table in Supabase links identities across surfaces to a single entitlement record. Slack uses workspace membership as identity. Circle uses SSO or JWT-based auth linking members to their entitlement profile. Nutri-Q uses practitioner login with credential tier and purchased courses.
 
 ### Content Freshness Pipeline
 
-Multiple consumers increase the value of keeping content current. The current knowledge base is updated manually in ingestion sessions. With students, practitioners, and staff all querying the same data, a semi-automated pipeline becomes important:
+Multiple consumers increase the value of keeping content current. Priority automations:
 
-- **New podcast episodes:** RSS feed → Whisper transcription → GPT extraction → embedding → ingestion. Currently manual; could be triggered on new RSS items.
-- **Curriculum updates:** When NTA updates course content, re-extract and re-embed affected chunks. Track content versions via `nta_documents.version`.
-- **Supplement catalog:** Apply for Fullscript API access for real-time product data sync (currently 832 products from manual scraping).
-- **New on-demand courses:** Ingest course content on publication, tag with `course_id` for entitlement matching.
+- **Podcast episodes:** RSS feed → Whisper transcription → GPT extraction → embedding → ingestion
+- **Curriculum updates:** Re-extract and re-embed affected chunks, track versions via `nta_documents.version`
+- **Supplement catalog:** Apply for Fullscript API access for real-time product data sync
+- **On-demand courses:** Ingest on publication, tag with `course_id` for entitlement matching
 
-### Per-Surface Analytics
+### Analytics & Data Collection
 
-The `nta_query_log` table already captures query metadata. Adding `source_surface` (slack, circle, nutriq, web) enables:
+Every surface logs to the same `nta_query_log` table with a `source_surface` field (slack, circle, nutriq, web) enabling per-surface dashboards, cross-surface demand analysis, and audience-aware gap detection.
 
-- Per-surface usage dashboards
-- Cross-surface demand analysis (are students and practitioners asking the same questions?)
-- Confidence level comparison across surfaces (does the knowledge base serve practitioners better than students?)
-- Content gap detection that accounts for audience (a gap for students is different from a gap for practitioners)
-
-### Data Collection from Day One
-
-The client vector similarity concept (Horizon section) and content gap intelligence both depend on rich data flowing through the system. Every surface should log:
-
-- Query text and response summary
-- Topic classification and category
-- Source types cited and specific documents referenced
-- Confidence level
-- User entitlement tier (staff, student, practitioner, graduate)
-- Surface identifier
-- Session/thread context
-- Latency
-
-For Nutri-Q specifically, the practitioner AI interactions should log (with appropriate consent):
-- NAQ score patterns that triggered the query
-- Protocol recommendations generated
-- Follow-up NAQ score changes (outcome tracking)
-- Practitioner acceptance/modification of AI recommendations
-
-This data becomes the training signal for content gap analysis and, eventually, the client vector similarity system.
+For Nutri-Q specifically, practitioner AI interactions should log (with consent): NAQ score patterns that triggered queries, protocol recommendations generated, follow-up NAQ score changes (outcome tracking), and practitioner acceptance/modification of AI recommendations. This data feeds both content gap intelligence and the Bio-Individuality Engine.
 
 ---
 
 ## What This Is Not
 
-- **Not a replacement for instructors, curriculum, or clinical judgment.** The knowledge base is a tool for finding, synthesizing, and applying what NTA already teaches. Practitioners make the final call. Instructors design the learning experience. The AI supports both.
-- **Not a public-facing product.** All current and proposed uses are internal — for NTA staff, students, and practitioners. The knowledge base contains proprietary curriculum content and copyrighted material that is not licensed for public distribution.
-- **Not a diagnostic or medical tool.** The system synthesizes information from its sources. It does not diagnose conditions, prescribe treatments, or replace professional clinical judgment. In Nutri-Q, it assists the practitioner — it does not advise the client directly.
-- **Not a data play.** Client vector similarity and cross-practitioner analytics require explicit consent, anonymization, and ethical oversight. NTA's practitioners trust the platform with their clients' health data. That trust is non-negotiable.
+- **Not a replacement for instructors, curriculum, or clinical judgment.** The AI supports practitioners and instructors — it doesn't replace them.
+- **Not a public-facing product.** All uses are internal — staff, students, and practitioners. The knowledge base contains proprietary and copyrighted material.
+- **Not a diagnostic or medical tool.** In Nutri-Q, it assists the practitioner — it does not advise the client directly.
+- **Not a data play.** Client vector similarity requires explicit consent, anonymization, and ethical oversight. NTA's practitioners trust the platform with their clients' health data. That trust is non-negotiable.
 
 ---
 
-*For the current architecture powering all of this, see [TECHNICAL.md](TECHNICAL.md).*
-*For what's in the knowledge base today, see [KNOWLEDGE-BASE.md](KNOWLEDGE-BASE.md).*
-*For general overview, see [README.md](README.md).*
+*For the current architecture, see [TECHNICAL.md](TECHNICAL.md). For the knowledge base, see [KNOWLEDGE-BASE.md](KNOWLEDGE-BASE.md). For general overview, see [README.md](README.md).*
