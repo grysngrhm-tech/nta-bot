@@ -311,11 +311,7 @@ Bio-individuality is the foundational NTA principle: each person has unique phys
 
 This concept proposes a system that makes bio-individuality **computable** — representable as data that can be compared, searched, and learned from at scale.
 
-The NTA AI ecosystem already maps two things:
-- **ARC Bot** maps meaning in community information
-- **NTA Bot** maps knowledge across curriculum, textbooks, and clinical references
-
-The Bio-Individuality Engine maps a third: **patterns in people.**
+NTA Bot already maps knowledge across curriculum, textbooks, and clinical references. The Bio-Individuality Engine maps something new: **patterns in people.**
 
 Instead of only asking *"What does the curriculum say?"* we can begin to ask *"What tends to work for people like this?"* This does not replace practitioner judgment — it augments it with pattern recognition across the entire NTA practitioner network.
 
