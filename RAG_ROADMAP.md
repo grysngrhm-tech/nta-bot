@@ -18,15 +18,15 @@ NTA Bot is a working internal tool. Staff use it today. But the more significant
 
 The chat app is one consumer of this pipeline. The pipeline doesn't know or care what called it — it receives a query, retrieves evidence, synthesizes an answer, and returns structured JSON with source metadata. Adding another consumer requires three things: **authentication, a system prompt, and a surface.** Everything else stays the same.
 
-This roadmap proposes three new surfaces:
+This roadmap proposes new surfaces for the same backend:
 
 | Surface | Stakeholder | Value |
 |---------|-------------|-------|
 | **Slack Bot** | NTA staff (remote, already in Slack) | Immediate access to the knowledge base where they already work |
 | **Nutri-Q AI** | Practitioners + clients | Clinical intelligence powered by the knowledge base + client data |
-| **Circle AI** | Students + instructors | Curriculum-aware study aid and assessment engine |
+| **Canvas / Circle** | Students + instructors | Curriculum-aware study aid embedded in the LMS and community platforms |
 
-All three consume the same backend. All three feed the same analytics pipeline. All three respect the same knowledge access control system.
+All surfaces consume the same backend, feed the same analytics pipeline, and respect the same knowledge access control system.
 
 ---
 
